@@ -4,7 +4,7 @@
     <header class="navbar glass-card animate-fade-in">
       <div class="logo">
         <el-icon :size="24" color="#6366f1"><MagicStick /></el-icon>
-        <span class="gradient-text">HappyLife AI</span>
+        <span class="gradient-text">DeShui&Angel-Happy❤️&Rich💰-life</span>
       </div>
       <div class="nav-links">
         <el-button link>Dashboard</el-button>

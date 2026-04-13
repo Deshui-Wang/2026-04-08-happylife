@@ -10,20 +10,20 @@
           
           <el-form label-position="top">
             <el-divider content-position="left" style="margin-top: 0;">核心资产</el-divider>
-            <el-row :gutter="10" align="middle">
-              <el-col :span="5">
+            <el-row :gutter="15" align="middle" class="core-assets-inputs">
+              <el-col :span="7">
                 <el-form-item label="当前存款 (元)">
                   <el-input-number v-model="assets.savings" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :span="1" style="text-align:center;font-size:18px;color:#6366f1;font-weight:bold;padding-top:28px">+</el-col>
-              <el-col :span="5">
-                <el-form-item label="额外流入 (一次性/元)">
+              <el-col :span="1" class="calc-symbol">+</el-col>
+              <el-col :span="8">
+                <el-form-item label="其他款项 (元)">
                   <div style="display: flex; gap: 4px; align-items: center;">
                     <el-input-number v-model="assets.oneTimeIncome" :precision="0" :step="1000" style="flex: 1" controls-position="right" />
                     <el-popover placement="bottom" :width="320" trigger="click" popper-style="padding: 16px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
                       <template #reference>
-                        <el-button link type="primary" :icon="MagicStick" style="font-size: 18px; padding: 0 4px;" />
+                    <el-button type="primary" plain :icon="MagicStick" class="tool-btn-square" />
                       </template>
                       <div class="comp-tool">
                         <div style="font-weight: bold; margin-bottom: 12px; font-size: 15px; color: #1e293b; display: flex; align-items: center; gap: 6px;">
@@ -72,15 +72,15 @@
                         </div>
                         
                         <el-button type="primary" size="default" style="width: 100%; border-radius: 8px; margin-top: 12px;" @click="syncCompResult">
-                          同步到额外流入
+                          同步到其他款项
                         </el-button>
                       </div>
                     </el-popover>
                   </div>
                 </el-form-item>
               </el-col>
-              <el-col :span="1" style="text-align:center;font-size:18px;color:#6366f1;font-weight:bold;padding-top:28px">+</el-col>
-              <el-col :span="4">
+              <el-col :span="1" class="calc-symbol">+</el-col>
+              <el-col :span="7">
                 <el-form-item :class="{'is-disabled': !assets.baoyouEnabled}">
                   <template #label>
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -88,16 +88,22 @@
                       <el-switch v-model="assets.baoyouEnabled" size="small" />
                     </div>
                   </template>
-                  <el-input-number v-model="assets.baoyou" :precision="0" style="width: 100%" controls-position="right" disabled />
-                </el-form-item>
-              </el-col>
-              <el-col :span="1" style="text-align:center;font-size:18px;color:#6366f1;font-weight:bold;padding-top:28px">=</el-col>
-              <el-col :span="5">
-                <el-form-item label="静态资产总额">
-                  <div class="asset-total-inline">¥ {{ totalAssets.toLocaleString() }}</div>
+                  <el-input-number v-model="assets.baoyou" :precision="0" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
             </el-row>
+
+            <div class="asset-summary-banner mt-10">
+              <div class="summary-label">
+                <el-icon><InfoFilled /></el-icon>
+                <span>静态资产总额</span>
+                <span class="formula-text">（存款+其他+宝有）</span>
+              </div>
+              <div class="summary-value">
+                <span class="currency">¥</span>
+                <span class="number">{{ totalAssets.toLocaleString() }}</span>
+              </div>
+            </div>
 
             <el-divider content-position="left">工作/未来流入</el-divider>
             <el-row :gutter="10">
@@ -309,7 +315,7 @@ const assets = reactive({
   savings: 147755, 
   oneTimeIncome: 0,
   baoyou: 300000,
-  baoyouEnabled: true,
+  baoyouEnabled: false,
   workingIncome: 0,
   workingYears: 0,
   estimatedPension: 5000,
@@ -343,7 +349,7 @@ const insuranceList = ref([
 // ★★★ 赔偿金计算工具逻辑 ★★★
 const compCalc = reactive({
   base: 29000,
-  type: 'N+1',
+  type: '2N',
   joinDate: '2022-03-01',
   targetDate: dayjs().format('YYYY-MM-DD')
 })
@@ -587,6 +593,71 @@ const flowChartData = computed(() => {
   border-radius: 8px;
   border: 1px solid #c7d2fe;
   text-align: center;
+}
+
+.calc-symbol {
+  text-align: center;
+  font-size: 20px;
+  color: #6366f1;
+  font-weight: bold;
+  padding-top: 18px;
+}
+
+.tool-btn-square {
+  width: 32px;
+  height: 32px;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px !important;
+  font-size: 16px !important;
+}
+
+.asset-summary-banner {
+  background: linear-gradient(135deg, #f8faff, #f0f4ff);
+  border-radius: 12px;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.05);
+  border: 1px solid #e0e7ff;
+}
+
+.asset-summary-banner .summary-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.asset-summary-banner .formula-text {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: normal;
+}
+
+.asset-summary-banner .summary-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.asset-summary-banner .currency {
+  font-size: 16px;
+  color: #6366f1;
+  font-weight: bold;
+}
+
+.asset-summary-banner .number {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #4f46e5;
+  text-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
 }
 
 .retirement-stat-card {
