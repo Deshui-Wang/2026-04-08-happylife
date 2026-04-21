@@ -10,85 +10,47 @@
           
           <el-form label-position="top">
             <el-divider content-position="left" style="margin-top: 0;">核心资产</el-divider>
-            <el-row :gutter="15" align="middle" class="core-assets-inputs">
+            <el-row :gutter="10" align="middle" class="core-assets-inputs">
               <el-col :span="7">
                 <el-form-item label="当前存款 (元)">
                   <el-input-number v-model="assets.savings" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :span="1" class="calc-symbol">+</el-col>
-              <el-col :span="8">
-                <el-form-item label="其他款项 (元)">
-                  <div style="display: flex; gap: 4px; align-items: center;">
-                    <el-input-number v-model="assets.oneTimeIncome" :precision="0" :step="1000" style="flex: 1" controls-position="right" />
-                    <el-popover placement="bottom" :width="320" trigger="click" popper-style="padding: 16px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-                      <template #reference>
-                    <el-button type="primary" plain :icon="MagicStick" class="tool-btn-square" />
-                      </template>
-                      <div class="comp-tool">
-                        <div style="font-weight: bold; margin-bottom: 12px; font-size: 15px; color: #1e293b; display: flex; align-items: center; gap: 6px;">
-                          <el-icon color="#6366f1"><MagicStick /></el-icon> 赔偿金速算小工具
-                        </div>
-                        <el-form size="small" label-position="left" label-width="90px">
-                          <el-form-item label="计算基数">
-                            <el-radio-group v-model="compCalc.base" class="premium-radio">
-                              <el-radio-button :label="29000">2.9w</el-radio-button>
-                              <el-radio-button :label="19725">1.97w</el-radio-button>
-                            </el-radio-group>
-                          </el-form-item>
-                          <el-form-item label="赔偿时限">
-                            <el-radio-group v-model="compCalc.type" class="premium-radio">
-                              <el-radio-button label="N+1">N+1</el-radio-button>
-                              <el-radio-button label="2N">2N</el-radio-button>
-                            </el-radio-group>
-                          </el-form-item>
-                        </el-form>
-                        
-                        <el-divider style="margin: 12px 0;" />
-                        
-                        <div class="comp-result-list">
-                          <div class="res-item">
-                            <span>工龄系数 (N):</span> 
-                            <span><b>{{ compCalcResult.n }}</b></span>
-                          </div>
-                          <div class="res-formula">入职: {{ compCalc.joinDate }} (共{{ compCalcResult.totalMonths }}个月)</div>
-                          
-                          <div class="res-item" style="margin-top: 8px;">
-                            <span>裁员补偿 ({{ compCalc.type }}):</span> 
-                            <span><b>¥{{ compCalcResult.severance.toLocaleString() }}</b></span>
-                          </div>
-                          <div class="res-formula">计算: {{ compCalc.base }} × {{ compCalc.type === '2N' ? '(' + compCalcResult.n + ' × 2)' : '(' + compCalcResult.n + ' + 1)' }}</div>
-
-                          <div class="res-item" style="margin-top: 8px;">
-                            <span>工资追补 (25%):</span> 
-                            <span><b>¥{{ compCalcResult.wageRestoration.toLocaleString() }}</b></span>
-                          </div>
-                          <div class="res-formula">计算: {{ compCalc.base }} × 0.25 × {{ compCalcResult.restorationMonths }}个月</div>
-
-                          <div class="total-res">
-                            <span>计算总和:</span> 
-                            <span class="val">¥{{ compCalcResult.total.toLocaleString() }}</span>
-                          </div>
-                        </div>
-                        
-                        <el-button type="primary" size="default" style="width: 100%; border-radius: 8px; margin-top: 12px;" @click="syncCompResult">
-                          同步到其他款项
-                        </el-button>
-                      </div>
-                    </el-popover>
-                  </div>
-                </el-form-item>
-              </el-col>
-              <el-col :span="1" class="calc-symbol">+</el-col>
+              <el-col :span="1" class="calc-symbol" style="padding-top: 10px; text-align: center;">+</el-col>
               <el-col :span="7">
-                <el-form-item :class="{'is-disabled': !assets.baoyouEnabled}">
+                <el-form-item>
                   <template #label>
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                      <span>宝有</span>
-                      <el-switch v-model="assets.baoyouEnabled" size="small" />
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <span>欠薪追补 (元)</span>
+                      <el-tooltip placement="top">
+                        <template #content>
+                          计算公式：29000 × 25% × {{ compensationInfo.restorationMonths }}个月<br/>
+                          (当前计算周期：2024年12月 - 当前)
+                        </template>
+                        <el-icon style="cursor: help; color: #94a3b8;"><QuestionFilled /></el-icon>
+                      </el-tooltip>
                     </div>
                   </template>
-                  <el-input-number v-model="assets.baoyou" :precision="0" style="width: 100%" controls-position="right" />
+                  <el-input-number v-model="assets.backPay" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="1" class="calc-symbol" style="padding-top: 10px; text-align: center;">+</el-col>
+              <el-col :span="8">
+                <el-form-item>
+                  <template #label>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <span>裁员赔偿 (元)</span>
+                      <el-tooltip placement="top">
+                        <template #content>
+                          计算方案：2N 补偿<br/>
+                          计算公式：29000 × ({{ compensationInfo.n }} × 2)<br/>
+                          (工龄系数 N 按 2022-03 入职至今计算)
+                        </template>
+                        <el-icon style="cursor: help; color: #94a3b8;"><QuestionFilled /></el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                  <el-input-number v-model="assets.compensation" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -97,7 +59,7 @@
               <div class="summary-label">
                 <el-icon><InfoFilled /></el-icon>
                 <span>静态资产总额</span>
-                <span class="formula-text">（存款+其他+宝有）</span>
+                <span class="formula-text">（存款 + 欠薪 + 赔偿金）</span>
               </div>
               <div class="summary-value">
                 <span class="currency">¥</span>
@@ -107,29 +69,35 @@
 
             <el-divider content-position="left">工作/未来流入</el-divider>
             <el-row :gutter="10">
-              <el-col :span="14">
+              <el-col :span="8">
                 <el-form-item label="月预计工作收入 (元)">
                   <el-input-number v-model="assets.workingIncome" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="8">
                 <el-form-item label="预计工作年限 (年)">
                   <el-input-number v-model="assets.workingYears" :precision="0" :step="1" :min="0" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
+              <el-col :span="8">
+                <el-form-item>
+                  <template #label>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <span>未来退休金 (月)</span>
+                      <el-tooltip placement="top">
+                        <template #content>
+                          {{ retirementInfo.age }}岁退休 | 距离退休 {{ retirementInfo.yearsLeft }} 年
+                        </template>
+                        <el-icon style="cursor: help; color: #94a3b8;"><QuestionFilled /></el-icon>
+                      </el-tooltip>
+                    </div>
+                  </template>
+                  <el-input-number v-model="assets.estimatedPension" :precision="0" :step="500" :min="0" style="width: 100%" controls-position="right" />
+                </el-form-item>
+              </el-col>
             </el-row>
 
-            <el-divider content-position="left">预估退休收入</el-divider>
 
-            <div class="retirement-stat-card">
-              <div class="stat-main" style="align-items: center;">
-                <span class="label">预估退休金 (月)</span>
-                <el-input-number v-model="assets.estimatedPension" :precision="0" :step="500" :min="0" style="width: 140px" controls-position="right" />
-              </div>
-              <div class="stat-sub" style="margin-top: 8px;">
-                <span>55岁退休 | 距离退休 {{ retirementInfo.yearsLeft }} 年</span>
-              </div>
-            </div>
 
             <el-divider content-position="left">保险收益/返还</el-divider>
             <div class="insurance-return-panel">
@@ -307,15 +275,14 @@
 
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
-import { User, Postcard, MagicStick, Warning, InfoFilled } from '@element-plus/icons-vue'
+import { User, Postcard, MagicStick, Warning, InfoFilled, QuestionFilled } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
 const userProfile = reactive({ gender: 'female', birthday: dayjs('1982-01-01').toDate() })
 const assets = reactive({ 
   savings: 147755, 
-  oneTimeIncome: 0,
-  baoyou: 300000,
-  baoyouEnabled: false,
+  backPay: 123250, // 欠薪追补
+  compensation: 261000, // 裁员赔偿
   workingIncome: 0,
   workingYears: 0,
   estimatedPension: 5000,
@@ -325,8 +292,7 @@ const assets = reactive({
   ]
 })
 const totalAssets = computed(() => {
-  const by = assets.baoyouEnabled ? assets.baoyou : 0
-  return assets.savings + assets.oneTimeIncome + by
+  return assets.savings + assets.backPay + assets.compensation
 })
 
 const selectedCity = ref('tieling')
@@ -346,19 +312,10 @@ const insuranceList = ref([
   { enabled: true, name: '全佑惠享荣耀重疾', yearsLeft: 10, premium: 4216.95 },
 ])
 
-// ★★★ 赔偿金计算工具逻辑 ★★★
-const compCalc = reactive({
-  base: 29000,
-  type: '2N',
-  joinDate: '2022-03-01',
-  targetDate: dayjs().format('YYYY-MM-DD')
-})
-
-const compCalcResult = computed(() => {
-  const joinDate = dayjs(compCalc.joinDate)
+// ★★★ 核心资产自动计算逻辑 ★★★
+const compensationInfo = computed(() => {
+  const joinDate = dayjs('2022-03-01')
   const now = dayjs()
-  
-  // 计算 N: 满半年不满一年算 1, 满一年算 1, 不满半年算 0.5 (中国劳动法标准)
   const totalMonths = now.diff(joinDate, 'month')
   const years = Math.floor(totalMonths / 12)
   const remainingMonths = totalMonths % 12
@@ -369,26 +326,26 @@ const compCalcResult = computed(() => {
     n += 0.5
   }
   
-  // 裁员补偿
-  const multiplier = compCalc.type === '2N' ? n * 2 : n + 1
-  const severance = compCalc.base * multiplier
-  
-  // 工资扣减补偿: 2024年12月至今 (月薪 * 25%)
+  const severance = 29000 * n * 2
   const restorationMonths = Math.max(0, now.diff(dayjs('2024-12-01'), 'month') + 1)
-  const wageRestoration = compCalc.base * 0.25 * restorationMonths
+  const wageRestoration = 29000 * 0.25 * restorationMonths
   
   return {
     n,
     severance,
     wageRestoration,
-    restorationMonths,
-    totalMonths,
-    total: Math.round(severance + wageRestoration)
+    restorationMonths
   }
 })
 
+// 自动同步到 assets 以供表单修改或展示
+watch(compensationInfo, (val) => {
+  assets.compensation = val.severance
+  assets.backPay = Math.round(val.wageRestoration)
+}, { immediate: true })
+
 const syncCompResult = () => {
-  assets.oneTimeIncome = compCalcResult.value.total
+  // 此函数现已弃用，由 watch 自动处理
 }
 
 // 监听 传世金生 停保动作：如果关闭了保费，自动取消未来的满期收益预期
@@ -593,6 +550,53 @@ const flowChartData = computed(() => {
   border-radius: 8px;
   border: 1px solid #c7d2fe;
   text-align: center;
+}
+
+.incentive-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.incentive-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+.incentive-item .item-label {
+  display: flex;
+  flex-direction: column;
+}
+.incentive-item .title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #1e293b;
+}
+.incentive-item .formula {
+  font-size: 11px;
+  color: #94a3b8;
+}
+.incentive-item .item-value {
+  font-weight: bold;
+  color: #475569;
+  font-size: 14px;
+}
+.incentive-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #6366f1;
+}
+.incentive-total .val {
+  font-size: 16px;
 }
 
 .calc-symbol {
