@@ -5,7 +5,32 @@
       <el-col :xs="24" :md="12">
         <el-card class="glass-card config-section animate-fade-in">
           <template #header>
-            <div class="card-header"><el-icon><Postcard /></el-icon><span>资产与基础画像</span></div>
+            <div class="card-header justify-between">
+              <div style="display:flex;align-items:center;gap:8px">
+                <el-icon><Postcard /></el-icon><span>资产与基础画像</span>
+              </div>
+              <el-popover placement="bottom" :width="240" trigger="click" effect="light" popper-style="padding: 12px; border-radius: 12px;">
+                <template #reference>
+                  <el-button circle size="small" type="primary" plain>
+                    <el-icon><Operation /></el-icon>
+                  </el-button>
+                </template>
+                <div class="mini-calculator">
+                  <div class="calc-screen">
+                    <div class="expr">{{ calcExpr || '0' }}</div>
+                    <div class="res" v-if="calcResult !== ''">= {{ calcResult }}</div>
+                  </div>
+                  <div class="calc-btns">
+                    <el-button v-for="b in ['7','8','9','/','4','5','6','*','1','2','3','-','0','.','C','+']" 
+                      :key="b" size="small" @click="handleCalcInput(b)"
+                      :type="['/','*','-','+'].includes(b) ? 'warning' : b === 'C' ? 'danger' : ''" plain>
+                      {{ b }}
+                    </el-button>
+                    <el-button type="success" size="small" style="grid-column: span 4; margin-top: 5px;" @click="handleCalcInput('=')">计算 (ENTER)</el-button>
+                  </div>
+                </div>
+              </el-popover>
+            </div>
           </template>
           
           <el-form label-position="top">
@@ -25,7 +50,7 @@
                       <el-tooltip placement="top">
                         <template #content>
                           计算公式：29000 × 25% × {{ compensationInfo.restorationMonths }}个月<br/>
-                          (当前计算周期：2024年12月 - 当前)
+                          (当前计算周期：2024年12月 - 至今)
                         </template>
                         <el-icon style="cursor: help; color: #94a3b8;"><QuestionFilled /></el-icon>
                       </el-tooltip>
@@ -42,12 +67,20 @@
                       <span>裁员赔偿 (元)</span>
                       <el-tooltip placement="top">
                         <template #content>
-                          计算方案：2N 补偿<br/>
-                          计算公式：29000 × ({{ compensationInfo.n }} × 2)<br/>
+                          计算方案：{{ severanceType }} 补偿<br/>
+                          计算公式：29000 × ({{ compensationInfo.n }} {{ severanceType === '2N' ? '× 2' : '' }})<br/>
                           (工龄系数 N 按 2022-03 入职至今计算)
                         </template>
-                        <el-icon style="cursor: help; color: #94a3b8;"><QuestionFilled /></el-icon>
+                        <el-icon 
+                          style="cursor: pointer; color: #6366f1; font-size: 16px; margin-left: 2px;"
+                          @click="severanceType = severanceType === '2N' ? 'N' : '2N'"
+                        >
+                          <QuestionFilled />
+                        </el-icon>
                       </el-tooltip>
+                      <el-tag size="small" effect="plain" :type="severanceType === '2N' ? 'danger' : 'info'" style="cursor:pointer" @click="severanceType = severanceType === '2N' ? 'N' : '2N'">
+                        {{ severanceType }}
+                      </el-tag>
                     </div>
                   </template>
                   <el-input-number v-model="assets.compensation" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
@@ -275,12 +308,13 @@
 
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
-import { User, Postcard, MagicStick, Warning, InfoFilled, QuestionFilled } from '@element-plus/icons-vue'
+import { User, Postcard, MagicStick, Warning, InfoFilled, QuestionFilled, Operation, Delete, Finished } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
 const userProfile = reactive({ gender: 'female', birthday: dayjs('1982-01-01').toDate() })
+const severanceType = ref('2N') // 2N 或 N
 const assets = reactive({ 
-  savings: 147755, 
+  savings: 160000, 
   backPay: 123250, // 欠薪追补
   compensation: 261000, // 裁员赔偿
   workingIncome: 0,
@@ -326,8 +360,8 @@ const compensationInfo = computed(() => {
     n += 0.5
   }
   
-  const severance = 29000 * n * 2
-  const restorationMonths = Math.max(0, now.diff(dayjs('2024-12-01'), 'month') + 1)
+  const severance = 29000 * n * (severanceType.value === '2N' ? 2 : 1)
+  const restorationMonths = Math.max(0, now.diff(dayjs('2024-12-01'), 'month'))
   const wageRestoration = 29000 * 0.25 * restorationMonths
   
   return {
@@ -504,6 +538,27 @@ const flowChartData = computed(() => {
     }
   })
 })
+// ★★★ 迷你计算器逻辑 ★★★
+const calcExpr = ref('')
+const calcResult = ref('')
+
+const handleCalcInput = (val) => {
+  if (val === '=') {
+    try {
+      // 简单的数学表达式计算
+      const sanitized = calcExpr.value.replace(/[^-+*/.0-9]/g, '')
+      calcResult.value = Function(`"use strict"; return (${sanitized})`)()
+      calcExpr.value = calcResult.value.toString()
+    } catch (e) {
+      calcResult.value = 'Error'
+    }
+  } else if (val === 'C') {
+    calcExpr.value = ''
+    calcResult.value = ''
+  } else {
+    calcExpr.value += val
+  }
+}
 </script>
 
 <style scoped>
@@ -797,6 +852,44 @@ const flowChartData = computed(() => {
   border-radius: 3px; 
   border: 1px solid white;
   box-shadow: 0 0 4px rgba(99, 102, 241, 0.3);
+}
+
+/* 计算器样式 */
+.mini-calculator {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.calc-screen {
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: right;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+}
+.calc-screen .expr {
+  font-family: monospace;
+  font-size: 16px;
+  color: #1e293b;
+  word-break: break-all;
+}
+.calc-screen .res {
+  font-size: 14px;
+  color: #6366f1;
+  font-weight: bold;
+}
+.calc-btns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+.calc-btns .el-button {
+  margin: 0 !important;
+  width: 100%;
 }
 
 .standalone-legend { display: flex; gap: 30px; background: #f8fafc; padding: 12px 24px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; justify-content: center; }
