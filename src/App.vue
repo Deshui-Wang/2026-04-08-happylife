@@ -1,25 +1,30 @@
 <template>
   <div class="app-container">
-    <!-- 顶部玻璃导航栏 -->
-    <header class="navbar glass-card animate-fade-in">
-      <div class="logo">
-        <el-icon :size="24" color="#6366f1"><MagicStick /></el-icon>
-        <span class="gradient-text">DeShui&Angel-Happy❤️&Rich💰-life</span>
-      </div>
-      <div class="nav-links">
-        <el-button link>Dashboard</el-button>
-        <el-button link>Settings</el-button>
-        <el-avatar
-          :size="40"
-          src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-        />
+    <header class="navbar animate-fade-in">
+      <div class="header-content">
+        <div class="logo">
+          <img src="/src/pic/facai.png" alt="logo" style="width: 44px; height: 44px; object-fit: contain;" />
+          <span class="gradient-text">RICH</span>
+        </div>
+        <el-tabs v-model="activeTab" class="custom-tabs header-tabs">
+          <el-tab-pane label="首页" name="home"></el-tab-pane>
+          <el-tab-pane label="财富测算" name="also-home"></el-tab-pane>
+          <el-tab-pane label="显化确认" name="confirmation"></el-tab-pane>
+        </el-tabs>
       </div>
     </header>
 
-    <!-- 主体区域：灵犀财算 FlexiCalc -->
+    <!-- 主体区域 -->
     <main class="main-content">
-      
-      <FlexiCalc />
+      <div v-if="activeTab === 'home'" class="animate-fade-in">
+        <HomeView />
+      </div>
+      <div v-else-if="activeTab === 'also-home'" class="animate-fade-in">
+        <AlsoHomeView />
+      </div>
+      <div v-else-if="activeTab === 'confirmation'" class="animate-fade-in">
+        <ConfirmationView />
+      </div>
     </main>
 
     <!-- 页脚 -->
@@ -32,15 +37,19 @@
 <script setup>
 import { ref } from 'vue'
 import { MagicStick } from '@element-plus/icons-vue'
-import FlexiCalc from './components/FlexiCalc.vue'
+import HomeView from './views/HomeView.vue'
+import AlsoHomeView from './views/AlsoHomeView.vue'
+import ConfirmationView from './views/ConfirmationView.vue'
+
+const activeTab = ref('home')
 </script>
 
 <style scoped>
 .app-container {
-  width: 98%;
+  width: 100%;
   max-width: 2560px; /* 适配至 2K/4K 屏幕 */
   margin: 0 auto;
-  padding: 20px 40px;
+  padding: 20px;
   flex: 1;
 }
 
@@ -61,24 +70,24 @@ import FlexiCalc from './components/FlexiCalc.vue'
 
 /* Navbar */
 .navbar {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.header-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  margin-bottom: 2rem;
+  gap: 60px;
+  padding: 0.5rem 0;
 }
 
 .logo {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 1.5rem;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -1px;
 }
 
 /* Banner */
@@ -201,6 +210,34 @@ import FlexiCalc from './components/FlexiCalc.vue'
 .done-text {
   text-decoration: line-through;
   color: #94a3b8;
+}
+
+/* Tabs Styling */
+.custom-tabs :deep(.el-tabs__header) {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.custom-tabs :deep(.el-tabs__nav-wrap::after) {
+  display: none;
+}
+
+.custom-tabs :deep(.el-tabs__item) {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #64748b;
+  padding: 0 25px;
+  transition: all 0.3s ease;
+}
+
+.custom-tabs :deep(.el-tabs__item.is-active) {
+  color: #6366f1;
+}
+
+.custom-tabs :deep(.el-tabs__active-bar) {
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
 }
 
 .footer {

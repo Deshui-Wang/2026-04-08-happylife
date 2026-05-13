@@ -1,9 +1,10 @@
 <template>
   <div class="flexicalc-container">
-    <el-row :gutter="20" class="equal-height-row">
-      <!-- 1. 资产模块 (左侧) -->
-      <el-col :xs="24" :md="12">
-        <el-card class="glass-card config-section animate-fade-in">
+    <el-row :gutter="20">
+      <!-- 左侧：资产与基础画像 + 消费与支出 (md=10) -->
+      <el-col :xs="24" :md="10">
+        <!-- 1. 资产模块 -->
+        <el-card class="glass-card config-section animate-fade-in mb-20">
           <template #header>
             <div class="card-header justify-between">
               <div style="display:flex;align-items:center;gap:8px">
@@ -130,8 +131,6 @@
               </el-col>
             </el-row>
 
-
-
             <el-divider content-position="left">保险收益/返还</el-divider>
             <div class="insurance-return-panel">
               <el-row :gutter="12">
@@ -163,17 +162,14 @@
             </div>
           </el-form>
         </el-card>
-      </el-col>
 
-      <!-- 2. 消费模块 (右侧) -->
-      <el-col :xs="24" :md="12">
-        <el-card class="glass-card expense-section animate-fade-in">
+        <!-- 2. 保险支出模块 -->
+        <el-card class="glass-card expense-section animate-fade-in mb-20">
           <template #header>
-            <div class="card-header"><el-icon><MagicStick /></el-icon><span>消费与支出管理</span></div>
+            <div class="card-header"><el-icon><MagicStick /></el-icon><span>保险支出管理</span></div>
           </template>
 
           <el-form label-position="top">
-            <el-divider content-position="left" style="margin-top: 0;">保险年缴支出</el-divider>
             <el-table :data="insuranceList" style="width: 100%" size="small" class="mini-table" :row-class-name="({row}) => !row.enabled ? 'disabled-row' : ''">
               <el-table-column width="45"><template #default="scope"><el-switch v-model="scope.row.enabled" size="small" /></template></el-table-column>
               <el-table-column prop="name" label="保单名称" min-width="120" />
@@ -188,9 +184,20 @@
                 </template>
               </el-table-column>
             </el-table>
+          </el-form>
+        </el-card>
 
-            <el-divider content-position="left" style="margin-top: 30px;">居住城市</el-divider>
-            <el-form-item>
+        <!-- 3. 居住城市模块 -->
+        <el-card class="glass-card animate-fade-in">
+          <template #header>
+            <div class="card-header">
+              <el-icon><Location /></el-icon>
+              <span>居住城市与生活开支</span>
+            </div>
+          </template>
+
+          <el-form label-position="top">
+            <el-form-item label="当前居住城市">
               <div style="display: flex; gap: 15px; width: 100%; align-items: stretch;">
                 <el-select v-model="selectedCity" size="large" style="flex: 1;">
                   <el-option :label="`菏泽 (${cityCosts.heze.monthly}/月)`" value="heze" />
@@ -202,7 +209,7 @@
               </div>
             </el-form-item>
 
-            <div class="total-expense-banner" style="margin-top: 25px;">
+            <div class="total-expense-banner" style="margin-top: 15px;">
               <div class="label">合计年支出</div>
               <div class="value" style="display:flex; align-items:center; gap:8px;">
                 <span style="font-size:14px; opacity:0.9; font-weight:normal;">生活 ¥{{ (cityCosts[selectedCity].monthly * 12).toLocaleString() }} + 保费 ¥{{ activeAnnualPremium.toLocaleString() }} =</span>
@@ -212,11 +219,9 @@
           </el-form>
         </el-card>
       </el-col>
-    </el-row>
 
-    <!-- ★★★ 新模块：资金断层分析 ★★★ -->
-    <el-row :gutter="20" class="mt-20">
-      <el-col :span="24">
+      <!-- 右侧：资金断层分析 (md=14) -->
+      <el-col :xs="24" :md="14">
         <el-card class="glass-card bridge-card animate-fade-in">
           <template #header>
             <div class="card-header justify-between">
@@ -254,7 +259,7 @@
                   <th class="col-out">生活开支</th>
                   <th>年结余</th>
                   <th>期末余额</th>
-                  <th style="min-width:160px">资金水位</th>
+                  <th style="min-width:80px">资金水位</th>
                 </tr>
               </thead>
               <tbody>
@@ -301,14 +306,12 @@
         </el-card>
       </el-col>
     </el-row>
-
-
   </div>
 </template>
 
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
-import { User, Postcard, MagicStick, Warning, InfoFilled, QuestionFilled, Operation, Delete, Finished } from '@element-plus/icons-vue'
+import { User, Postcard, MagicStick, Warning, InfoFilled, QuestionFilled, Operation, Delete, Finished, Location } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
 const userProfile = reactive({ gender: 'female', birthday: dayjs('1982-01-01').toDate() })
@@ -562,7 +565,7 @@ const handleCalcInput = (val) => {
 </script>
 
 <style scoped>
-.flexicalc-container { padding: 20px; min-height: 100vh; font-family: sans-serif; }
+.flexicalc-container { padding: 20px 0px; min-height: 100vh; font-family: sans-serif; }
 .glass-card { background: rgba(255, 255, 255, 0.9); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.3); }
 .card-header { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1e293b; }
 .justify-between { justify-content: space-between; }
@@ -914,19 +917,19 @@ const handleCalcInput = (val) => {
 /* ★★★ 资金断层分析模块样式 ★★★ */
 .bridge-card { border: 1px solid #e0e7ff; }
 .bridge-table-wrap { border-radius: 8px; border: 1px solid #e2e8f0; }
-.bridge-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.bridge-table { width: 100%; border-collapse: collapse; font-size: 11px; }
 .bridge-table thead { position: sticky; top: 0; z-index: 10; }
 .bridge-table th {
   background: #1e293b;
   color: white;
-  padding: 10px 12px;
+  padding: 8px 4px;
   text-align: center;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
 }
 .bridge-table th.col-out { background: #991b1b; }
-.bridge-table td { padding: 8px 10px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+.bridge-table td { padding: 6px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; }
 .bridge-table tbody tr:nth-child(even) { background: #f8fafc; }
 .bridge-table tbody tr:hover { background: #eef2ff; }
 
@@ -936,12 +939,12 @@ const handleCalcInput = (val) => {
 .bridge-table tr.danger td { color: #991b1b; }
 .bridge-table tr.warning { background: #fffbeb !important; }
 
-.age-cell { font-size: 14px; white-space: nowrap; }
+.age-cell { font-size: 12px; white-space: nowrap; }
 .milestone-tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 4px; font-weight: bold; }
 .pension-tag { background: #f3e8ff; color: #7c3aed; }
 .ins-tag { background: #dcfce7; color: #16a34a; }
 
-.num-cell { font-family: 'SF Mono', 'Courier New', monospace; font-size: 12px; }
+.num-cell { font-family: 'SF Mono', 'Courier New', monospace; font-size: 11px; }
 .num-cell.income { color: #059669; font-weight: 600; }
 .num-cell.expense { color: #dc2626; font-weight: 600; }
 .safe-bal { color: #1d4ed8; }
@@ -1106,4 +1109,5 @@ const handleCalcInput = (val) => {
 .premium-radio :deep(.el-radio-button__inner) {
   padding: 6px 12px;
 }
+.mb-20 { margin-bottom: 20px; }
 </style>
