@@ -35,13 +35,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { MagicStick } from '@element-plus/icons-vue'
 import HomeView from './views/HomeView.vue'
 import AlsoHomeView from './views/AlsoHomeView.vue'
 import ConfirmationView from './views/ConfirmationView.vue'
 
 const activeTab = ref('home')
+
+const handleTabChange = (e) => {
+  activeTab.value = e.detail
+}
+
+onMounted(() => {
+  window.addEventListener('change-tab', handleTabChange)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('change-tab', handleTabChange)
+})
 </script>
 
 <style scoped>

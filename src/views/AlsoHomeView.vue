@@ -198,13 +198,27 @@
 
           <el-form label-position="top">
             <el-form-item label="当前居住城市">
-              <div style="display: flex; gap: 15px; width: 100%; align-items: stretch;">
-                <el-select v-model="selectedCity" size="large" style="flex: 1;">
-                  <el-option :label="`菏泽 (${cityCosts.heze.monthly}/月)`" value="heze" />
-                  <el-option :label="`铁岭 (${cityCosts.tieling.monthly}/月)`" value="tieling" />
-                </el-select>
-                <div class="city-info-tag" style="flex: 1; margin: 0; padding: 0; height: 40px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
-                  月生活费：<span class="highlight" style="margin-left: 6px; font-size: 15px;">¥ {{ cityCosts[selectedCity].monthly.toLocaleString() }}</span>
+              <div class="city-card-grid">
+                <div 
+                  v-for="(info, key) in cityCosts" 
+                  :key="key"
+                  class="city-card"
+                  :class="{ active: selectedCity === key }"
+                  @click="selectedCity = key"
+                >
+                  <div class="city-name">{{ info.label }}</div>
+                  <div class="city-cost">¥{{ info.monthly.toLocaleString() }}/月</div>
+                </div>
+              </div>
+              
+              <div class="city-detail-row">
+                <div class="detail-item">
+                  <span class="label">生活费：</span>
+                  <span class="value">¥ {{ cityCosts[selectedCity].living.toLocaleString() }}</span>
+                </div>
+                <div v-if="cityCosts[selectedCity].rent > 0" class="detail-item">
+                  <span class="label">房租：</span>
+                  <span class="value">¥ {{ cityCosts[selectedCity].rent.toLocaleString() }}</span>
                 </div>
               </div>
             </el-form-item>
@@ -320,8 +334,8 @@ const assets = reactive({
   savings: 160000, 
   backPay: 123250, // 欠薪追补
   compensation: 261000, // 裁员赔偿
-  workingIncome: 0,
-  workingYears: 0,
+  workingIncome: 10000,
+  workingYears: 1,
   estimatedPension: 5000,
   returns: [
     { name: '优享年年', amount: 19206, start: 60, end: 79, enabled: true },
@@ -334,8 +348,9 @@ const totalAssets = computed(() => {
 
 const selectedCity = ref('tieling')
 const cityCosts = {
-  heze: { monthly: 2500 },
-  tieling: { monthly: 2000 }
+  tieling: { label: '铁岭', monthly: 2000, living: 2000, rent: 0 },
+  heze: { label: '菏泽', monthly: 2500, living: 2500, rent: 0 },
+  beijing: { label: '北京', monthly: 14300, living: 10000, rent: 4300 }
 }
 
 // 严格按照您的截图(2026/44岁时刻)
@@ -598,6 +613,68 @@ const handleCalcInput = (val) => {
 }
 .total-assets-banner .label, .total-expense-banner .label { font-size: 13px; opacity: 0.9; }
 .total-assets-banner .value, .total-expense-banner .value { font-size: 20px; font-weight: bold; }
+
+.city-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.city-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.city-card:hover {
+  border-color: #c7d2fe;
+  background: #f8fafc;
+}
+
+.city-card.active {
+  border-color: #6366f1;
+  background: #eef2ff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.city-card .city-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+
+.city-card .city-cost {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.city-card.active .city-name { color: #4f46e5; }
+.city-card.active .city-cost { color: #6366f1; font-weight: 600; }
+
+.city-detail-row {
+  display: flex;
+  gap: 20px;
+  background: #f8fafc;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.city-detail-row .detail-item {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+}
+
+.city-detail-row .detail-item .label { color: #64748b; }
+.city-detail-row .detail-item .value { color: #1e293b; font-weight: bold; }
 
 .asset-total-inline {
   font-size: 16px;
