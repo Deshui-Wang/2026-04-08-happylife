@@ -10,6 +10,7 @@
           <el-tab-pane label="首页" name="home"></el-tab-pane>
           <el-tab-pane label="财富测算" name="also-home"></el-tab-pane>
           <el-tab-pane label="显化确认" name="confirmation"></el-tab-pane>
+          <el-tab-pane label="幸福足迹" name="footprint"></el-tab-pane>
         </el-tabs>
       </div>
     </header>
@@ -24,6 +25,9 @@
       </div>
       <div v-else-if="activeTab === 'confirmation'" class="animate-fade-in">
         <ConfirmationView />
+      </div>
+      <div v-else-if="activeTab === 'footprint'" class="animate-fade-in">
+        <FootprintView />
       </div>
     </main>
 
@@ -40,6 +44,7 @@ import { MagicStick } from '@element-plus/icons-vue'
 import HomeView from './views/HomeView.vue'
 import AlsoHomeView from './views/AlsoHomeView.vue'
 import ConfirmationView from './views/ConfirmationView.vue'
+import FootprintView from './views/FootprintView.vue'
 
 const activeTab = ref('home')
 

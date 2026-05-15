@@ -44,6 +44,18 @@
                 <span class="desc">自由职业/工作室</span>
               </div>
             </div>
+
+            <div 
+              class="menu-item" 
+              :class="{ active: activeManifest === 'mom' }"
+              @click="activeManifest = 'mom'"
+            >
+              <div class="item-icon mom"><el-icon><FirstAidKit /></el-icon></div>
+              <div class="item-info">
+                <span class="label">妈妈安康</span>
+                <span class="desc">甲亢指标完全正常</span>
+              </div>
+            </div>
           </div>
         </div>
       </el-col>
@@ -61,7 +73,9 @@
               </div>
               <div class="mockup-container multi-mockup">
                 <!-- 1. 兴业银行 Mockup -->
-                <div class="phone-mockup cibi-theme">
+                <div class="mockup-unit">
+                  <h4 class="mockup-title">兴业银行</h4>
+                  <div class="phone-mockup cibi-theme">
                   <div class="phone-header">
                     <span class="time">14:53</span>
                     <div class="header-icons">
@@ -132,8 +146,11 @@
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <!-- 2. 招商银行 Mockup (CMB) -->
+              <!-- 2. 招商银行 Mockup (CMB) -->
+              <div class="mockup-unit">
+                <h4 class="mockup-title">招商银行</h4>
                 <div class="phone-mockup cmb-theme">
                   <div class="phone-header">
                     <span class="time">15:13</span>
@@ -180,7 +197,7 @@
                                 </div>
                                 <div class="cmb-item-bottom">
                                   <span class="card-info">储蓄卡7546 10:24</span>
-                                  <span class="balance">余额:¥122,000.00</span>
+                                  <span class="balance">余额:¥182,000.00</span>
                                 </div>
                               </div>
                             </div>
@@ -203,6 +220,7 @@
                 </div>
               </div>
             </div>
+          </div>
 
             <!-- 2. Angel 上班内容 -->
             <div v-if="activeManifest === 'angel'" class="content-wrapper">
@@ -326,6 +344,99 @@
                 </el-card>
               </div>
             </div>
+            <!-- 4. 妈妈安康内容 -->
+            <div v-if="activeManifest === 'mom'" class="content-wrapper">
+              <div class="page-title-section">
+                <h2 class="section-title">妈妈健康显化</h2>
+                <p class="section-subtitle">健康身体 · 指标正常 · 平安长寿</p>
+              </div>
+              <div class="manifest-report-wrap">
+                <div class="medical-report-paper animate-slide-up">
+                  <header class="report-header">
+                    <div class="hospital-info">
+                      <el-icon class="hosp-logo"><FirstAidKit /></el-icon>
+                      <span class="hosp-name">铁岭县中心医院检验报告单</span>
+                    </div>
+                    <div class="report-type">门诊</div>
+                    <div class="qr-placeholder">
+                      <div class="qr-box"></div>
+                      <div class="qr-box"></div>
+                    </div>
+                  </header>
+
+                  <section class="patient-info-grid">
+                    <div class="info-item"><span>姓名：</span><strong>崔建明</strong></div>
+                    <div class="info-item"><span>性别：</span><strong>女</strong></div>
+                    <div class="info-item"><span>年龄：</span><strong>71岁</strong></div>
+                    <div class="info-item"><span>病人编号：</span><strong>01976939/51</strong></div>
+                    <div class="info-item"><span>科别：</span><strong>内分泌门诊</strong></div>
+                    <div class="info-item"><span>标本种类：</span><strong>血清</strong></div>
+                    <div class="info-item"><span>条码编号：</span><strong>0201530789</strong></div>
+                    <div class="info-item"><span>样本编号：</span><strong>MZ0034</strong></div>
+                    <div class="info-item"><span>床号：</span><strong>-</strong></div>
+                    <div class="info-item"><span>检查科室：</span><strong>检验科</strong></div>
+                    <div class="info-item"><span>采集时间：</span><strong>2026-06-15 08:06</strong></div>
+                    <div class="info-item"><span>签收时间：</span><strong>2026-06-15 09:03</strong></div>
+                    <div class="info-item"><span>申请医生：</span><strong>王春波</strong></div>
+                    <div class="info-item"><span>临床诊断：</span><strong>甲状腺功能亢进症</strong></div>
+                    <div class="info-item full-row"><span>检验项目：</span><strong>血清促甲状腺激素测定(发光法)、血清游离甲状腺素(FT4)测定(发光法)、血清游离三碘甲状腺原氨酸(FT3)测定(发光法)</strong></div>
+                  </section>
+
+                  <table class="report-table">
+                    <thead>
+                      <tr>
+                        <th>序号</th>
+                        <th>项目名称</th>
+                        <th>英文缩写</th>
+                        <th>检验结果</th>
+                        <th>单位</th>
+                        <th>参考值范围</th>
+                        <th>状态</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>01</td>
+                        <td>促甲状腺激素</td>
+                        <td>TSH</td>
+                        <td class="result-value normal">2.15</td>
+                        <td>uIU/mL</td>
+                        <td>0.35 - 5.10</td>
+                        <td><el-tag size="small" type="success" effect="dark">正常</el-tag></td>
+                      </tr>
+                      <tr>
+                        <td>02</td>
+                        <td>游离三碘甲状腺原氨酸</td>
+                        <td>FT3</td>
+                        <td class="result-value normal">3.25</td>
+                        <td>pg/ml</td>
+                        <td>1.8 - 4.2</td>
+                        <td><el-tag size="small" type="success" effect="dark">正常</el-tag></td>
+                      </tr>
+                      <tr>
+                        <td>03</td>
+                        <td>游离甲状腺素</td>
+                        <td>FT4</td>
+                        <td class="result-value normal">1.22</td>
+                        <td>ng/dL</td>
+                        <td>0.89 - 1.85</td>
+                        <td><el-tag size="small" type="success" effect="dark">正常</el-tag></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <footer class="report-footer">
+                    <div class="time-stamp">报告时间：2026-06-15 10:04</div>
+                    <div class="doctors">
+                      <div class="doc-item">报告医生：<span class="signature">郝乐</span></div>
+                      <div class="doc-item">审核医生：<span class="signature">孙宁</span></div>
+                    </div>
+                    <p class="disclaimer">此结果仅对该标本负责！仅供临床参考如有异议请于3日内到检验科咨询。79892163 79892089</p>
+                    <div class="hosp-seal">铁岭县中心医院<br/>检验科专用章</div>
+                  </footer>
+                </div>
+              </div>
+            </div>
 
           </div>
         </transition>
@@ -340,7 +451,8 @@ import {
   Finished, ArrowLeft, Search, MoreFilled, 
   ArrowDown, InfoFilled, Filter, Connection,
   Shop, Calendar, MapLocation, Timer, Bowl, UserFilled,
-  Brush, HomeFilled, Star, Refresh, Share, Postcard, Suitcase, Notebook
+  Brush, HomeFilled, Star, Refresh, Share, Postcard, Suitcase, Notebook,
+  FirstAidKit
 } from '@element-plus/icons-vue'
 
 const activeManifest = ref('bank')
@@ -419,6 +531,7 @@ const activeManifest = ref('bank')
 .item-icon.bank { background: linear-gradient(135deg, #3b82f6, #1e3a8a); }
 .item-icon.angel { background: linear-gradient(135deg, #10b981, #059669); }
 .item-icon.awang { background: linear-gradient(135deg, #6366f1, #a855f7); }
+.item-icon.mom { background: linear-gradient(135deg, #f43f5e, #be123c); }
 
 .item-info {
   display: flex;
@@ -488,6 +601,22 @@ const activeManifest = ref('bank')
 
 .multi-mockup {
   flex-wrap: wrap;
+}
+
+.mockup-unit {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.mockup-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .phone-mockup {
@@ -642,7 +771,7 @@ const activeManifest = ref('bank')
 
 .cmb-item {
   display: flex;
-  gap: 12px;
+  gap: 7px;
 }
 
 .item-icon-wrap {
@@ -651,13 +780,13 @@ const activeManifest = ref('bank')
 }
 
 .cmb-icon-box {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 10px;
   border-radius: 4px;
   color: #64748b;
 }
@@ -674,19 +803,23 @@ const activeManifest = ref('bank')
 }
 
 .cmb-item-top .desc {
-  font-size: 14px;
+  font-size: 13px;
   color: #333;
   font-weight: 500;
-  max-width: 160px;
+  max-width: 135px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex-grow: 1;
 }
 
 .cmb-item-top .amount {
   font-size: 15px;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 8px;
 }
 
 .cmb-item-bottom {
@@ -726,7 +859,7 @@ const activeManifest = ref('bank')
   font-size: 11px;
 }
 
-/* 任务卡片内部样式 */
+/* ★★★ 任务卡片内部样式 ★★★ */
 .job-header, .studio-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
 .job-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; }
 .job-name { font-size: 22px; font-weight: 800; color: #1e293b; margin: 0; }
@@ -761,6 +894,136 @@ const activeManifest = ref('bank')
 .success-text strong { font-size: 14px; }
 .success-text p { font-size: 12px; color: #64748b; margin: 2px 0 0 0; }
 .purple-theme { border-left-color: #a855f7 !important; background: #faf5ff !important; }
+
+/* ★★★ 化验单专属样式 ★★★ */
+.manifest-report-wrap {
+  padding-bottom: 40px;
+}
+
+.medical-report-paper {
+  background: #fff;
+  width: 100%;
+  max-width: 850px;
+  min-height: 500px;
+  padding: 40px 50px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.05);
+  border-radius: 4px;
+  position: relative;
+  font-family: "SimSun", "STSong", serif;
+  color: #000;
+}
+
+.medical-report-paper::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 8px;
+  background: #f1f5f9;
+}
+
+.report-header {
+  border-bottom: 2px solid #000;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.hospital-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hosp-logo { font-size: 24px; color: #be123c; }
+.hosp-name { font-size: 24px; font-weight: bold; letter-spacing: 2px; }
+.report-type { font-size: 18px; border: 1px solid #000; padding: 2px 10px; margin-right: 80px; }
+
+.qr-placeholder { display: flex; gap: 10px; }
+.qr-box { width: 45px; height: 45px; border: 1px solid #eee; background: #fafafa; }
+
+.patient-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+.patient-info-grid .info-item span { color: #666; }
+.patient-info-grid .full-row { grid-column: span 4; border-top: 1px dashed #ccc; padding-top: 8px; margin-top: 5px; }
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.report-table th {
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.report-table td {
+  padding: 12px 10px;
+  font-size: 14px;
+}
+
+.result-value.normal {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.report-footer {
+  border-top: 1px solid #000;
+  padding-top: 15px;
+  position: relative;
+}
+
+.time-stamp { font-size: 13px; margin-bottom: 10px; }
+
+.doctors {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 15px;
+}
+
+.doc-item { font-size: 15px; }
+.signature {
+  font-family: "STKaiti", "Kaiti", cursive;
+  font-size: 20px;
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.disclaimer {
+  font-size: 12px;
+  color: #333;
+  border-top: 1px dashed #ccc;
+  padding-top: 10px;
+}
+
+.hosp-seal {
+  position: absolute;
+  right: 60px;
+  bottom: 30px;
+  width: 120px;
+  height: 120px;
+  border: 3px solid rgba(190, 18, 60, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgba(190, 18, 60, 0.4);
+  font-weight: bold;
+  font-size: 14px;
+  transform: rotate(-15deg);
+  pointer-events: none;
+}
 
 /* 切换动画 */
 .fade-transform-enter-active, .fade-transform-leave-active {

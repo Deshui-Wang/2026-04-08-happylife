@@ -334,7 +334,7 @@ const assets = reactive({
   savings: 160000, 
   backPay: 123250, // 欠薪追补
   compensation: 261000, // 裁员赔偿
-  workingIncome: 10000,
+  workingIncome: 20000,
   workingYears: 1,
   estimatedPension: 5000,
   returns: [
