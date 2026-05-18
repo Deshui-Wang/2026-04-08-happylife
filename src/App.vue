@@ -11,6 +11,7 @@
           <el-tab-pane label="财富测算" name="also-home"></el-tab-pane>
           <el-tab-pane label="显化确认" name="confirmation"></el-tab-pane>
           <el-tab-pane label="幸福足迹" name="footprint"></el-tab-pane>
+          <el-tab-pane label="修行字典" name="dictionary"></el-tab-pane>
         </el-tabs>
       </div>
     </header>
@@ -29,6 +30,9 @@
       <div v-else-if="activeTab === 'footprint'" class="animate-fade-in">
         <FootprintView />
       </div>
+      <div v-else-if="activeTab === 'dictionary'" class="animate-fade-in">
+        <PracticeDictionaryView />
+      </div>
     </main>
 
     <!-- 页脚 -->
@@ -45,6 +49,7 @@ import HomeView from './views/HomeView.vue'
 import AlsoHomeView from './views/AlsoHomeView.vue'
 import ConfirmationView from './views/ConfirmationView.vue'
 import FootprintView from './views/FootprintView.vue'
+import PracticeDictionaryView from './views/PracticeDictionaryView.vue'
 
 const activeTab = ref('home')
 
