@@ -8,17 +8,16 @@
     <el-card class="glass-card map-control-card" :body-style="{ padding: '0' }">
       <div class="map-input-group">
         <div class="input-header">
-          <el-input 
-            v-model="newPlace" 
-            placeholder="输入已到访的城市或省份点亮（如：北京、铁岭、四川、湖南）" 
-            class="city-input"
-            @keyup.enter="addFootprint"
-            clearable
-          >
-            <template #append>
-              <el-button type="primary" @click="addFootprint">点亮区域</el-button>
-            </template>
-          </el-input>
+          <div class="input-with-button">
+            <el-input 
+              v-model="newPlace" 
+              placeholder="输入已到访的城市或省份点亮（如：北京、铁岭、四川、湖南）" 
+              class="city-input"
+              @keyup.enter="addFootprint"
+              clearable
+            />
+            <el-button type="primary" class="lit-btn" @click="addFootprint">点亮区域</el-button>
+          </div>
           <el-button @click="clearAll" type="danger" plain size="small" class="clear-btn">清空所有</el-button>
         </div>
         <div class="city-tags">
@@ -203,8 +202,28 @@ onMounted(() => {
 .section-subtitle { color: #64748b; margin-top: 5px; font-size: 14px; }
 .map-control-card { border-radius: 30px; background: rgba(255, 255, 255, 0.8) !important; backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.4); overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); }
 .map-input-group { padding: 30px 40px; background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.5)); border-bottom: 1px solid #f1f5f9; }
-.input-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-.city-input { max-width: 500px; }
+.input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+.input-with-button { display: flex; gap: 12px; align-items: center; flex: 1; max-width: 650px; }
+.city-input { max-width: 500px; flex: 1; }
+.lit-btn {
+  background: #6366f1 !important;
+  border-color: #6366f1 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  height: 40px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+.lit-btn:hover {
+  background: #4f46e5 !important;
+  border-color: #4f46e5 !important;
+  color: #ffffff !important;
+}
 .city-tags { display: flex; flex-wrap: wrap; gap: 10px; }
 .city-tag { border-radius: 10px; font-weight: 600; padding: 10px 16px; height: auto; font-size: 14px; border: none; background: #6366f1; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
 .china-map-container { width: 100%; height: 850px; }
