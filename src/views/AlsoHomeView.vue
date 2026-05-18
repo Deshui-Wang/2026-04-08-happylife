@@ -190,43 +190,86 @@
         <!-- 3. 居住城市模块 -->
         <el-card class="glass-card animate-fade-in">
           <template #header>
-            <div class="card-header">
-              <el-icon><Location /></el-icon>
-              <span>居住城市与生活开支</span>
+            <div class="card-header justify-between">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <el-icon><Location /></el-icon>
+                <span>居住城市与生活开支 (时间段设置)</span>
+              </div>
+              <span class="city-stats-pill">已启用 {{ cityCostsList.filter(c => c.enabled).length }} 个城市阶段</span>
             </div>
           </template>
 
           <el-form label-position="top">
-            <el-form-item label="当前居住城市">
-              <div class="city-card-grid">
-                <div 
-                  v-for="(info, key) in cityCosts" 
-                  :key="key"
-                  class="city-card"
-                  :class="{ active: selectedCity === key }"
-                  @click="selectedCity = key"
-                >
-                  <div class="city-name">{{ info.label }}</div>
-                  <div class="city-cost">¥{{ info.monthly.toLocaleString() }}/月</div>
+            <div class="city-stages-wrapper">
+              <div 
+                v-for="city in cityCostsList" 
+                :key="city.id" 
+                class="city-stage-card" 
+                :class="{ 'is-disabled': !city.enabled }"
+              >
+                <!-- 卡片头部：开关与城市信息 -->
+                <div class="city-stage-header">
+                  <div class="header-left">
+                    <el-switch v-model="city.enabled" size="default" active-color="#6366f1" />
+                    <span class="city-badge-name">{{ city.label }}</span>
+                    <el-tag v-if="city.enabled" size="small" type="primary" effect="light" class="city-cost-tag">
+                      ¥{{ (city.monthly * 12 / 10000).toFixed(1) }}w/年
+                    </el-tag>
+                  </div>
+                  
+                  <div class="header-right-inputs" v-if="city.enabled">
+                    <div class="input-mini-box">
+                      <span class="mini-label">生活费/月</span>
+                      <el-input-number 
+                        v-model="city.living" 
+                        :min="0" 
+                        :step="500"
+                        size="small" 
+                        controls-position="right" 
+                        class="mini-num-input" 
+                      />
+                    </div>
+                    <div class="input-mini-box">
+                      <span class="mini-label">房租/月</span>
+                      <el-input-number 
+                        v-model="city.rent" 
+                        :min="0" 
+                        :step="500"
+                        size="small" 
+                        controls-position="right" 
+                        class="mini-num-input" 
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-              
-              <div class="city-detail-row">
-                <div class="detail-item">
-                  <span class="label">生活费：</span>
-                  <span class="value">¥ {{ cityCosts[selectedCity].living.toLocaleString() }}</span>
-                </div>
-                <div v-if="cityCosts[selectedCity].rent > 0" class="detail-item">
-                  <span class="label">房租：</span>
-                  <span class="value">¥ {{ cityCosts[selectedCity].rent.toLocaleString() }}</span>
-                </div>
-              </div>
-            </el-form-item>
 
-            <div class="total-expense-banner" style="margin-top: 15px;">
-              <div class="label">合计年支出</div>
-              <div class="value" style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:14px; opacity:0.9; font-weight:normal;">生活 ¥{{ (cityCosts[selectedCity].monthly * 12).toLocaleString() }} + 保费 ¥{{ activeAnnualPremium.toLocaleString() }} =</span>
+                <!-- 卡片身体：居住年龄段拖拽滑块 -->
+                <div class="city-stage-body" v-if="city.enabled">
+                  <div class="slider-row">
+                    <div class="slider-label-text">
+                      居住年龄段：<strong>{{ city.ageRange[0] }} 岁</strong> 至 <strong>{{ city.ageRange[1] }} 岁</strong>
+                      <span class="duration-badge">(共 {{ city.ageRange[1] - city.ageRange[0] + 1 }} 年)</span>
+                    </div>
+                    <el-slider 
+                      v-model="city.ageRange" 
+                      range 
+                      :min="44" 
+                      :max="100" 
+                      :marks="ageMarks"
+                      class="city-age-slider"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 合计支出横幅 -->
+            <div class="total-expense-banner" style="margin-top: 24px;">
+              <div class="label">合计首年年支出 (44岁阶段时刻)</div>
+              <div class="value" style="display:flex; align-items:center; gap:8px; flex-wrap: wrap;">
+                <span style="font-size:13px; opacity:0.9; font-weight:normal;">
+                  生活 ¥{{ ((totalAnnualExpense - activeAnnualPremium) || 0).toLocaleString() }} + 保费 ¥{{ activeAnnualPremium.toLocaleString() }} =
+                </span>
                 <span>¥ {{ totalAnnualExpense.toLocaleString() }}</span>
               </div>
             </div>
@@ -346,12 +389,26 @@ const totalAssets = computed(() => {
   return assets.savings + assets.backPay + assets.compensation
 })
 
-const selectedCity = ref('tieling')
-const cityCosts = {
-  tieling: { label: '铁岭', monthly: 2000, living: 2000, rent: 0 },
-  heze: { label: '菏泽', monthly: 2500, living: 2500, rent: 0 },
-  beijing: { label: '北京', monthly: 14300, living: 10000, rent: 4300 }
+const cityCostsList = ref([
+  { id: 'beijing', label: '北京', monthly: 14300, living: 10000, rent: 4300, ageRange: [44, 48], enabled: true },
+  { id: 'tieling', label: '铁岭', monthly: 2000, living: 2000, rent: 0, ageRange: [49, 100], enabled: true },
+  { id: 'heze', label: '菏泽', monthly: 2500, living: 2500, rent: 0, ageRange: [49, 100], enabled: false }
+])
+
+const ageMarks = {
+  44: '44岁',
+  55: '55岁领养老金',
+  70: '70岁',
+  100: '100岁'
 }
+
+// 自动监听生活费与房租输入，同步更新月总开支
+watch(cityCostsList, (newVal) => {
+  newVal.forEach(city => {
+    city.monthly = Number(city.living || 0) + Number(city.rent || 0)
+  })
+}, { deep: true })
+
 
 // 严格按照您的截图(2026/44岁时刻)
 const insuranceList = ref([
@@ -414,8 +471,12 @@ const retirementInfo = computed(() => {
 
 const activeAnnualPremium = computed(() => insuranceList.value.filter(i => i.enabled && i.yearsLeft > 0).reduce((s, i) => s + i.premium, 0))
 const totalAnnualExpense = computed(() => {
-  const cityMonthly = cityCosts[selectedCity.value].monthly
-  return (cityMonthly * 12) + activeAnnualPremium.value
+  let firstYearLivingCost = 0
+  const activeCity = cityCostsList.value.find(c => c.enabled && currentAge.value >= c.ageRange[0] && currentAge.value <= c.ageRange[1])
+  if (activeCity) {
+    firstYearLivingCost = activeCity.monthly * 12
+  }
+  return firstYearLivingCost + activeAnnualPremium.value
 })
 const activeTotalRemaining = computed(() => insuranceList.value.filter(i => i.enabled).reduce((s, i) => s + (i.premium * i.yearsLeft), 0))
 
@@ -449,7 +510,13 @@ const bridgeData = computed(() => {
 
     // 支出
     const insPremium = insuranceList.value.filter(i => i.enabled && i.yearsLeft > t).reduce((s, i) => s + i.premium, 0)
-    const livingCost = cityCosts[selectedCity.value].monthly * 12
+    
+    // 计算当前年龄居住的城市支出（支持多城市按年龄段配置）
+    let livingCost = 0
+    const activeCity = cityCostsList.value.find(c => c.enabled && age >= c.ageRange[0] && age <= c.ageRange[1])
+    if (activeCity) {
+      livingCost = activeCity.monthly * 12
+    }
 
     const yearNet = jobIncome + pensionIncome + insIncome - insPremium - livingCost
     const openBal = bal // 期初余额
@@ -510,8 +577,15 @@ const simulation = computed(() => {
 
     // 年度支出 (Real Cash Flow)
     const outIns = insuranceList.value.filter(i => i.enabled && i.yearsLeft > t).reduce((s, i) => s + i.premium, 0)
-    const outCity = cityCosts[selectedCity.value].monthly * 12
+    
+    // 计算当前年龄居住的城市支出（支持多城市按年龄段配置）
+    let outCity = 0
+    const activeCity = cityCostsList.value.find(c => c.enabled && age >= c.ageRange[0] && age <= c.ageRange[1])
+    if (activeCity) {
+      outCity = activeCity.monthly * 12
+    }
     const totalOut = outIns + outCity
+
 
     // 存量实时变动：水位 = 上年余额 + 今年进账 - 今年出账
     bal = bal + totalIn - totalOut
@@ -614,67 +688,105 @@ const handleCalcInput = (val) => {
 .total-assets-banner .label, .total-expense-banner .label { font-size: 13px; opacity: 0.9; }
 .total-assets-banner .value, .total-expense-banner .value { font-size: 20px; font-weight: bold; }
 
-.city-card-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  width: 100%;
-  margin-bottom: 15px;
-}
-
-.city-card {
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 12px 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: white;
-}
-
-.city-card:hover {
-  border-color: #c7d2fe;
-  background: #f8fafc;
-}
-
-.city-card.active {
-  border-color: #6366f1;
-  background: #eef2ff;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
-}
-
-.city-card .city-name {
-  font-size: 15px;
-  font-weight: 800;
-  color: #1e293b;
-  margin-bottom: 4px;
-}
-
-.city-card .city-cost {
+.city-stats-pill {
   font-size: 12px;
-  color: #64748b;
+  background: rgba(99, 102, 241, 0.1);
+  color: #6366f1;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
 }
-
-.city-card.active .city-name { color: #4f46e5; }
-.city-card.active .city-cost { color: #6366f1; font-weight: 600; }
-
-.city-detail-row {
+.city-stages-wrapper {
   display: flex;
-  gap: 20px;
-  background: #f8fafc;
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
 }
-
-.city-detail-row .detail-item {
+.city-stage-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+.city-stage-card.is-disabled {
+  background: #f8fafc;
+  border-color: #f1f5f9;
+  opacity: 0.6;
+}
+.city-stage-card:not(.is-disabled) {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.city-stage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.header-left {
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+.city-badge-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+}
+.city-cost-tag {
+  font-weight: 600;
+}
+.header-right-inputs {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.input-mini-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mini-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+.mini-num-input {
+  width: 100px;
+}
+.city-stage-body {
+  margin-top: 16px;
+  border-top: 1px dashed #f1f5f9;
+  padding-top: 16px;
+}
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.slider-label-text {
   font-size: 13px;
+  color: #475569;
+}
+.slider-label-text strong {
+  color: #6366f1;
+}
+.duration-badge {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: 6px;
+}
+.city-age-slider {
+  padding: 0 10px 10px 10px;
+}
+:deep(.city-age-slider .el-slider__bar) {
+  background-color: #6366f1;
+}
+:deep(.city-age-slider .el-slider__button) {
+  border-color: #6366f1;
 }
 
-.city-detail-row .detail-item .label { color: #64748b; }
-.city-detail-row .detail-item .value { color: #1e293b; font-weight: bold; }
 
 .asset-total-inline {
   font-size: 16px;
