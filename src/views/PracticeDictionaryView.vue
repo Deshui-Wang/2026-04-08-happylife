@@ -171,9 +171,22 @@
       <!-- 右栏：指诀掌法图（最能WOW用户的部分） -->
       <el-col :xs="24" :lg="10" class="flex-column">
         <div class="glass-card hand-card">
-          <div class="card-glow-title text-center">
-            <el-icon class="glow-icon"><Pointer /></el-icon>
-            <span>掐指神算 · 掌上地支排盘指诀</span>
+          <div class="card-glow-title text-center" style="display: flex; align-items: center; justify-content: center; gap: 8px; position: relative;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <el-icon class="glow-icon"><Pointer /></el-icon>
+              <span>掐指神算 · 掌上地支排盘指诀</span>
+            </div>
+            <el-tooltip content="点击查看传统掌法指诀口诀图" placement="top" effect="dark">
+              <el-button 
+                type="warning" 
+                circle 
+                size="small" 
+                class="hand-diagram-btn"
+                @click="showTraditionalHandDialog = true"
+              >
+                <el-icon><Picture /></el-icon>
+              </el-button>
+            </el-tooltip>
           </div>
 
           <div class="hand-description">
@@ -631,17 +644,44 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+    
+    <!-- 传统地支掌诀大图弹窗 -->
+    <el-dialog
+      v-model="showTraditionalHandDialog"
+      title="传统地支掌诀排法口诀"
+      width="460px"
+      align-center
+      destroy-on-close
+      class="traditional-hand-dialog"
+    >
+      <div class="dialog-img-container">
+        <img :src="traditionalHandMapImg" alt="传统地支掌诀排法" class="traditional-hand-img" />
+        <div class="traditional-hand-tip">
+          <strong>💡 古人“掐指一算”传统掌诀定位：</strong><br/>
+          以左手为盘，按顺时针次序环绕食指、中指、无名指和小指的指节排定十二地支：
+          <ul style="margin: 5px 0; padding-left: 20px;">
+            <li><strong>子（北）</strong>：位于无名指根部</li>
+            <li><strong>午（南）</strong>：位于中指尖端</li>
+            <li><strong>卯（东）</strong>：位于食指中节</li>
+            <li><strong>酉（西）</strong>：位于小指中节</li>
+          </ul>
+          古人在测算时，常以大拇指点按对应关节进行推演排盘，称为“掐指神算”。
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Search, Clock, Opportunity, Pointer, MagicStick, WarningFilled, Notebook } from '@element-plus/icons-vue'
+import { Search, Clock, Opportunity, Pointer, MagicStick, WarningFilled, Notebook, Picture } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
+import traditionalHandMapImg from '../pic/traditional_hand_map.png'
 
 // 搜索过滤与 Tab 状态
 const searchQuery = ref('')
 const activeTableTab = ref('branches')
+const showTraditionalHandDialog = ref(false)
 
 // 实时时间计算
 const liveTime = ref(dayjs().format('HH:mm:ss'))
@@ -2451,5 +2491,89 @@ const getGuaElementCN = (nature) => {
 
 .sync-gua-btn:active {
   transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   传统地支掌诀大图弹窗与按钮 (Traditional Hand Modal & Button)
+   ========================================================================== */
+.hand-diagram-btn {
+  background: linear-gradient(135deg, #fbbf24, #d97706) !important;
+  border: none !important;
+  color: white !important;
+  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.25) !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
+
+.hand-diagram-btn:hover {
+  transform: scale(1.18) rotate(15deg);
+  box-shadow: 0 6px 15px rgba(217, 119, 6, 0.4) !important;
+}
+
+.hand-diagram-btn:active {
+  transform: scale(0.92);
+}
+
+/* 对话框全息玻璃拟物风格 */
+.traditional-hand-dialog :deep(.el-dialog) {
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.22);
+}
+
+.traditional-hand-dialog :deep(.el-dialog__header) {
+  margin-right: 0;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+  padding: 24px 24px 16px 24px;
+}
+
+.traditional-hand-dialog :deep(.el-dialog__title) {
+  font-weight: 900;
+  color: #0f172a;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+.traditional-hand-dialog :deep(.el-dialog__body) {
+  padding: 24px;
+}
+
+.dialog-img-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.traditional-hand-img {
+  max-width: 100%;
+  max-height: 280px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 5px solid white;
+  transition: all 0.4s ease;
+}
+
+.traditional-hand-img:hover {
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.traditional-hand-tip {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: #334155;
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px solid rgba(251, 191, 36, 0.15);
+  padding: 18px;
+  border-radius: 16px;
+  text-align: justify;
 }
 </style>
