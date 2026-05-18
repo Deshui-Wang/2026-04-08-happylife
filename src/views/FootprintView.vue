@@ -2,35 +2,35 @@
   <div class="footprint-view animate-fade-in">
     <div class="page-title-section">
       <h2 class="section-title">幸福足迹</h2>
-      <p class="section-subtitle">家庭旅行 · 城市点亮 · 幸福见证</p>
+      <p class="section-subtitle">家庭旅行 · 地区点亮 · 幸福见证</p>
     </div>
 
     <el-card class="glass-card map-control-card" :body-style="{ padding: '0' }">
       <div class="map-input-group">
         <div class="input-header">
           <el-input 
-            v-model="newCity" 
-            placeholder="输入已到访的城市名称（如：大连、成都、三亚）" 
+            v-model="newPlace" 
+            placeholder="输入已到访的城市或省份点亮（如：北京、铁岭、四川、湖南）" 
             class="city-input"
             @keyup.enter="addFootprint"
             clearable
           >
             <template #append>
-              <el-button type="primary" @click="addFootprint">点亮城市</el-button>
+              <el-button type="primary" @click="addFootprint">点亮区域</el-button>
             </template>
           </el-input>
           <el-button @click="clearAll" type="danger" plain size="small" class="clear-btn">清空所有</el-button>
         </div>
         <div class="city-tags">
           <el-tag 
-            v-for="city in litCities" 
-            :key="city" 
+            v-for="place in visitedPlaces" 
+            :key="place" 
             closable 
-            @close="removeFootprint(city)"
+            @close="removeFootprint(place)"
             class="city-tag"
             effect="dark"
           >
-            {{ city }}
+            {{ place }}
           </el-tag>
         </div>
       </div>
@@ -48,37 +48,35 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 
 const chinaMapRef = ref(null)
 let mapInstance = null
-const newCity = ref('')
-const litCities = ref(['北京', '铁岭', '菏泽'])
+const newPlace = ref('')
+const visitedPlaces = ref(['北京', '辽宁', '湖南']) // 默认示例
 
-// 持久化存储
-watch(litCities, (newVal) => {
-  localStorage.setItem('rich_lit_cities', JSON.stringify(newVal))
-}, { deep: true })
+// 标准省份列表（用于匹配地图数据）
+const provinceNames = [
+  '北京市', '天津市', '上海市', '重庆市', '河北省', '山西省', '辽宁省', '吉林省', '黑龙江省', 
+  '江苏省', '浙江省', '安徽省', '福建省', '江西省', '山东省', '河南省', '湖北省', '湖南省', 
+  '广东省', '海南省', '四川省', '贵州省', '云南省', '陕西省', '甘肃省', '青海省', '台湾省', 
+  '内蒙古自治区', '广西壮族自治区', '西藏自治区', '宁夏回族自治区', '新疆维吾尔自治区', '香港特别行政区', '澳门特别行政区'
+]
 
-// 深度扩展示例坐标字典 (覆盖全国主要地级市)
-const cityCoords = {
-  // 直辖市
-  '北京': [116.407526, 39.90403], '上海': [121.473701, 31.230416], '天津': [117.190182, 39.125596], '重庆': [106.504962, 29.533155],
-  // 辽宁
-  '铁岭': [123.844279, 42.290585], '沈阳': [123.429096, 41.796767], '大连': [121.618622, 38.91459], '鞍山': [122.995632, 41.110626], '抚顺': [123.921109, 41.875951], '本溪': [123.770519, 41.297909], '丹东': [124.383044, 40.124296], '锦州': [121.135742, 41.119269], '营口': [122.228687, 40.664717], '阜新': [121.648962, 42.011796], '辽阳': [123.18152, 41.269404], '盘锦': [122.06957, 41.124484], '朝阳': [120.451376, 41.573391], '葫芦岛': [120.856394, 40.755572],
-  // 山东
-  '菏泽': [115.463304, 35.240493], '济南': [117.000923, 36.675807], '青岛': [120.355173, 36.082982], '淄博': [118.047648, 36.814939], '枣庄': [117.557964, 34.857954], '东营': [118.491624, 37.463286], '烟台': [121.391382, 37.539297], '潍坊': [119.107078, 36.70925], '济宁': [116.587245, 35.41539], '泰安': [117.129063, 36.194968], '威海': [122.116394, 37.509691], '日照': [119.461424, 35.428588], '莱芜': [117.677736, 36.214397], '临沂': [118.326443, 35.065282], '德州': [116.30744, 37.453968], '聊城': [115.980367, 36.456013], '滨州': [118.016974, 37.383542],
-  // 广东
-  '广州': [113.264385, 23.129112], '深圳': [114.057868, 22.543099], '珠海': [113.552724, 22.255899], '汕头': [116.679202, 23.364001], '韶关': [113.591544, 24.801322], '佛山': [113.122717, 23.028762], '江门': [113.094942, 22.590431], '湛江': [110.364977, 21.274898], '茂名': [110.919229, 21.659751], '肇庆': [112.472529, 23.051546], '惠州': [114.412599, 23.079404], '梅州': [116.117582, 24.299112], '汕尾': [115.364238, 22.774485], '河源': [114.697802, 23.746266], '阳江': [111.975107, 21.859222], '清远': [113.051227, 23.689322], '东莞': [113.746262, 23.046237], '中山': [113.382391, 22.521113], '潮州': [116.632301, 23.661701], '揭阳': [116.355733, 23.543778], '云浮': [112.044439, 22.929801],
-  // 湖南
-  '长沙': [112.938814, 28.228209], '株洲': [113.151737, 27.835806], '湘潭': [112.944052, 27.82973], '衡阳': [112.607693, 26.900358], '邵阳': [111.46923, 27.237842], '岳阳': [113.132855, 29.37029], '常德': [111.691347, 29.040225], '张家界': [110.479921, 29.127401], '益阳': [112.355042, 28.570066], '郴州': [113.032067, 25.793534], '永州': [111.608019, 26.434516], '怀化': [109.97824, 27.550082], '娄底': [111.99513, 27.734134], '吉首': [109.739735, 28.314296],
-  // 浙江
-  '杭州': [120.153576, 30.287459], '宁波': [121.549792, 29.868388], '温州': [120.672111, 28.000575], '嘉兴': [120.750865, 30.762653], '湖州': [120.102398, 30.867198], '绍兴': [120.582112, 30.002454], '金华': [119.649506, 29.089524], '衢州': [118.87263, 28.941708], '舟山': [122.106863, 30.016028], '台州': [121.428599, 28.661378], '丽水': [119.921786, 28.451993],
-  // 四川
-  '成都': [104.065735, 30.659462], '自贡': [104.773447, 29.35204], '攀枝花': [101.716007, 26.580446], '泸州': [105.443348, 28.889138], '德阳': [104.398651, 31.127991], '绵阳': [104.741722, 31.46402], '广元': [105.829757, 32.433668], '遂宁': [105.571324, 30.513311], '内江': [105.066138, 29.58708], '乐山': [103.761263, 29.582024], '南充': [106.082974, 30.791223], '眉山': [103.831788, 30.048318], '宜宾': [104.630825, 28.760189], '广安': [106.633369, 30.456398], '达州': [107.502262, 31.209484], '雅安': [103.001033, 29.987722], '巴中': [106.753676, 31.858809], '资阳': [104.641917, 30.122211],
-  // 江苏
-  '南京': [118.767413, 32.041544], '无锡': [120.301663, 31.574729], '徐州': [117.184811, 34.261792], '常州': [119.946973, 31.772752], '苏州': [120.619585, 31.299379], '南通': [120.864608, 32.016212], '连云港': [119.178821, 34.596992], '淮安': [119.021265, 33.597506], '盐城': [120.139998, 33.377631], '扬州': [119.421003, 32.393159], '镇江': [119.452753, 32.204402], '泰州': [119.915176, 32.484341], '宿迁': [118.275162, 33.963008],
-  // 福建
-  '福州': [119.306239, 26.075302], '厦门': [118.11022, 24.490474], '莆田': [119.007558, 23.23926], '三明': [117.635001, 26.273372], '泉州': [118.589421, 24.908836], '漳州': [117.661801, 24.510878], '南平': [118.174293, 26.643626], '龙岩': [117.02978, 25.074793], '宁德': [119.527082, 26.65924],
-  // ... (根据需要继续补充)
-  '西安': [108.940174, 34.341568], '三亚': [109.508268, 18.247872], '海口': [110.33119, 20.031971], '昆明': [102.712251, 25.040609], '武汉': [114.305392, 30.593098], '郑州': [113.665412, 34.757975]
+// 核心：城市与省份的对应关系（确保输入城市也能准确点亮省份）
+const cityMap = {
+  '北京': '北京市', '上海': '上海市', '天津': '天津市', '重庆': '重庆市',
+  '铁岭': '辽宁省', '沈阳': '辽宁省', '大连': '辽宁省',
+  '长沙': '湖南省', '岳阳': '湖南省', '常德': '湖南省',
+  '济南': '山东省', '青岛': '山东省', '菏泽': '山东省',
+  '成都': '四川省', '绵阳': '四川省',
+  '广州': '广东省', '深圳': '广东省', '东莞': '广东省',
+  '杭州': '浙江省', '宁波': '浙江省',
+  '南京': '江苏省', '苏州': '江苏省', '无锡': '江苏省',
+  '西安': '陕西省', '武汉': '湖北省', '郑州': '河南省',
+  '福州': '福建省', '厦门': '福建省', '昆明': '云南省'
 }
+
+// 持久化
+watch(visitedPlaces, (newVal) => {
+  localStorage.setItem('visited_places_final', JSON.stringify(newVal))
+}, { deep: true })
 
 const initMap = async () => {
   if (!chinaMapRef.value) return
@@ -88,85 +86,109 @@ const initMap = async () => {
       const response = await axios.get('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
       echarts.registerMap('china', response.data)
     } catch (error) {
-      console.error('Failed to load China Map GeoJSON', error)
+      console.error('地图数据加载失败', error)
       return
     }
   }
-  updateMapOption()
+  renderMap()
 }
 
-const updateMapOption = () => {
-  const cityData = litCities.value.map(name => {
-    const cleanName = name.replace(/(市|省|自治区|特别行政区)$/, '')
-    const coords = cityCoords[cleanName] || cityCoords[name]
-    
+// 核心渲染函数：根据 visitedPlaces 计算哪些省份需要变色
+const renderMap = () => {
+  // 1. 确定哪些省份需要被点亮
+  const litProvinceSet = new Set()
+  
+  visitedPlaces.value.forEach(input => {
+    const name = input.trim()
+    // 检查是否在城市映射表中
+    if (cityMap[name]) {
+      litProvinceSet.add(cityMap[name])
+    } else {
+      // 模糊匹配省份名（如输入“辽宁”匹配“辽宁省”）
+      const found = provinceNames.find(p => p.includes(name) || name.includes(p.replace(/(省|市|自治区|特别行政区|壮族|回族|维吾尔)$/, '')))
+      if (found) litProvinceSet.add(found)
+    }
+  })
+
+  // 2. 构建地图数据，为每个省份显式设置颜色
+  const mapData = provinceNames.map(name => {
+    const isLit = litProvinceSet.has(name)
     return {
-      name,
-      // 如果找不到，使用随机兜底，但范围限制在核心区域
-      value: coords || [105 + Math.random() * 8, 28 + Math.random() * 6]
+      name: name,
+      value: isLit ? 1 : 0,
+      itemStyle: {
+        areaColor: isLit ? '#6366f1' : '#f8fafc', // 点亮为蓝色，未点亮为极浅灰
+        borderColor: '#cbd5e1',
+        borderWidth: 0.5
+      },
+      label: {
+        show: true,
+        color: isLit ? '#ffffff' : '#64748b',
+        fontSize: 10
+      },
+      emphasis: {
+        itemStyle: { areaColor: isLit ? '#4f46e5' : '#e2e8f0' },
+        label: { color: isLit ? '#ffffff' : '#1e293b' }
+      }
     }
   })
 
   const option = {
     backgroundColor: 'transparent',
     tooltip: { trigger: 'item', formatter: '{b}' },
-    geo: {
-      map: 'china', roam: true, zoom: 1.25, top: '10%',
-      label: { show: true, color: '#94a3b8', fontSize: 10 },
-      itemStyle: { areaColor: '#fcfcfc', borderColor: '#e2e8f0', borderWidth: 1 },
-      emphasis: { label: { show: true, color: '#6366f1' }, itemStyle: { areaColor: '#f1f5f9' } }
-    },
     series: [
       {
-        name: '足迹', type: 'scatter', coordinateSystem: 'geo', data: cityData,
-        symbolSize: 12,
-        itemStyle: { color: '#6366f1', shadowBlur: 10, shadowColor: 'rgba(99, 102, 241, 0.6)', borderColor: '#fff', borderWidth: 2 },
-        label: {
-          show: true, position: 'top', formatter: '{b}', color: '#4338ca', fontWeight: 'bold', fontSize: 12,
-          backgroundColor: 'rgba(255,255,255,0.8)', padding: [4, 8], borderRadius: 4
-        },
-        emphasis: { scale: 1.5 },
-        zlevel: 1
+        name: '省份点亮',
+        type: 'map',
+        map: 'china',
+        roam: true,
+        zoom: 1.2,
+        top: '10%',
+        label: { show: true },
+        data: mapData,
+        // 关键：禁用默认的点击选中，全部由 data 驱动
+        selectedMode: false 
       }
     ]
   }
-  mapInstance.setOption(option)
+  
+  mapInstance.setOption(option, true)
 }
 
 const addFootprint = () => {
-  let city = newCity.value.trim()
-  if (city && !litCities.value.includes(city)) {
-    litCities.value.push(city)
-    newCity.value = ''
-    updateMapOption()
-    ElMessage.success(`成功点亮 ${city}`)
+  const val = newPlace.value.trim()
+  if (val && !visitedPlaces.value.includes(val)) {
+    visitedPlaces.value.push(val)
+    newPlace.value = ''
+    renderMap()
+    ElMessage.success(`已记录: ${val}`)
   }
 }
 
-const removeFootprint = (city) => {
-  litCities.value = litCities.value.filter(c => c !== city)
-  updateMapOption()
+const removeFootprint = (place) => {
+  visitedPlaces.value = visitedPlaces.value.filter(p => p !== place)
+  renderMap()
 }
 
 const clearAll = () => {
-  ElMessageBox.confirm('确定要清空所有点亮的足迹吗？此操作不可撤销。', '警告', {
+  ElMessageBox.confirm('确定要重置所有点亮的足迹吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    litCities.value = []
-    updateMapOption()
-    ElMessage.success('已清空所有足迹')
+    visitedPlaces.value = []
+    renderMap()
+    ElMessage.success('已清空')
   })
 }
 
 onMounted(() => {
-  const savedCities = localStorage.getItem('rich_lit_cities')
-  if (savedCities) {
+  const saved = localStorage.getItem('visited_places_final')
+  if (saved) {
     try {
-      litCities.value = JSON.parse(savedCities)
+      visitedPlaces.value = JSON.parse(saved)
     } catch (e) {
-      console.error('Failed to parse saved cities', e)
+      console.error(e)
     }
   }
   nextTick(() => initMap())
