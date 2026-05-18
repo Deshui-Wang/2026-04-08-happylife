@@ -645,12 +645,12 @@
       </el-tabs>
     </div>
     
-    <!-- 传统地支掌诀大图弹窗 -->
     <el-dialog
       v-model="showTraditionalHandDialog"
       title="传统地支掌诀排法口诀"
       width="460px"
-      align-center
+      top="8vh"
+      append-to-body
       destroy-on-close
       class="traditional-hand-dialog"
     >
@@ -2518,62 +2518,71 @@ const getGuaElementCN = (nature) => {
   transform: scale(0.92);
 }
 
-/* 对话框全息玻璃拟物风格 */
-.traditional-hand-dialog :deep(.el-dialog) {
-  border-radius: 28px;
+/* 对话框全息玻璃拟物风格由全局样式定义在下方 */
+</style>
+
+<style>
+/* ==========================================================================
+   全局传统地支掌诀弹窗样式 (Global Dialog Styles for append-to-body)
+   ========================================================================== */
+.traditional-hand-dialog {
+  border-radius: 28px !important;
   background: rgba(255, 255, 255, 0.94) !important;
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.22) !important;
+  overflow: hidden !important;
 }
 
-.traditional-hand-dialog :deep(.el-dialog__header) {
-  margin-right: 0;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
-  padding: 24px 24px 16px 24px;
+.traditional-hand-dialog .el-dialog__header {
+  margin-right: 0 !important;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08) !important;
+  padding: 24px 24px 16px 24px !important;
 }
 
-.traditional-hand-dialog :deep(.el-dialog__title) {
-  font-weight: 900;
-  color: #0f172a;
-  font-size: 20px;
-  letter-spacing: 0.5px;
+.traditional-hand-dialog .el-dialog__title {
+  font-weight: 900 !important;
+  color: #0f172a !important;
+  font-size: 20px !important;
+  letter-spacing: 0.5px !important;
 }
 
-.traditional-hand-dialog :deep(.el-dialog__body) {
-  padding: 24px;
+.traditional-hand-dialog .el-dialog__body {
+  padding: 24px !important;
 }
 
 .dialog-img-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 20px !important;
 }
 
 .traditional-hand-img {
-  max-width: 100%;
-  max-height: 280px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  border: 5px solid white;
-  transition: all 0.4s ease;
+  max-width: 100% !important;
+  max-height: 280px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  border: 5px solid white !important;
+  transition: all 0.4s ease !important;
 }
 
 .traditional-hand-img:hover {
-  transform: scale(1.03) translateY(-2px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  transform: scale(1.03) translateY(-2px) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15) !important;
 }
 
 .traditional-hand-tip {
-  font-size: 13.5px;
-  line-height: 1.7;
-  color: #334155;
-  background: rgba(251, 191, 36, 0.06);
-  border: 1px solid rgba(251, 191, 36, 0.15);
-  padding: 18px;
-  border-radius: 16px;
-  text-align: justify;
+  font-size: 13.5px !important;
+  line-height: 1.7 !important;
+  color: #334155 !important;
+  background: rgba(251, 191, 36, 0.06) !important;
+  border: 1px solid rgba(251, 191, 36, 0.15) !important;
+  padding: 18px !important;
+  border-radius: 16px !important;
+  text-align: justify !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 </style>
