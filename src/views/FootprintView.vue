@@ -83,7 +83,8 @@ const initMap = async () => {
   if (!mapInstance) {
     mapInstance = echarts.init(chinaMapRef.value)
     try {
-      const response = await axios.get('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json')
+      // 使用更稳定的 CDN 替换阿里云接口，避免线上环境因跨域或防盗链(Referer)导致请求失败
+      const response = await axios.get('https://cdn.jsdelivr.net/npm/echarts@4.9.0/map/json/china.json')
       echarts.registerMap('china', response.data)
     } catch (error) {
       console.error('地图数据加载失败', error)
