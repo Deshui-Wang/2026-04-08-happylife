@@ -119,9 +119,14 @@
           <!-- 2. 梅花易数 · 先天八卦余数起卦计算器 (挪回左栏) -->
           <div class="glass-card gua-calc-card animate-fade-in">
             <div class="toolbar-header">
-              <div class="card-glow-title">
-                <el-icon class="glow-icon"><Opportunity /></el-icon>
-                <span>梅花易数 · 先天八卦余数计算器</span>
+              <div class="card-glow-title" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <el-icon class="glow-icon"><Opportunity /></el-icon>
+                  <span>梅花易数 · 先天八卦余数计算器</span>
+                </div>
+                <el-button type="warning" size="small" link class="plum-jump-btn" @click="scrollToPlumBlossom" style="font-weight: 800; font-size: 12px; color: #b45309; text-decoration: none;">
+                  🔮 全息推演系统 &gt;
+                </el-button>
               </div>
             </div>
             
@@ -642,6 +647,318 @@
             </div>
           </div>
         </el-tab-pane>
+
+        <!-- 表五：梅花易数全息起卦 -->
+        <el-tab-pane name="plumBlossom">
+          <template #label>
+            <span class="tab-label-custom">
+              <span class="tab-badge-num">🔮</span>
+              <span>梅花易数全息起卦</span>
+            </span>
+          </template>
+
+          <div class="table-intro">
+            梅花易数是由宋代易学家邵康节先生所创，根据“数由心生、万物皆数”的法则，通过特定时间或数字输入来起卦，解算出本卦（现状）、互卦（中间过程）和变卦（终局），并通过体卦与用卦的五行生克研判吉凶。
+          </div>
+
+          <div class="plum-main-container">
+            <!-- 1. 起卦参数控制台 -->
+            <div class="glass-card plum-console-card">
+              <div class="card-glow-title">
+                <el-icon class="glow-icon"><Opportunity /></el-icon>
+                <span>乾坤演兵起卦台</span>
+              </div>
+              
+              <div class="console-mode-selector" style="margin-bottom: 20px; display: flex; justify-content: center;">
+                <el-radio-group v-model="plumParams.type" size="default" class="custom-radio-group">
+                  <el-radio-button label="time">🕒 时间起卦</el-radio-button>
+                  <el-radio-button label="number">🔢 数字起卦</el-radio-button>
+                </el-radio-group>
+              </div>
+
+              <!-- 时间起卦面板 -->
+              <div v-if="plumParams.type === 'time'" class="console-form animate-fade-in" style="margin-bottom: 24px;">
+                <el-row :gutter="20">
+                  <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 12px;">
+                    <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">农历年支 (年数)</span>
+                    <el-select v-model="plumParams.lunarYear" placeholder="请选择年支" style="width: 100%;">
+                      <el-option
+                        v-for="item in lunarYearOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-col>
+                  <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 12px;">
+                    <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">农历月份 (月数)</span>
+                    <el-input-number v-model="plumParams.lunarMonth" :min="1" :max="12" style="width: 100%;" />
+                  </el-col>
+                  <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 12px;">
+                    <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">农历日期 (日数)</span>
+                    <el-input-number v-model="plumParams.lunarDay" :min="1" :max="30" style="width: 100%;" />
+                  </el-col>
+                  <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 12px;">
+                    <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">农历时辰 (时数)</span>
+                    <el-select v-model="plumParams.lunarHour" placeholder="请选择时辰" style="width: 100%;">
+                      <el-option
+                        v-for="item in lunarHourOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-col>
+                </el-row>
+                <div class="form-tips" style="font-size: 12px; color: #94a3b8; margin-top: 12px; line-height: 1.5; background: #fafafa; padding: 10px 14px; border-radius: 8px;">
+                  * <strong>时间起卦公式：</strong>上卦 = (年支数 + 月数 + 日数) % 8；下卦 = (年支数 + 月数 + 日数 + 时支数) % 8；动爻 = (年支数 + 月数 + 日数 + 时支数) % 6。如果整除，卦余 0 视作 8（坤卦），爻余 0 视作 6（上爻）。
+                </div>
+              </div>
+
+              <!-- 数字起卦面板 -->
+              <div v-else class="console-form animate-fade-in" style="margin-bottom: 24px;">
+                <el-row :gutter="20" style="align-items: flex-end;">
+                  <el-col :xs="24" :sm="8" style="margin-bottom: 12px;">
+                    <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">第一个数 (求上卦)</span>
+                    <el-input-number v-model="plumParams.num1" :min="1" :max="9999999" style="width: 100%;" />
+                  </el-col>
+                  <el-col :xs="24" :sm="8" style="margin-bottom: 12px;">
+                    <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">第二个数 (求下卦)</span>
+                    <el-input-number v-model="plumParams.num2" :min="1" :max="9999999" style="width: 100%;" />
+                  </el-col>
+                  <el-col :xs="24" :sm="8" style="margin-bottom: 12px;">
+                    <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">第三个数 (求动爻 · 可空)</span>
+                    <el-input-number v-model="plumParams.num3" :min="1" :max="9999999" placeholder="不填则用两数之和求" style="width: 100%;" />
+                  </el-col>
+                </el-row>
+                <div class="form-btn-row" style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                  <el-button type="success" size="default" :plain="true" class="magic-btn" @click="randomizePlumNums">
+                    🎲 随机报数
+                  </el-button>
+                </div>
+                <div class="form-tips" style="font-size: 12px; color: #94a3b8; margin-top: 12px; line-height: 1.5; background: #fafafa; padding: 10px 14px; border-radius: 8px;">
+                  * <strong>数字起卦公式：</strong>第一个数除以 8 的余数为上卦；第二个数除以 8 的余数为下卦；第三个数（或两数之和）除以 6 的余数为动爻。
+                </div>
+              </div>
+
+              <div class="deduce-action-center" style="display: flex; justify-content: center; margin-top: 24px;">
+                <el-button type="primary" size="large" class="plum-deduce-big-btn" :loading="isDeducing" @click="calculatePlumBlossom" style="background: linear-gradient(135deg, #1e1b4b, #4c1d95); border: none; font-weight: bold; font-size: 16px; padding: 16px 40px; border-radius: 16px; box-shadow: 0 10px 20px rgba(76, 29, 149, 0.2); transition: all 0.3s;">
+                  ☯ 开始太极推演起卦 ☯
+                </el-button>
+              </div>
+            </div>
+
+            <!-- 2. 全息演绎面板 -->
+            <div class="plum-display-section" style="margin-top: 30px;">
+              <!-- 空状态 -->
+              <div v-if="deducingStep === 0" class="glass-card plum-empty-card animate-fade-in" style="text-align: center; padding: 60px 40px; background: rgba(255,255,255,0.6) !important; border-radius: 24px; border: 1px dashed rgba(99,102,241,0.25);">
+                <div class="empty-taiji-spinner" style="font-size: 64px; color: #cbd5e1; margin-bottom: 20px; animation: spinTaiji 15s linear infinite; display: inline-block;">☯</div>
+                <h3 style="font-size: 20px; font-weight: 800; color: #475569; margin: 0 0 10px 0;">天道无常 · 乾坤有数</h3>
+                <p style="font-size: 14px; color: #94a3b8; max-width: 500px; margin: 0 auto; line-height: 1.6;">请在上方配置您的起卦参数，并点击“开始太极推演起卦”按钮，系统将实时计算并在此生成全息三卦排盘及体用生克吉凶分析。</p>
+              </div>
+
+              <!-- 推演中动效 -->
+              <div v-else-if="deducingStep === 1" class="glass-card plum-loading-card" style="text-align: center; padding: 60px 40px; border-radius: 24px;">
+                <div class="taiji-loading-icon spinning-fast" style="font-size: 64px; color: #6366f1; margin-bottom: 20px; animation: spinTaiji 2s linear infinite; display: inline-block;">☯</div>
+                <h3 style="font-size: 18px; font-weight: 800; color: #1e293b; margin: 0 0 20px 0;">正在排布三卦，洞悉天机...</h3>
+                <div class="loading-bar" style="width: 240px; height: 6px; background: #e2e8f0; border-radius: 3px; margin: 0 auto; overflow: hidden;">
+                  <div class="loading-progress" style="width: 100%; height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7); animation: loadProgress 1s ease-in-out infinite; transform-origin: left;"></div>
+                </div>
+              </div>
+
+              <!-- 推演完成：全息排盘展示 -->
+              <div v-else class="plum-result-board animate-fade-in">
+                <!-- 卦画三列排盘 -->
+                <el-row :gutter="24" class="hexagrams-row" style="margin-bottom: 24px;">
+                  <!-- 本卦 -->
+                  <el-col :xs="24" :md="8" style="margin-bottom: 20px;">
+                    <div class="glass-card hexagram-card ben-card" style="border-radius: 24px; padding: 24px; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.8) !important;">
+                      <div class="hex-badge" style="background: rgba(99, 102, 241, 0.1); color: #4f46e5; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px;">本卦 · 现状与初始</div>
+                      
+                      <!-- 卦爻排盘（从上到下，即从6爻到1爻） -->
+                      <div class="hex-lines-container" style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 160px; height: 120px; justify-content: space-between; margin-bottom: 20px; position: relative;">
+                        <div
+                          v-for="index in [5, 4, 3, 2, 1, 0]"
+                          :key="'ben-yao-' + index"
+                          class="hex-yao-line"
+                          :style="{ position: 'relative', width: '100%', height: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }"
+                        >
+                          <!-- 阳爻 [1] -->
+                          <div v-if="plumResult.ben.yao[index] === 1" class="yao-bar yang-bar" :style="{ width: '100%', height: '8px', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #d97706, #fbbf24)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(251, 191, 36, 0.6)' : 'none' }"></div>
+                          <!-- 阴爻 [0] -->
+                          <div v-else class="yao-bar yin-bar" :style="{ width: '100%', height: '8px', display: 'flex', justifyContent: 'space-between' }">
+                            <div class="yin-half left-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #d97706, #fbbf24)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(251, 191, 36, 0.6)' : 'none' }"></div>
+                            <div class="yin-half right-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #fbbf24, #d97706)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(251, 191, 36, 0.6)' : 'none' }"></div>
+                          </div>
+                          
+                          <!-- 爻位右侧小圆点及说明 -->
+                          <span class="yao-label-tag" style="position: absolute; right: -55px; font-size: 10px; color: #94a3b8; font-weight: 700;">{{ getClerkYaoName(index + 1) }}</span>
+                          <span v-if="(index + 1) === plumResult.movingYao" class="moving-dot" style="position: absolute; left: -50px; font-size: 10px; font-weight: 800; color: #b45309; animation: pulseGlow 1.5s infinite;">○ 动爻</span>
+                        </div>
+                      </div>
+
+                      <div class="hex-gua-meta" style="text-align: center; width: 100%; margin-top: 10px;">
+                        <h2 style="font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 8px 0;">{{ plumResult.ben.name }}</h2>
+                        <div class="hex-tag-row" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px;">
+                          <el-tag size="small" type="warning" effect="dark" style="border: none;">
+                            {{ plumResult.ben.upGua.name }}天 / {{ plumResult.ben.downGua.name }}地
+                          </el-tag>
+                          <el-tag size="small" type="danger" effect="plain" style="border-radius: 6px; font-weight: bold;">
+                            {{ plumResult.isTiUp ? '上体下用' : '下体上用' }}
+                          </el-tag>
+                        </div>
+                        <p class="hex-desc" style="font-size: 12px; color: #64748b; line-height: 1.5; background: #f8fafc; padding: 10px; border-radius: 10px; min-height: 54px; margin: 0;">{{ plumResult.ben.desc }}</p>
+                      </div>
+                    </div>
+                  </el-col>
+
+                  <!-- 互卦 -->
+                  <el-col :xs="24" :md="8" style="margin-bottom: 20px;">
+                    <div class="glass-card hexagram-card hu-card" style="border-radius: 24px; padding: 24px; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.8) !important;">
+                      <div class="hex-badge" style="background: rgba(148, 163, 184, 0.1); color: #475569; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px;">互卦 · 核心与中途</div>
+                      
+                      <!-- 卦爻排盘 -->
+                      <div class="hex-lines-container" style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 160px; height: 120px; justify-content: space-between; margin-bottom: 20px; position: relative;">
+                        <div
+                          v-for="index in [5, 4, 3, 2, 1, 0]"
+                          :key="'hu-yao-' + index"
+                          class="hex-yao-line"
+                          :style="{ position: 'relative', width: '100%', height: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }"
+                        >
+                          <!-- 阳爻 [1] -->
+                          <div v-if="plumResult.hu.yao[index] === 1" class="yao-bar yang-bar" style="width: 100%; height: 8px; background: #475569; border-radius: 4px;"></div>
+                          <!-- 阴爻 [0] -->
+                          <div v-else class="yao-bar yin-bar" style="width: 100%; height: 8px; display: flex; justify-content: space-between;">
+                            <div class="yin-half left-half" style="width: 45%; height: 100%; background: #475569; border-radius: 4px;"></div>
+                            <div class="yin-half right-half" style="width: 45%; height: 100%; background: #475569; border-radius: 4px;"></div>
+                          </div>
+                          
+                          <span class="yao-label-tag" style="position: absolute; right: -55px; font-size: 10px; color: #94a3b8; font-weight: 700;">{{ getClerkYaoName(index + 1) }}</span>
+                        </div>
+                      </div>
+
+                      <div class="hex-gua-meta" style="text-align: center; width: 100%; margin-top: 10px;">
+                        <h2 style="font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 8px 0;">{{ plumResult.hu.name }}</h2>
+                        <div class="hex-tag-row" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px;">
+                          <el-tag size="small" type="info" effect="dark" style="border: none;">
+                            {{ plumResult.hu.upGua.name }}天 / {{ plumResult.hu.downGua.name }}地
+                          </el-tag>
+                        </div>
+                        <p class="hex-desc" style="font-size: 12px; color: #64748b; line-height: 1.5; background: #f8fafc; padding: 10px; border-radius: 10px; min-height: 54px; margin: 0;">{{ plumResult.hu.desc }}</p>
+                      </div>
+                    </div>
+                  </el-col>
+
+                  <!-- 变卦 -->
+                  <el-col :xs="24" :md="8" style="margin-bottom: 20px;">
+                    <div class="glass-card hexagram-card bian-card" style="border-radius: 24px; padding: 24px; display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.8) !important;">
+                      <div class="hex-badge" style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px;">变卦 · 结果与终局</div>
+                      
+                      <!-- 卦爻排盘 -->
+                      <div class="hex-lines-container" style="display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 160px; height: 120px; justify-content: space-between; margin-bottom: 20px; position: relative;">
+                        <div
+                          v-for="index in [5, 4, 3, 2, 1, 0]"
+                          :key="'bian-yao-' + index"
+                          class="hex-yao-line"
+                          :style="{ position: 'relative', width: '100%', height: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }"
+                        >
+                          <!-- 阳爻 [1] -->
+                          <div v-if="plumResult.bian.yao[index] === 1" class="yao-bar yang-bar" :style="{ width: '100%', height: '8px', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #10b981, #34d399)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none' }"></div>
+                          <!-- 阴爻 [0] -->
+                          <div v-else class="yao-bar yin-bar" :style="{ width: '100%', height: '8px', display: 'flex', justifyContent: 'space-between' }">
+                            <div class="yin-half left-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #10b981, #34d399)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none' }"></div>
+                            <div class="yin-half right-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #34d399, #10b981)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none' }"></div>
+                          </div>
+                          
+                          <span class="yao-label-tag" style="position: absolute; right: -55px; font-size: 10px; color: #94a3b8; font-weight: 700;">{{ getClerkYaoName(index + 1) }}</span>
+                          <span v-if="(index + 1) === plumResult.movingYao" class="change-dot" style="position: absolute; left: -50px; font-size: 10px; font-weight: 800; color: #059669; animation: pulseGlow 1.5s infinite;">● 变爻</span>
+                        </div>
+                      </div>
+
+                      <div class="hex-gua-meta" style="text-align: center; width: 100%; margin-top: 10px;">
+                        <h2 style="font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 8px 0;">{{ plumResult.bian.name }}</h2>
+                        <div class="hex-tag-row" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px;">
+                          <el-tag size="small" type="success" effect="dark" style="border: none;">
+                            {{ plumResult.bian.upGua.name }}天 / {{ plumResult.bian.downGua.name }}地
+                          </el-tag>
+                        </div>
+                        <p class="hex-desc" style="font-size: 12px; color: #64748b; line-height: 1.5; background: #f8fafc; padding: 10px; border-radius: 10px; min-height: 54px; margin: 0;">{{ plumResult.bian.desc }}</p>
+                      </div>
+                    </div>
+                  </el-col>
+                </el-row>
+
+                <!-- 体用生克与谶语解析面板 -->
+                <div class="glass-card plum-analysis-card" style="border-radius: 24px; padding: 24px; background: rgba(255,255,255,0.85) !important;">
+                  <div class="card-glow-title" style="border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px; margin-bottom: 24px;">
+                    <el-icon class="glow-icon"><Opportunity /></el-icon>
+                    <span>梅花体用相法全息解析</span>
+                  </div>
+
+                  <div class="analysis-inner-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px;">
+                    <!-- 左侧：生克对比看板 -->
+                    <div class="relation-board-box" style="background: #f8fafc; border-radius: 20px; padding: 24px; border: 1px solid rgba(0,0,0,0.02); display: flex; justify-content: space-around; align-items: center; position: relative;">
+                      <!-- 体卦 -->
+                      <div class="relation-actor ti-actor" style="display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 1;">
+                        <span class="actor-tag" style="font-size: 11px; font-weight: 800; color: #4f46e5; background: rgba(99,102,241,0.1); padding: 2px 8px; border-radius: 10px;">体卦 (主)</span>
+                        <div class="actor-circle-glow" :style="{ width: '80px', height: '80px', borderRadius: '50%', background: '#fff', border: '3px solid ' + plumResult.tiGua.color, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(0,0,0,0.04)' }">
+                          <span class="actor-symbol" :style="{ fontSize: '28px', color: plumResult.tiGua.color, fontWeight: '800', lineHeight: 1 }">{{ plumResult.tiGua.symbol }}</span>
+                          <h4 style="font-size: 14px; font-weight: 800; color: #1e293b; margin: 2px 0 0 0;">{{ plumResult.tiGua.name }}卦</h4>
+                        </div>
+                        <el-tag effect="dark" size="small" :color="plumResult.tiGua.color" style="border:none; font-weight: 800;">
+                          {{ plumResult.tiGua.element }} ({{ plumResult.tiGua.nature }})
+                        </el-tag>
+                      </div>
+
+                      <!-- 关联箭头 -->
+                      <div class="relation-link-arrow" style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100px; position: relative; margin: 0 10px;">
+                        <div class="arrow-relation-badge" style="background: linear-gradient(135deg, #1e1b4b, #311042); color: #fbbf24; font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 2; white-space: nowrap;">
+                          {{ plumResult.relation }}
+                        </div>
+                        <div class="arrow-visual-line" style="width: 100%; height: 2px; border-bottom: 2px dashed #cbd5e1; position: absolute; top: 12px; left: 0;"></div>
+                        <!-- 指向箭头的动态方向小尖角 -->
+                        <div class="arrow-direction-marker" style="position: absolute; top: 8px; font-size: 12px; color: #94a3b8;" :style="plumResult.relation === '用生体' ? { left: '15px' } : plumResult.relation === '体生用' || plumResult.relation === '体克用' ? { right: '15px' } : { display: 'none' }">
+                          {{ plumResult.relation === '用生体' ? '◀' : '▶' }}
+                        </div>
+                      </div>
+
+                      <!-- 用卦 -->
+                      <div class="relation-actor yong-actor" style="display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 1;">
+                        <span class="actor-tag" style="font-size: 11px; font-weight: 800; color: #b45309; background: rgba(245,158,11,0.1); padding: 2px 8px; border-radius: 10px;">用卦 (事/客)</span>
+                        <div class="actor-circle-glow" :style="{ width: '80px', height: '80px', borderRadius: '50%', background: '#fff', border: '3px solid ' + plumResult.yongGua.color, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(0,0,0,0.04)' }">
+                          <span class="actor-symbol" :style="{ fontSize: '28px', color: plumResult.yongGua.color, fontWeight: '800', lineHeight: 1 }">{{ plumResult.yongGua.symbol }}</span>
+                          <h4 style="font-size: 14px; font-weight: 800; color: #1e293b; margin: 2px 0 0 0;">{{ plumResult.yongGua.name }}卦</h4>
+                        </div>
+                        <el-tag effect="dark" size="small" :color="plumResult.yongGua.color" style="border:none; font-weight: 800;">
+                          {{ plumResult.yongGua.element }} ({{ plumResult.yongGua.nature }})
+                        </el-tag>
+                      </div>
+                    </div>
+
+                    <!-- 右侧：谶语吉凶解析 -->
+                    <div class="relation-luck-box" :class="getLuckClass(plumResult.luckLevel)" style="border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 14px; justify-content: center; transition: all 0.3s;" :style="{ borderLeft: '6px solid ' + (plumResult.luckLevel.includes('大吉') ? '#f59e0b' : plumResult.luckLevel.includes('吉') ? '#10b981' : plumResult.luckLevel.includes('大凶') ? '#ef4444' : plumResult.luckLevel.includes('凶') ? '#f43f5e' : '#64748b'), background: plumResult.luckLevel.includes('大吉') ? '#fffdf5' : plumResult.luckLevel.includes('大凶') ? '#fff5f5' : '#f8fafc' }">
+                      <div class="luck-grade-row" style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 13px; font-weight: 800; color: #64748b;">测算吉凶判定：</span>
+                        <div class="luck-grade-badge" style="font-size: 16px; font-weight: 900; color: white; padding: 4px 14px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.06);" :style="{ background: plumResult.luckLevel.includes('大吉') ? 'linear-gradient(135deg, #fbbf24, #d97706)' : plumResult.luckLevel.includes('吉') ? 'linear-gradient(135deg, #34d399, #059669)' : plumResult.luckLevel.includes('大凶') ? 'linear-gradient(135deg, #f43f5e, #be123c)' : plumResult.luckLevel.includes('凶') ? 'linear-gradient(135deg, #fda4af, #e11d48)' : 'linear-gradient(135deg, #cbd5e1, #475569)' }">
+                          {{ plumResult.luckLevel }}
+                        </div>
+                      </div>
+                      
+                      <div class="luck-detail-content" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p class="relation-desc-text" style="font-size: 13px; line-height: 1.5; color: #475569; margin: 0;"><strong>卦气气场：</strong>{{ plumResult.relationDesc }}</p>
+                        <div class="rhyme-box text-left" style="background: rgba(255,255,255,0.7); border-radius: 12px; padding: 12px; display: flex; align-items: flex-start; gap: 6px; border-left: 4px solid #fbbf24; margin: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);">
+                          <span class="quote-mark" style="font-size: 24px; font-weight: bold; color: #cbd5e1; font-family: Georgia, serif; line-height: 1; margin-top: -5px;">“</span>
+                          <span class="rhyme-text bold-text" style="font-size: 13.5px; color: #334155; font-weight: 800; line-height: 1.6; text-align: justify;">{{ plumResult.luckDesc }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </div>
     
@@ -941,11 +1258,511 @@ const getGuaElementCN = (nature) => {
     '山': '土',
     '地': '土'
   }
-  return elements[nature] || '未知'
+  }
+
+// ==========================================
+// 🔮 梅花易数全息起卦推演核心系统
+// ==========================================
+
+// 八卦卦画核心基础信息表（1-8 先天八卦，trigram 对应 [初爻, 二爻, 三爻] 0代表阴, 1代表阳）
+const baguaBase = {
+  1: { id: 1, name: '乾', symbol: '☰', nature: '天', element: '金', yinYang: '阳', desc: '至健至刚，天行健，自强不息', trigram: [1, 1, 1], color: '#64748b' },
+  2: { id: 2, name: '兑', symbol: '☱', nature: '泽', element: '金', yinYang: '阴', desc: '喜悦沟通，丽泽兑，朋友相学', trigram: [1, 1, 0], color: '#94a3b8' },
+  3: { id: 3, name: '离', symbol: '☲', nature: '火', element: '火', yinYang: '阴', desc: '光明美丽，明两作照，守中正', trigram: [1, 0, 1], color: '#dc2626' },
+  4: { id: 4, name: '震', symbol: '☳', nature: '雷', element: '木', yinYang: '阳', desc: '变动爆发，雷震千里，警醒自修', trigram: [1, 0, 0], color: '#16a34a' },
+  5: { id: 5, name: '巽', symbol: '☴', nature: '风', element: '木', yinYang: '阴', desc: '无孔不入，柔顺渗透，申命行事', trigram: [0, 1, 1], color: '#a855f7' },
+  6: { id: 6, name: '坎', symbol: '☵', nature: '水', element: '水', yinYang: '阳', desc: '坎坷险陷，沉淀心智，常德行进', trigram: [0, 1, 0], color: '#1e3a8a' },
+  7: { id: 7, name: '艮', symbol: '☶', nature: '山', element: '土', yinYang: '阳', desc: '静止阻碍，安如磐石，适可而止', trigram: [0, 0, 1], color: '#0284c7' },
+  8: { id: 8, name: '坤', symbol: '☷', nature: '地', element: '土', yinYang: '阴', desc: '包容厚德，坤厚载物，德合无疆', trigram: [0, 0, 0], color: '#db2777' }
+}
+
+// 六十四卦经典组合词典
+const sixtyFourGua = {
+  "1-1": { name: "乾为天", desc: "至健大吉。天行健，自强不息。名利双收之象。" },
+  "1-2": { name: "天泽履", desc: "如履薄冰。礼待他人，防微杜渐，谨慎则吉。" },
+  "1-3": { name: "天火同人", desc: "天下大同。志同道合，团结协作，无往不利。" },
+  "1-4": { name: "天雷无妄", desc: "顺应天意。坚守正道，切勿妄动，平实无怨。" },
+  "1-5": { name: "天风姤", desc: "邂逅相遇。防范暗流，女强男弱，顺其自然。" },
+  "1-6": { name: "天水讼", desc: "争讼克制。防口舌争端，宜和为贵，退一步海阔天空。" },
+  "1-7": { name: "天山遁", desc: "退避隐遁。蓄势待发，明哲保身，适时隐退为上。" },
+  "1-8": { name: "天地否", desc: "闭塞不通。上下不合，小人得势，坚守贞固以待黎明。" },
+  "2-1": { name: "泽天夬", desc: "决断清除。决而能和，刚柔相济，防小人暗算。" },
+  "2-2": { name: "兑为泽", desc: "喜悦交流。丽泽对讲，朋友相帮，言谈有度则吉。" },
+  "2-3": { name: "泽火革", desc: "顺天应人。变革创新，改弦更张，大吉可期。" },
+  "2-4": { name: "泽雷随", desc: "随遇而安。顺应潮流，择善而从，自得平安。" },
+  "2-5": { name: "泽风大过", desc: "栋梁折曲。压力过重，需稳健调节，不可强出头。" },
+  "2-6": { name: "泽水困", desc: "穷困坚守. 龙游浅水，坚守正道，岁寒知松柏。" },
+  "2-7": { name: "泽山咸", desc: "心灵感应。少男少女，相互吸引，心有灵犀，万事皆吉。" },
+  "2-8": { name: "泽地萃", desc: "精英汇聚。萃聚一堂，财源大茂，得众力支持。" },
+  "3-1": { name: "火天大有", desc: "日丽中天。大有收获，富足宽容，顺天依时。" },
+  "3-2": { name: "火泽睽", desc: "同而不同。求同存异，防背道而驰，以柔克刚。" },
+  "3-3": { name: "离为火", desc: "光明附着。明两作照，前途坦荡，宜守中正。" },
+  "3-4": { name: "火雷噬嗑", desc: "刚正严明。排除万难，赏罚分明，宜快速决断。" },
+  "3-5": { name: "火风鼎", desc: "三足鼎立。协力图新，贤才得用，基业稳固。" },
+  "3-6": { name: "火水未济", desc: "黎明前夕。事情尚未完结，虽有困难但大有希望。" },
+  "3-7": { name: "火山旅", desc: "羁旅漂泊。不安于室，在外奔波，守正防破财。" },
+  "3-8": { name: "火地晋", desc: "旭日东升。仕途坦荡，步步高升，大受器重。" },
+  "4-1": { name: "雷天大壮", desc: "声势浩大。阳气鼎盛，防亢龙有悔，宜中庸稳重。" },
+  "4-2": { name: "雷泽归妹", desc: "终难长久。防主次颠倒，宜按部就班，不可急躁功利。" },
+  "4-3": { name: "雷火丰", desc: "丰盛璀璨。如日中天，宜居安思危，防盛极而衰。" },
+  "4-4": { name: "震为雷", desc: "春雷炸响。震惊百里，警醒自修，先惊后喜。" },
+  "4-5": { name: "雷风恒", desc: "持之以恒。雷风相助，恒心能成，夫妻和睦。" },
+  "4-6": { name: "雷水解", desc: "冰消瓦解。转危为安，排除阻碍，宜快速推进。" },
+  "4-7": { name: "雷山小过", desc: "小有过越。宜下不宜上，宜静不宜动，小事能成。" },
+  "4-8": { name: "雷地豫", desc: "喜乐安豫。顺时依势，防玩物丧志，宜居安思危。" },
+  "5-1": { name: "风天小畜", desc: "密云不雨。蓄积力量，小有收获，耐心等待时机。" },
+  "5-2": { name: "风泽中孚", desc: "诚信立身。心中诚信，感化他人，谋望皆能实现。" },
+  "5-3": { name: "风火家人", desc: "齐家之道。内政井然，各司其职，家和万事兴。" },
+  "5-4": { name: "风雷益", desc: "损上益下。利涉大川，大有作为，天施地生。" },
+  "5-5": { name: "巽为风", desc: "顺风渗透。申命行事，随风潜入，宜多用计谋。" },
+  "5-6": { name: "风水涣", desc: "冰消瓦解。扬帆起航，消解隔阂，重聚人心。" },
+  "5-7": { name: "风山渐", desc: "鸿渐于陆。循序渐进，积少成多，前途不可限量。" },
+  "5-8": { name: "风地观", desc: "高瞻远瞩。观摩学习，宜静修反思，以德化人。" },
+  "6-1": { name: "水天需", desc: "云行于天。耐心等待，蓄水养息，终能大展宏图。" },
+  "6-2": { name: "水泽节", desc: "节制有度。甘节自甘，防奢侈无度，适度调节则吉。" },
+  "6-3": { name: "水火既济", desc: "功成圆满。诸事皆顺，宜防备松懈，守成防衰。" },
+  "6-4": { name: "水雷屯", desc: "草创维艰。万事开头难，宜广结善缘，积蓄力量。" },
+  "6-5": { name: "水风井", desc: "源源不断。养人无方，守常不改，财源细水长流。" },
+  "6-6": { name: "坎为水", desc: "重重险陷。常德行进，沉淀心智，必能脱困。" },
+  "6-7": { name: "水山蹇", desc: "雪上加霜。前路受阻，宜反求诸己，宜往西南吉。" },
+  "6-8": { name: "水地比", desc: "亲密比辅。广结人缘，得众人拥护，先吉后平。" },
+  "7-1": { name: "山天大畜", desc: "大有积蓄。藏器于身，广积粮草，大有作为。" },
+  "7-2": { name: "山泽损", desc: "损己利人。惩忿窒欲，虽有付出，终能有大报。" },
+  "7-3": { name: "山火贲", desc: "文饰装点。白贲无咎，讲求内外兼修，适度包装。" },
+  "7-4": { name: "山雷颐", desc: "修身养性。慎言语，节饮食，保重身体则吉。" },
+  "7-5": { name: "山风蛊", desc: "推陈出新。整治积弊，勇于自我革新，终能重振旗鼓。" },
+  "7-6": { name: "山水蒙", desc: "启蒙发慧。虚心求教，果行育德，渐入佳境。" },
+  "7-7": { name: "艮为山", desc: "安如磐石。思不出位，动静得宜，适可而止。" },
+  "7-8": { name: "山地剥", desc: "剥落衰退。小人势力上升，宜顺应退守，静待冬去春来。" },
+  "8-1": { name: "地天泰", desc: "三阳开泰。上下交泰，诸事顺遂，国泰民安，大吉大利。" },
+  "8-2": { name: "地泽临", desc: "大兵临境。亲自督导，防盛极而衰，宜柔中克刚。" },
+  "8-3": { name: "地火明夷", desc: "韬光养晦。伤于明处，宜藏锋避祸，心怀正念。" },
+  "8-4": { name: "地雷复", desc: "一阳复始。重获新生，循环往复，前景渐渐光明。" },
+  "8-5": { name: "地风升", desc: "步步高升。柔顺上升，得贤才提拔，积少成多。" },
+  "8-6": { name: "地水师", desc: "行军出征。大众一心，统帅得力，虽有劳累终有成。" },
+  "8-7": { name: "地山谦", desc: "虚怀若谷。谦谦君子，卑以自牧，万事皆能化险为夷。" },
+  "8-8": { name: "坤为地", desc: "厚德载物。至柔至顺，包容万物，得主有常。" }
+}
+
+// 农历年支选项
+const lunarYearOptions = [
+  { value: 1, label: '子鼠 (1)' }, { value: 2, label: '丑牛 (2)' },
+  { value: 3, label: '寅虎 (3)' }, { value: 4, label: '卯兔 (4)' },
+  { value: 5, label: '辰龙 (5)' }, { value: 6, label: '巳蛇 (6)' },
+  { value: 7, label: '午马 (7)' }, { value: 8, label: '未羊 (8)' },
+  { value: 9, label: '申猴 (9)' }, { value: 10, label: '酉鸡 (10)' },
+  { value: 11, label: '戌狗 (11)' }, { value: 12, label: '亥猪 (12)' }
+]
+
+// 农历时支选项
+const lunarHourOptions = [
+  { value: 1, label: '子时 23:00~01:00 (1)' }, { value: 2, label: '丑时 01:00~03:00 (2)' },
+  { value: 3, label: '寅时 03:00~05:00 (3)' }, { value: 4, label: '卯时 05:00~07:00 (4)' },
+  { value: 5, label: '辰时 07:00~09:00 (5)' }, { value: 6, label: '巳时 09:00~11:00 (6)' },
+  { value: 7, label: '午时 11:00~13:00 (7)' }, { value: 8, label: '未时 13:00~15:00 (8)' },
+  { value: 9, label: '申时 15:00~17:00 (9)' }, { value: 10, label: '酉时 17:00~19:00 (10)' },
+  { value: 11, label: '戌时 19:00~21:00 (11)' }, { value: 12, label: '亥时 21:00~23:00 (12)' }
+]
+
+// 交互表单及状态
+const plumParams = ref({
+  type: 'time', // 'time' 或 'number'
+  lunarYear: 7,
+  lunarMonth: 5,
+  lunarDay: 15,
+  lunarHour: 7,
+  num1: 520,
+  num2: 1314,
+  num3: null
+})
+
+const isDeducing = ref(false)
+const deducingStep = ref(0) // 0:未开始, 1:动画中, 2:推演完成
+const plumResult = ref(null)
+
+// 快捷随机生成数字起卦
+const randomizePlumNums = () => {
+  plumParams.value.num1 = Math.floor(Math.random() * 9999) + 1
+  plumParams.value.num2 = Math.floor(Math.random() * 9999) + 1
+  plumParams.value.num3 = Math.floor(Math.random() * 999) + 1
+}
+
+// 核心起卦推演逻辑
+const calculatePlumBlossom = () => {
+  isDeducing.value = true
+  deducingStep.value = 1
+  
+  setTimeout(() => {
+    let upperGuaNum = 1
+    let lowerGuaNum = 1
+    let movingYao = 1 // 1-6 爻
+
+    if (plumParams.value.type === 'time') {
+      const year = plumParams.value.lunarYear
+      const month = plumParams.value.lunarMonth
+      const day = plumParams.value.lunarDay
+      const hour = plumParams.value.lunarHour
+
+      // 上卦: (年 + 月 + 日) % 8
+      const upSum = year + month + day
+      const upRem = upSum % 8
+      upperGuaNum = upRem === 0 ? 8 : upRem
+
+      // 下卦: (年 + 月 + 日 + 时) % 8
+      const downSum = year + month + day + hour
+      const downRem = downSum % 8
+      lowerGuaNum = downRem === 0 ? 8 : downRem
+
+      // 动爻: (年 + 月 + 日 + 时) % 6
+      const yaoRem = downSum % 6
+      movingYao = yaoRem === 0 ? 6 : yaoRem
+    } else {
+      const n1 = plumParams.value.num1 || 1
+      const n2 = plumParams.value.num2 || 1
+      const n3 = plumParams.value.num3
+
+      const upRem = n1 % 8
+      upperGuaNum = upRem === 0 ? 8 : upRem
+
+      const downRem = n2 % 8
+      lowerGuaNum = downRem === 0 ? 8 : downRem
+
+      if (n3 !== undefined && n3 !== null && n3 !== '') {
+        const yaoRem = n3 % 6
+        movingYao = yaoRem === 0 ? 6 : yaoRem
+      } else {
+        const yaoRem = (n1 + n2) % 6
+        movingYao = yaoRem === 0 ? 6 : yaoRem
+      }
+    }
+
+    // 1. 本卦合成
+    const upGua = baguaBase[upperGuaNum]
+    const downGua = baguaBase[lowerGuaNum]
+    const benGuaCode = `${upperGuaNum}-${lowerGuaNum}`
+    const benGuaInfo = sixtyFourGua[benGuaCode] || { name: '未知卦', desc: '乾坤变通，玄之又玄。' }
+    // 数组爻画：下卦在下[0,1,2]，上卦在上[3,4,5]
+    const benYao = [...downGua.trigram, ...upGua.trigram]
+
+    // 2. 互卦解算
+    // 互卦下卦 = 本卦的 2, 3, 4爻 (索引 1, 2, 3)
+    // 互卦上卦 = 本卦的 3, 4, 5爻 (索引 2, 3, 4)
+    const huDownTrigram = [benYao[1], benYao[2], benYao[3]]
+    const huUpTrigram = [benYao[2], benYao[3], benYao[4]]
+
+    const findBaguaIdByTrigram = (tri) => {
+      for (const id in baguaBase) {
+        const baseTri = baguaBase[id].trigram
+        if (baseTri[0] === tri[0] && baseTri[1] === tri[1] && baseTri[2] === tri[2]) {
+          return parseInt(id)
+        }
+      }
+      return 8
+    }
+
+    const huLowerGuaNum = findBaguaIdByTrigram(huDownTrigram)
+    const huUpperGuaNum = findBaguaIdByTrigram(huUpTrigram)
+    const huGuaCode = `${huUpperGuaNum}-${huLowerGuaNum}`
+    const huGuaInfo = sixtyFourGua[huGuaCode] || { name: '未知互卦', desc: '事态发展的中间起伏和内因。' }
+    const huYao = [...huDownTrigram, ...huUpTrigram]
+
+    // 3. 变卦解算（动爻取反，1变0，0变1，爻为1-indexed，对应索引 movingYao-1）
+    const bianYao = [...benYao]
+    bianYao[movingYao - 1] = benYao[movingYao - 1] === 1 ? 0 : 1
+
+    const bianDownTrigram = [bianYao[0], bianYao[1], bianYao[2]]
+    const bianUpTrigram = [bianYao[3], bianYao[4], bianYao[5]]
+    const bianLowerGuaNum = findBaguaIdByTrigram(bianDownTrigram)
+    const bianUpperGuaNum = findBaguaIdByTrigram(bianUpTrigram)
+    const bianGuaCode = `${bianUpperGuaNum}-${bianLowerGuaNum}`
+    const bianGuaInfo = sixtyFourGua[bianGuaCode] || { name: '未知变卦', desc: '事态演变的最终局势和走向。' }
+
+    // 4. 体卦与用卦定位
+    // 无动爻为体，有动爻为用。动爻在1-3爻为下卦，动爻在4-6爻为上卦。
+    let tiGua = null
+    let yongGua = null
+    let isTiUp = false
+
+    if (movingYao >= 4) {
+      tiGua = downGua // 下卦为体
+      yongGua = upGua   // 上卦为用
+      isTiUp = false
+    } else {
+      tiGua = upGua   // 上卦为体
+      yongGua = downGua // 下卦为用
+      isTiUp = true
+    }
+
+    // 5. 体用五行生克研判
+    const sheng = { '木': '火', '火': '土', '土': '金', '金': '水', '水': '木' }
+    const ke = { '木': '土', '土': '水', '水': '火', '火': '金', '金': '木' }
+
+    const tiEl = tiGua.element
+    const yongEl = yongGua.element
+
+    let relation = ''
+    let relationDesc = ''
+    let luckLevel = ''
+    let luckDesc = ''
+
+    if (tiEl === yongEl) {
+      relation = '比和'
+      relationDesc = `体卦【${tiGua.name}金】与用卦【${yongGua.name}金】五行同属【${tiEl}】，比肩并茂。`
+      luckLevel = '吉（比和）'
+      luckDesc = '体用比和为平稳亨通之象。代表谋事可得平辈、同道或合作伙伴鼎力协作，不偏不倚，稳扎稳打即可成事。'
+    } else if (sheng[yongEl] === tiEl) {
+      relation = '用生体'
+      relationDesc = `用卦之【${yongEl}】生扶体卦之【${tiEl}】。`
+      luckLevel = '大吉（生入）'
+      luckDesc = '用生体为万事大吉之兆。预示外力大为受益，贵人扶掖，资财与机遇主动送上门来，诸般谋望皆能顺心顺意！'
+    } else if (sheng[tiEl] === yongEl) {
+      relation = '体生用'
+      relationDesc = `体卦之【${tiEl}】泄气生扶用卦之【${yongEl}】。`
+      luckLevel = '小凶（生出/泄气）'
+      luckDesc = '体生用代表消耗泄气。预示做此事需耗费您极大的精力、物力、财力，容易事倍功半、过度透支。建议防微杜渐，量力而行。'
+    } else if (ke[tiEl] === yongEl) {
+      relation = '体克用'
+      relationDesc = `体卦之【${tiEl}】降服克服用卦之【${yongEl}】。`
+      luckLevel = '小吉（克出）'
+      luckDesc = '体克用代表所求之事在自身掌控之下。虽然推进过程中伴随诸多竞争与磨难，但最终可通过自身实力克难克坚，夺得胜利果实！'
+    } else if (ke[yongEl] === tiEl) {
+      relation = '用克体'
+      relationDesc = `用卦之【${yongEl}】克制克伤体卦之【${tiEl}】。`
+      luckLevel = '大凶（克入/克伤）'
+      luckDesc = '用克体为压力重重、行事受阻之象。预示近期易伴随口舌、小人暗箭或财物损耗，压力极大。此时不宜轻率突围，宜静守贞固，韬光养晦。'
+    }
+
+    plumResult.value = {
+      movingYao,
+      tiGua,
+      yongGua,
+      isTiUp,
+      relation,
+      relationDesc,
+      luckLevel,
+      luckDesc,
+      ben: {
+        code: benGuaCode,
+        name: benGuaInfo.name,
+        desc: benGuaInfo.desc,
+        upGua,
+        downGua,
+        yao: benYao
+      },
+      hu: {
+        code: huGuaCode,
+        name: huGuaInfo.name,
+        desc: huGuaInfo.desc,
+        upGua: baguaBase[huUpperGuaNum],
+        downGua: baguaBase[huLowerGuaNum],
+        yao: huYao
+      },
+      bian: {
+        code: bianGuaCode,
+        name: bianGuaInfo.name,
+        desc: bianGuaInfo.desc,
+        upGua: baguaBase[bianUpperGuaNum],
+        downGua: baguaBase[bianLowerGuaNum],
+        yao: bianYao
+      }
+    }
+
+    isDeducing.value = false
+    deducingStep.value = 2
+  }, 1000)
+}
+
+// 平滑滚动至梅花易数 Tab
+const scrollToPlumBlossom = () => {
+  activeTableTab.value = 'plumBlossom'
+  setTimeout(() => {
+    const el = document.querySelector('.dictionary-tabs')
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, 100)
+}
+
+// 爻位序号转换中文
+const getClerkYaoName = (num) => {
+  const names = {
+    1: '初爻',
+    2: '二爻',
+    3: '三爻',
+    4: '四爻',
+    5: '五爻',
+    6: '上爻'
+  }
+  return names[num] || ''
+}
+
+// 根据吉凶等级匹配 CSS 类
+const getLuckClass = (level) => {
+  if (!level) return 'luck-neutral'
+  if (level.includes('大吉')) return 'luck-big-win'
+  if (level.includes('大凶')) return 'luck-big-loss'
+  if (level.includes('小吉')) return 'luck-small-win'
+  if (level.includes('小凶')) return 'luck-small-loss'
+  return 'luck-neutral'
 }
 </script>
 
 <style scoped>
+/* ==========================================
+   🔮 梅花易数全息起卦推演专属美学样式
+   ========================================== */
+.plum-main-container {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.plum-console-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+  box-shadow: 0 12px 36px rgba(99, 102, 241, 0.06) !important;
+  border-radius: 24px;
+}
+
+/* Radio Group 拟物玻璃化定制 */
+.custom-radio-group {
+  background: rgba(0, 0, 0, 0.03);
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.custom-radio-group :deep(.el-radio-button__inner) {
+  border-radius: 12px !important;
+  margin: 0 4px;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: #64748b !important;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 8px 20px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: none !important;
+}
+
+.custom-radio-group :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+  background: linear-gradient(135deg, #1e1b4b, #4c1d95) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(251, 191, 36, 0.15) !important;
+  box-shadow: 0 4px 15px rgba(30, 27, 75, 0.25) !important;
+}
+
+/* 输入控件定制 */
+.plum-select-full :deep(.el-input__wrapper),
+.plum-input-full :deep(.el-input__wrapper) {
+  border-radius: 12px !important;
+  padding: 8px 12px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: none !important;
+  transition: border-color 0.3s;
+}
+
+.plum-select-full :deep(.el-input__wrapper:hover),
+.plum-input-full :deep(.el-input__wrapper:hover) {
+  border-color: #6366f1 !important;
+}
+
+.plum-deduce-big-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(76, 29, 149, 0.35) !important;
+  filter: brightness(1.08);
+}
+
+.plum-deduce-big-btn:active {
+  transform: translateY(0);
+}
+
+/* 动爻高亮呼吸特写 */
+.hex-yao-line.moving-yao-highlight .yang-bar,
+.hex-yao-line.moving-yao-highlight .yin-half {
+  animation: pulseMovingYao 2s infinite !important;
+}
+
+.hex-yao-line.changed-yao-highlight .yang-bar,
+.hex-yao-line.changed-yao-highlight .yin-half {
+  animation: pulseChangedYao 2s infinite !important;
+}
+
+@keyframes pulseMovingYao {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.9);
+    filter: brightness(1.15);
+  }
+}
+
+@keyframes pulseChangedYao {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(16, 185, 129, 0.9);
+    filter: brightness(1.15);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+/* 进度条动画 */
+@keyframes loadProgress {
+  0% { transform: scaleX(0); }
+  50% { transform: scaleX(0.7); }
+  100% { transform: scaleX(1); }
+}
+
+.spinning-fast {
+  animation: spinTaiji 1.2s linear infinite !important;
+}
+
+/* 卦卡精美悬浮 */
+.hexagram-card {
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important;
+}
+
+.hexagram-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.06) !important;
+  border-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+.hex-desc {
+  transition: color 0.3s;
+}
+
+.hexagram-card:hover .hex-desc {
+  color: #334155 !important;
+}
+
+/* 平滑跳转按钮 */
+.plum-jump-btn {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.plum-jump-btn:hover {
+  transform: translateX(4px) scale(1.05);
+}
+
 .practice-dictionary {
   max-width: 1400px;
   margin: 0 auto;
