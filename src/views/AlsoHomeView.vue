@@ -12,8 +12,8 @@
               </div>
               <el-popover placement="bottom" :width="240" trigger="click" effect="light" popper-style="padding: 12px; border-radius: 12px;">
                 <template #reference>
-                  <el-button circle size="small" type="primary" plain>
-                    <el-icon><Operation /></el-icon>
+                  <el-button class="header-action-btn" size="small">
+                    <el-icon><Operation /></el-icon><span>辅助计算</span>
                   </el-button>
                 </template>
                 <div class="mini-calculator">
@@ -166,7 +166,14 @@
         <!-- 2. 保险支出模块 -->
         <el-card class="glass-card expense-section animate-fade-in mb-20">
           <template #header>
-            <div class="card-header"><el-icon><MagicStick /></el-icon><span>保险支出管理</span></div>
+            <div class="card-header justify-between">
+              <div style="display:flex;align-items:center;gap:8px">
+                <el-icon><MagicStick /></el-icon><span>保险支出管理</span>
+              </div>
+              <el-button class="header-action-btn" size="small" @click="drawerVisible = true">
+                <el-icon><InfoFilled /></el-icon><span>保单说明</span>
+              </el-button>
+            </div>
           </template>
 
           <el-form label-position="top">
@@ -308,6 +315,7 @@
               <thead>
                 <tr>
                   <th>年龄</th>
+                  <th>年份</th>
                   <th>期初余额</th>
                   <th>工作收入</th>
                   <th>退休金</th>
@@ -331,6 +339,9 @@
                     <strong>{{ row.age }}</strong>
                     <span v-if="row.age === 55" class="milestone-tag pension-tag">领退休金</span>
                     <span v-if="row.age === 60" class="milestone-tag ins-tag">保险到期</span>
+                  </td>
+                  <td class="num-cell" style="color: #64748b; font-weight: 500;">
+                    {{ row.year }}年
                   </td>
                   <td class="num-cell safe-bal"><strong>{{ (row.openBal/10000).toFixed(1) }}w</strong></td>
                   <td class="num-cell income">{{ row.jobIncome > 0 ? '+' + (row.jobIncome/10000).toFixed(1) + 'w' : '-' }}</td>
@@ -363,16 +374,47 @@
         </el-card>
       </el-col>
     </el-row>
+
+    <!-- 保单说明侧滑抽屉 -->
+    <el-drawer
+      v-model="drawerVisible"
+      title="友邦保险13份合同全面梳理分析报告"
+      size="60%"
+      direction="rtl"
+      destroy-on-close
+      class="policy-drawer"
+    >
+      <div class="markdown-body" v-html="renderedMarkdown"></div>
+    </el-drawer>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, reactive, watch } from 'vue'
+import { ref, computed, reactive, watch, onMounted } from 'vue'
 import { User, Postcard, MagicStick, Warning, InfoFilled, QuestionFilled, Operation, Delete, Finished, Location } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
+import { marked } from 'marked'
+import reportMd from '@/PRD/友邦保险13份合同全面梳理分析报告.md?raw'
 
 const userProfile = reactive({ gender: 'female', birthday: dayjs('1982-01-01').toDate() })
 const severanceType = ref('2N') // 2N 或 N
+const drawerVisible = ref(false)
+const renderedMarkdown = computed(() => {
+  const html = marked(reportMd)
+  console.log('--- 保单说明 Markdown 调试信息 ---')
+  console.log('1. 文本原始字数 (Length):', reportMd ? reportMd.length : 0)
+  
+  // 精确检索 HTML 中 2039年 所在的位置，截取并输出前后共 800 字符的 HTML 片段
+  const idx = html.indexOf('2039年')
+  if (idx !== -1) {
+    console.log('2. 2039年 在 HTML 中的字符偏移量:', idx)
+    console.log('3. 2039年 前后片段 (HTML fragment around 2039):')
+    console.log(html.substring(Math.max(0, idx - 150), Math.min(html.length, idx + 650)))
+  } else {
+    console.log('2. HTML 中未能检索到 "2039年" 字符！')
+  }
+  return html
+})
 const assets = reactive({ 
   savings: 160000, 
   backPay: 123250, // 欠薪追补
@@ -524,6 +566,7 @@ const bridgeData = computed(() => {
 
     rows.push({
       age,
+      year: 2026 + t,
       openBal,
       jobIncome,
       pensionIncome,
@@ -689,12 +732,43 @@ const handleCalcInput = (val) => {
 .total-assets-banner .value, .total-expense-banner .value { font-size: 20px; font-weight: bold; }
 
 .city-stats-pill {
-  font-size: 12px;
-  background: rgba(99, 102, 241, 0.1);
-  color: #6366f1;
-  padding: 4px 10px;
-  border-radius: 20px;
+  font-size: 11px;
   font-weight: 600;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  padding: 3px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  box-sizing: border-box;
+}
+
+/* 统一的高级胶囊型按钮样式 */
+.header-action-btn {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #6366f1 !important;
+  background: rgba(99, 102, 241, 0.08) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+  padding: 4px 12px !important;
+  height: 24px !important;
+  border-radius: 20px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.header-action-btn:hover {
+  background: rgba(99, 102, 241, 0.18) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+.header-action-btn:active {
+  transform: translateY(0);
 }
 .city-stages-wrapper {
   display: flex;
@@ -1299,4 +1373,175 @@ const handleCalcInput = (val) => {
   padding: 6px 12px;
 }
 .mb-20 { margin-bottom: 20px; }
+
+</style>
+
+<style>
+/* 全局样式块（非 scoped），专门用于渲染 v-html 中的 Markdown 报告及抽屉包装 */
+.policy-drawer {
+  height: 100vh !important; /* 强制锁定抽屉总体高度为视口高度 */
+}
+.policy-drawer .el-drawer__header {
+  margin-bottom: 0;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+.policy-drawer .el-drawer__title {
+  font-weight: 800 !important;
+  color: #1e1b4b !important;
+  font-size: 16px !important;
+}
+.policy-drawer .el-drawer__body {
+  padding: 0 !important;
+  background-color: #fafbfc;
+  height: calc(100vh - 65px) !important; /* 锁定Body高度为窗口减去Header，严防溢出屏幕 */
+  overflow-y: auto !important; /* 强制启用独立的Y轴垂直滚动条 */
+}
+
+.markdown-body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+  color: #334155;
+  padding: 24px 28px 80px 28px; /* 增加底部内边距，确保6.3保障总额速览表格及底部注释能流畅滚出展示，不被屏幕下边缘遮挡 */
+  background-color: #fafbfc;
+}
+
+/* 标题样式 - 精巧的色彩与层级 */
+.markdown-body h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e1b4b;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e0e7ff;
+  letter-spacing: -0.5px;
+}
+.markdown-body h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4f46e5;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  padding-left: 10px;
+  border-left: 4px solid #4f46e5;
+  letter-spacing: -0.3px;
+}
+.markdown-body h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+.markdown-body h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+/* 段落与强调 */
+.markdown-body p {
+  margin-bottom: 18px;
+  font-size: 13.5px;
+  color: #475569;
+}
+.markdown-body strong {
+  color: #4f46e5;
+  font-weight: 700;
+  background: linear-gradient(120deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* 带有现代渐变质感的引用块 */
+.markdown-body blockquote {
+  padding: 16px 20px;
+  margin: 24px 0;
+  background: linear-gradient(135deg, #f5f7ff 0%, #eff2fe 100%);
+  border-left: 5px solid #6366f1;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.03);
+  font-size: 13px;
+}
+.markdown-body blockquote p {
+  margin-bottom: 0;
+  color: #4338ca;
+  font-weight: 500;
+}
+
+/* 精美表格设计 */
+.markdown-body table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 24px 0;
+  font-size: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+.markdown-body th {
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  color: #1e293b;
+  font-weight: 700;
+  padding: 12px 14px;
+  border-bottom: 2px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap;
+}
+.markdown-body td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #475569;
+  line-height: 1.5;
+  background-color: #ffffff;
+}
+.markdown-body tr:last-child td {
+  border-bottom: none;
+}
+.markdown-body tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
+.markdown-body tr:hover td {
+  background-color: #f0f4ff !important;
+  color: #1e1b4b;
+}
+
+/* 列表美化 */
+.markdown-body ul, .markdown-body ol {
+  padding-left: 24px;
+  margin-bottom: 20px;
+  font-size: 13.5px;
+}
+.markdown-body li {
+  margin-bottom: 8px;
+  color: #475569;
+}
+.markdown-body li::marker {
+  color: #6366f1;
+}
+
+/* 分割线 */
+.markdown-body hr {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e2e8f0 50%, transparent);
+  margin: 32px 0;
+}
+
+/* 内联代码块 */
+.markdown-body code {
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  background-color: #f1f5f9;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  color: #e11d48;
+  border: 1px solid #e2e8f0;
+}
 </style>
