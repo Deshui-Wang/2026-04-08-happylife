@@ -3,7 +3,7 @@
     <header class="navbar animate-fade-in">
       <div class="header-content">
         <div class="logo">
-          <img src="/src/pic/facai.png" alt="logo" style="width: 44px; height: 44px; object-fit: contain;" />
+          <img src="/src/pic/home_rich.jpg" alt="logo" style="width: 44px; height: 44px; object-fit: contain;" />
           <span class="gradient-text">RICH</span>
         </div>
         <el-tabs v-model="activeTab" class="custom-tabs header-tabs">
