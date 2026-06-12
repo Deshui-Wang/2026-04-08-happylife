@@ -314,7 +314,7 @@ import dayjs from 'dayjs'
 const userProfile = reactive({ gender: 'female', birthday: dayjs('1982-01-01').toDate() })
 const severanceType = ref('2N') // 2N 或 N
 const assets = reactive({ 
-  savings: 160000, 
+  savings: 170000, 
   backPay: 123250, // 欠薪追补
   compensation: 261000, // 裁员赔偿
   workingIncome: 0,
