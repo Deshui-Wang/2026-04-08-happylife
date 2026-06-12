@@ -6,6 +6,9 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import path from 'path'
 
 export default defineConfig({
+  server: {
+    host: '0.0.0.0'
+  },
   plugins: [
     vue(),
     AutoImport({

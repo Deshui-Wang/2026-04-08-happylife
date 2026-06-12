@@ -282,4 +282,26 @@ onUnmounted(() => {
   opacity: 0;
   transform: translateX(30px);
 }
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px;
+  }
+  .header-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo {
+    font-size: 1.5rem;
+  }
+  .custom-tabs :deep(.el-tabs__item) {
+    padding: 0 12px;
+    font-size: 0.875rem;
+  }
+  .custom-tabs :deep(.el-tabs__nav-scroll) {
+    display: flex;
+    justify-content: center;
+  }
+}
 </style>

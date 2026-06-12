@@ -3402,4 +3402,39 @@ const getLuckClass = (level) => {
   width: 100% !important;
   box-sizing: border-box !important;
 }
+
+@media (max-width: 768px) {
+  .practice-dictionary-view {
+    padding: 10px;
+  }
+  .diagram-tab-wrapper {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 20px !important;
+  }
+  .bagua-plate-col {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 15px !important;
+    box-sizing: border-box;
+  }
+  .bagua-plate-outer-container {
+    width: 280px !important;
+    height: 280px !important;
+  }
+  .toolbar-body {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 15px !important;
+  }
+  .toolbar-input-area {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .toolbar-result-panel {
+    min-width: 100% !important;
+    box-sizing: border-box;
+  }
+}
 </style>

@@ -129,7 +129,6 @@ const goTo = (tab) => {
 <style scoped>
 .home-dashboard {
   padding: 10px 0;
-  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -346,5 +345,79 @@ const goTo = (tab) => {
 .milestone-banner .text {
   font-size: 14px;
   font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .welcome-section {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 24px;
+  }
+  .greeting {
+    font-size: 1.8rem;
+  }
+  .manifest-slogan {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  .date-badge {
+    padding: 8px 16px;
+    border-radius: 12px;
+  }
+  .date-badge .day {
+    font-size: 20px;
+  }
+  .kpi-row {
+    margin-bottom: 20px;
+  }
+  .kpi-card {
+    padding: 16px;
+    gap: 12px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+  }
+  .kpi-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+    border-radius: 12px;
+  }
+  .kpi-data .value {
+    font-size: 18px;
+  }
+  .nav-row {
+    margin-bottom: 20px;
+  }
+  .nav-entry-card {
+    height: auto;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    gap: 20px;
+  }
+  .entry-title {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  .entry-desc {
+    font-size: 13px;
+    max-width: 100%;
+  }
+  .entry-decoration {
+    font-size: 120px;
+    right: -10px;
+    bottom: -10px;
+    opacity: 0.02;
+  }
+  .milestone-banner {
+    padding: 12px 16px;
+    border-radius: 14px;
+    gap: 10px;
+  }
+  .milestone-banner .text {
+    font-size: 12px;
+    line-height: 1.4;
+  }
 }
 </style>

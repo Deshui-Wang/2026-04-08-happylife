@@ -36,13 +36,13 @@
           <el-form label-position="top">
             <el-divider content-position="left" style="margin-top: 0;">核心资产</el-divider>
             <el-row :gutter="10" align="middle" class="core-assets-inputs">
-              <el-col :span="7">
+              <el-col :xs="24" :sm="7">
                 <el-form-item label="当前存款 (元)">
                   <el-input-number v-model="assets.savings" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :span="1" class="calc-symbol" style="padding-top: 10px; text-align: center;">+</el-col>
-              <el-col :span="7">
+              <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
+              <el-col :xs="24" :sm="7">
                 <el-form-item>
                   <template #label>
                     <div style="display: flex; align-items: center; gap: 4px;">
@@ -59,8 +59,8 @@
                   <el-input-number v-model="assets.backPay" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :span="1" class="calc-symbol" style="padding-top: 10px; text-align: center;">+</el-col>
-              <el-col :span="8">
+              <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
+              <el-col :xs="24" :sm="8">
                 <el-form-item>
                   <template #label>
                     <div style="display: flex; align-items: center; gap: 4px;">
@@ -102,17 +102,17 @@
 
             <el-divider content-position="left">工作/未来流入</el-divider>
             <el-row :gutter="10">
-              <el-col :span="8">
+              <el-col :xs="24" :sm="8">
                 <el-form-item label="月预计工作收入 (元)">
                   <el-input-number v-model="assets.workingIncome" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :span="8">
+              <el-col :xs="24" :sm="8">
                 <el-form-item label="预计工作年限 (年)">
                   <el-input-number v-model="assets.workingYears" :precision="0" :step="1" :min="0" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :span="8">
+              <el-col :xs="24" :sm="8">
                 <el-form-item>
                   <template #label>
                     <div style="display: flex; align-items: center; gap: 4px;">
@@ -135,7 +135,7 @@
             <el-divider content-position="left">保险收益/返还</el-divider>
             <div class="insurance-return-panel">
               <el-row :gutter="12">
-                <el-col :span="12">
+                <el-col :xs="24" :sm="12">
                   <div class="return-item" :class="{'is-disabled': !assets.returns[0].enabled}">
                     <div class="item-header">
                       <span class="name">优享年年 (年领)</span>
@@ -147,7 +147,7 @@
                     </div>
                   </div>
                 </el-col>
-                <el-col :span="12">
+                <el-col :xs="24" :sm="12">
                   <div class="return-item" :class="{'is-disabled': !assets.returns[1].enabled}">
                     <div class="item-header">
                       <span class="name">传世金生 (满期)</span>
@@ -1105,5 +1105,39 @@ const handleCalcInput = (val) => {
 }
 .premium-radio :deep(.el-radio-button__inner) {
   padding: 6px 12px;
+}
+
+@media (max-width: 768px) {
+  .flexicalc-container {
+    padding: 10px 0px;
+  }
+  .core-assets-inputs {
+    align-items: stretch !important;
+  }
+  .calc-symbol {
+    text-align: center;
+    padding: 5px 0 !important;
+    font-size: 18px;
+    font-weight: bold;
+    color: #6366f1;
+  }
+  /* 逐年推演表格在移动端支持左右平滑滑动 */
+  .bridge-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  .bridge-table {
+    min-width: 800px;
+  }
+  .bridge-table th, .bridge-table td {
+    padding: 6px 8px !important;
+    font-size: 11.5px !important;
+  }
+  .bridge-summary {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 </style>

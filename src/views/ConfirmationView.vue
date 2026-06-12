@@ -120,11 +120,11 @@
                     </div>
                     <div class="transactions-list">
                       <div class="month-header">
-                        <div class="month-title">6月 <el-icon><ArrowDown /></el-icon></div>
+                        <div class="month-title">7月 <el-icon><ArrowDown /></el-icon></div>
                         <div class="month-summary">收入 ¥128,654.99(2笔)</div>
                       </div>
                       <div class="transaction-item">
-                        <div class="item-left"><span class="date">06/08</span></div>
+                        <div class="item-left"><span class="date">07/08</span></div>
                         <div class="item-center">
                           <span class="target-name">中联集团教育科技有限公司</span>
                           <span class="type-tag">[代发工资]</span>
@@ -134,7 +134,7 @@
                         </div>
                       </div>
                       <div class="transaction-item">
-                        <div class="item-left"><span class="date">06/08</span></div>
+                        <div class="item-left"><span class="date">07/08</span></div>
                         <div class="item-center">
                           <span class="target-name">中联集团教育科技有限公司</span>
                           <span class="type-tag">[代发工资]</span>
@@ -170,7 +170,7 @@
                     </header>
                     
                     <div class="cmb-filters">
-                      <span class="filter-item">2026.06 <el-icon><ArrowDown /></el-icon></span>
+                      <span class="filter-item">2026.07 <el-icon><ArrowDown /></el-icon></span>
                       <span class="filter-item">银行卡 <el-icon><ArrowDown /></el-icon></span>
                       <span class="filter-item">按金额</span>
                       <span class="filter-btn-text">筛选</span>
@@ -178,7 +178,7 @@
 
                     <div class="cmb-scroll-content">
                       <div class="cmb-month-card">
-                        <div class="month-label">6<span>月</span></div>
+                        <div class="month-label">7<span>月</span></div>
                         <div class="month-income">
                           <span class="label">收入</span>
                           <span class="value">¥ 22,000.00</span>
@@ -187,7 +187,7 @@
                         
                         <div class="cmb-transactions">
                           <div class="day-group">
-                            <div class="day-badge">6.8</div>
+                            <div class="day-badge">7.8</div>
                             <div class="cmb-item">
                               <div class="item-icon-wrap"><div class="cmb-icon-box transfer">转</div></div>
                               <div class="cmb-item-main">
@@ -461,7 +461,6 @@ const activeManifest = ref('bank')
 <style scoped>
 .confirmation-view {
   padding: 20px;
-  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -584,7 +583,6 @@ const activeManifest = ref('bank')
 
 .manifest-job-card, .manifest-studio-card {
   width: 100%;
-  max-width: 650px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(20px);
@@ -903,7 +901,6 @@ const activeManifest = ref('bank')
 .medical-report-paper {
   background: #fff;
   width: 100%;
-  max-width: 850px;
   min-height: 500px;
   padding: 40px 50px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.05);
@@ -1038,5 +1035,103 @@ const activeManifest = ref('bank')
 .fade-transform-leave-to {
   opacity: 0;
   transform: translateX(-30px);
+}
+
+@media (max-width: 768px) {
+  .confirmation-view {
+    padding: 10px;
+  }
+  .manifest-sidebar {
+    position: static !important;
+    margin-bottom: 24px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+  .sidebar-header {
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+  .menu-list {
+    flex-direction: row !important;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 8px;
+    padding-bottom: 8px;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .menu-list::-webkit-scrollbar {
+    display: none;
+  }
+  .menu-item {
+    flex: 0 0 auto;
+    padding: 8px 12px !important;
+    gap: 8px;
+    border-radius: 12px;
+    width: auto;
+  }
+  .menu-item:hover {
+    transform: none !important;
+  }
+  .menu-item .item-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  .menu-item .desc {
+    display: none;
+  }
+  .menu-item .label {
+    font-size: 13px;
+  }
+  .section-title {
+    font-size: 1.4rem;
+  }
+  .section-subtitle {
+    font-size: 12px;
+  }
+  .page-title-section {
+    padding-left: 12px;
+    margin-bottom: 20px;
+  }
+  /* 手机模拟器脱去外壳 */
+  .phone-mockup {
+    width: 100% !important;
+    height: auto !important;
+    border: none !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.02) !important;
+    overflow: visible;
+  }
+  .phone-header {
+    display: none !important;
+  }
+  .mockup-container {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .mockup-unit {
+    width: 100%;
+  }
+  /* 妈妈检验报告单在手机端的滚动/宽度自适应 */
+  .medical-report-paper {
+    padding: 15px !important;
+    border-radius: 12px !important;
+    overflow-x: auto;
+  }
+  .report-table {
+    min-width: 550px;
+  }
+  .patient-info-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .hosp-seal {
+    right: 20px;
+    bottom: 20px;
+    width: 90px;
+    height: 90px;
+    font-size: 11px;
+  }
 }
 </style>

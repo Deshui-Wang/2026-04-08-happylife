@@ -584,7 +584,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.footprint-view { padding: 20px; max-width: 1400px; margin: 0 auto; }
+.footprint-view { padding: 20px; margin: 0 auto; }
 .page-title-section { margin-bottom: 24px; border-left: 4px solid #6366f1; padding-left: 20px; }
 .section-title { font-size: 1.8rem; font-weight: 800; color: #1e293b; margin: 0; }
 .section-subtitle { color: #64748b; margin-top: 5px; font-size: 14px; }
@@ -980,6 +980,49 @@ onMounted(() => {
   }
   .scrollbar-container {
     height: 380px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footprint-view {
+    padding: 10px;
+  }
+  .input-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .input-with-button {
+    width: 100%;
+    max-width: 100%;
+  }
+  .clear-btn {
+    align-self: flex-start;
+  }
+  .china-map-container {
+    height: 320px !important;
+  }
+  .scrollbar-container {
+    height: 340px;
+  }
+  .tags-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .input-with-button {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .city-input {
+    max-width: 100%;
+  }
+  .lit-btn {
+    width: 100%;
   }
 }
 </style>
