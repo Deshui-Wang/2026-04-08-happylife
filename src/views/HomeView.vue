@@ -50,7 +50,7 @@
 
     <!-- 3. 功能导航卡片 -->
     <el-row :gutter="30" class="nav-row">
-      <el-col :xs="24" :md="12">
+      <el-col :xs="24" :md="12" style="margin-bottom: 30px;">
         <div class="nav-entry-card calc" @click="goTo('also-home')">
           <div class="entry-content">
             <div class="entry-tag">核心工具</div>
@@ -66,7 +66,7 @@
           </div>
         </div>
       </el-col>
-      <el-col :xs="24" :md="12">
+      <el-col :xs="24" :md="12" style="margin-bottom: 30px;">
         <div class="nav-entry-card confirm" @click="goTo('confirmation')">
           <div class="entry-content">
             <div class="entry-tag">显化成就</div>
@@ -82,6 +82,38 @@
           </div>
         </div>
       </el-col>
+      <el-col :xs="24" :md="12" style="margin-bottom: 30px;">
+        <div class="nav-entry-card footprint" @click="goTo('footprint')">
+          <div class="entry-content">
+            <div class="entry-tag">足迹见证</div>
+            <h2 class="entry-title">家庭幸福足迹</h2>
+            <p class="entry-desc">记录与家人共同点亮的旅行足迹，在地图与档案中双重见证生活中的幸福与闪光点。</p>
+            <div class="entry-footer">
+              <span class="status">当前状态：已点亮 3 个省级行政区</span>
+              <el-icon><Right /></el-icon>
+            </div>
+          </div>
+          <div class="entry-decoration">
+            <el-icon><Compass /></el-icon>
+          </div>
+        </div>
+      </el-col>
+      <el-col :xs="24" :md="12" style="margin-bottom: 30px;">
+        <div class="nav-entry-card dictionary" @click="goTo('dictionary')">
+          <div class="entry-content">
+            <div class="entry-tag">国学智慧</div>
+            <h2 class="entry-title">人生修行字典</h2>
+            <p class="entry-desc">融合地支五行与先天八卦哲学，查阅时辰布局与乾坤奥妙，助力人生修行与自我觉察。</p>
+            <div class="entry-footer">
+              <span class="status">当前状态：支持地支与八卦双重推演</span>
+              <el-icon><Right /></el-icon>
+            </div>
+          </div>
+          <div class="entry-decoration">
+            <el-icon><Opportunity /></el-icon>
+          </div>
+        </div>
+      </el-col>
     </el-row>
 
     <!-- 4. 底部提醒 -->
@@ -94,7 +126,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Money, TrendCharts, CircleCheckFilled, Right, Histogram, Finished, Notification } from '@element-plus/icons-vue'
+import { Money, TrendCharts, CircleCheckFilled, Right, Histogram, Finished, Notification, Compass, Opportunity } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
 const emit = defineEmits(['navigate'])
@@ -323,6 +355,16 @@ const goTo = (tab) => {
 .nav-entry-card.confirm:hover {
   background: linear-gradient(135deg, #ffffff, #f0fdf4);
   border-color: #bbf7d0;
+}
+
+.nav-entry-card.footprint:hover {
+  background: linear-gradient(135deg, #ffffff, #eff6ff);
+  border-color: #bfdbfe;
+}
+
+.nav-entry-card.dictionary:hover {
+  background: linear-gradient(135deg, #ffffff, #fffbeb);
+  border-color: #fde68a;
 }
 
 /* 里程碑横幅 */
