@@ -444,6 +444,187 @@
       </el-col>
     </el-row>
 
+    <!-- 2.8 生辰八字全息命理分析平台 -->
+    <el-row :gutter="24" class="bazi-row" style="margin-bottom: 24px; margin-top: 24px;">
+      <el-col :span="24">
+        <div class="glass-card bazi-main-card" style="padding: 24px; display: flex; flex-direction: column;">
+          <div class="card-glow-title" style="border-bottom: 1px dashed #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
+            <el-icon class="glow-icon"><Notebook /></el-icon>
+            <span>生辰八字全息命理推排</span>
+          </div>
+          
+          <el-row :gutter="24">
+            <!-- 左侧：生日参数录入 -->
+            <el-col :xs="24" :md="8" style="margin-bottom: 20px;">
+              <div style="background: rgba(255,255,255,0.4); border-radius: 16px; padding: 20px; border: 1px solid rgba(0,0,0,0.02); height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <h3 style="font-size: 15px; font-weight: 800; color: #1e293b; margin: 0 0 15px 0; display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #6366f1;">☯</span> 输入公历生日数字
+                  </h3>
+                  <el-row :gutter="12">
+                    <el-col :span="12" style="margin-bottom: 12px;">
+                      <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">出生年份 (公历)</span>
+                      <el-input-number v-model="baziParams.solarYear" :min="1900" :max="2100" style="width: 100%;" :controls="false" placeholder="如 1995" />
+                    </el-col>
+                    <el-col :span="12" style="margin-bottom: 12px;">
+                      <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">出生月份 (公历)</span>
+                      <el-input-number v-model="baziParams.solarMonth" :min="1" :max="12" style="width: 100%;" placeholder="1-12" />
+                    </el-col>
+                    <el-col :span="12" style="margin-bottom: 12px;">
+                      <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">出生日期 (公历)</span>
+                      <el-input-number v-model="baziParams.solarDay" :min="1" :max="31" style="width: 100%;" placeholder="1-31" />
+                    </el-col>
+                    <el-col :span="12" style="margin-bottom: 12px;">
+                      <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">出生小时 (0-23)</span>
+                      <el-input-number v-model="baziParams.solarHour" :min="0" :max="23" style="width: 100%;" placeholder="0-23" />
+                    </el-col>
+                  </el-row>
+                  <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin-top: 10px;">
+                    * 录入公历阳历的出生年、月、日、时数字，系统将基于高精度干支历法自动换算并推排其天干地支四柱命盘。
+                  </p>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                  <el-button 
+                    type="primary" 
+                    size="large" 
+                    style="width: 100%; background: linear-gradient(135deg, #4f46e5, #7c3aed); border: none; font-weight: 800; border-radius: 12px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);"
+                    :loading="baziDeducing"
+                    @click="calculateBaziDestiny"
+                  >
+                    ☯ 开启八字全息推算 ☯
+                  </el-button>
+                </div>
+              </div>
+            </el-col>
+
+            <!-- 右侧：推算结果展示 -->
+            <el-col :xs="24" :md="16">
+              <!-- 空状态 -->
+              <div v-if="baziDeducingStep === 0" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border: 1px dashed rgba(99,102,241,0.2); border-radius: 16px; background: rgba(255,255,255,0.4); min-height: 250px; text-align: center;">
+                <div style="font-size: 48px; color: #cbd5e1; margin-bottom: 12px; animation: spinTaiji 15s linear infinite; display: inline-block;">☯</div>
+                <h4 style="font-size: 16px; font-weight: 800; color: #475569; margin: 0 0 6px 0;">命由天定 · 运由己造</h4>
+                <p style="font-size: 12.5px; color: #94a3b8; max-width: 420px; line-height: 1.6; margin: 0;">请输入您的阳历生日信息并点击“开启八字全息推算”，我们将在此生成您的乾坤四柱排盘、五行能量配比以及详尽的日主命理解析。</p>
+              </div>
+
+              <!-- 推算中动效 -->
+              <div v-else-if="baziDeducingStep === 1" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border-radius: 16px; min-height: 250px; text-align: center;">
+                <div style="font-size: 48px; color: #6366f1; margin-bottom: 12px; animation: spinTaiji 2s linear infinite; display: inline-block;">☯</div>
+                <h4 style="font-size: 15px; font-weight: 800; color: #1e293b; margin: 0 0 10px 0;">排定乾坤四柱，推衍命理玄机...</h4>
+                <div style="width: 180px; height: 4px; background: #e2e8f0; border-radius: 2px; overflow: hidden; margin: 0 auto;">
+                  <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7); animation: loadProgress 1s ease-in-out infinite; transform-origin: left;"></div>
+                </div>
+              </div>
+
+              <!-- 推演完成结果面板 -->
+              <div v-else class="animate-fade-in" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- 1. 四柱排盘看板 -->
+                <div style="background: rgba(255,255,255,0.7); border-radius: 16px; padding: 16px; border: 1px solid rgba(0,0,0,0.02);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                    <span style="font-size: 13px; font-weight: 800; color: #1e293b;">📅 生日信息：{{ baziResult.solarDate }} ({{ baziResult.lunarDate }})</span>
+                    <el-tag size="small" type="success" effect="dark" style="border: none; font-weight: 800;">八字命盘：{{ baziResult.eightCharStr }}</el-tag>
+                  </div>
+                  
+                  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                    <div v-for="col in baziResult.columns" :key="col.name" style="background: white; border: 1px solid #cbd5e1; border-radius: 12px; padding: 10px 6px; text-align: center; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.01);">
+                      <div style="font-size: 11px; color: #94a3b8; font-weight: bold;">{{ col.name }}</div>
+                      <!-- 十神 -->
+                      <div>
+                        <el-tag size="small" :type="col.tenGod === '日元' ? 'danger' : 'info'" effect="plain" style="font-size: 9px; padding: 0 4px; font-weight: bold; border-radius: 4px;">{{ col.tenGod }}</el-tag>
+                      </div>
+                      <!-- 干支大字 -->
+                      <div style="font-size: 24px; font-weight: 900; line-height: 1.2; display: flex; justify-content: center; gap: 4px;">
+                        <span :style="{ color: col.ganElement?.color }">{{ col.gan }}</span>
+                        <span :style="{ color: col.zhiElement?.color }">{{ col.zhi }}</span>
+                      </div>
+                      <!-- 藏干 -->
+                      <div style="font-size: 9px; color: #64748b; line-height: 1.3;">
+                        <span style="color: #94a3b8; display: block; font-size: 8px; margin-bottom: 2px;">地支藏干</span>
+                        <span v-for="cg in col.hideGan" :key="cg" style="margin: 0 2px;">{{ cg }}</span>
+                      </div>
+                      <!-- 纳音 -->
+                      <div style="font-size: 9px; color: #475569; background: #f1f5f9; padding: 2px 4px; border-radius: 6px; font-weight: 700; margin-top: auto;">
+                        {{ col.nayin }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                  <!-- 2. 五行能量占比看板 -->
+                  <div style="background: rgba(255,255,255,0.7); border-radius: 16px; padding: 16px; border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                      <h4 style="font-size: 13.5px; font-weight: 800; color: #1e293b; margin: 0 0 12px 0;">📊 八字五行能量配比</h4>
+                      <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <!-- 金 -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #64748b;">金（白）</span>
+                          <el-progress :percentage="baziResult.elementRates['金']" color="#64748b" style="flex: 1;" :stroke-width="8" />
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['金'] }}字 ({{ baziResult.elementRates['金'] }}%)</span>
+                        </div>
+                        <!-- 木 -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #10b981;">木（青）</span>
+                          <el-progress :percentage="baziResult.elementRates['木']" color="#10b981" style="flex: 1;" :stroke-width="8" />
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['木'] }}字 ({{ baziResult.elementRates['木'] }}%)</span>
+                        </div>
+                        <!-- 水 -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #3b82f6;">水（黑）</span>
+                          <el-progress :percentage="baziResult.elementRates['水']" color="#3b82f6" style="flex: 1;" :stroke-width="8" />
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['水'] }}字 ({{ baziResult.elementRates['水'] }}%)</span>
+                        </div>
+                        <!-- 火 -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #ef4444;">火（红）</span>
+                          <el-progress :percentage="baziResult.elementRates['火']" color="#ef4444" style="flex: 1;" :stroke-width="8" />
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['火'] }}字 ({{ baziResult.elementRates['火'] }}%)</span>
+                        </div>
+                        <!-- 土 -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #d97706;">土（黄）</span>
+                          <el-progress :percentage="baziResult.elementRates['土']" color="#d97706" style="flex: 1;" :stroke-width="8" />
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['土'] }}字 ({{ baziResult.elementRates['土'] }}%)</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div style="margin-top: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 8px; font-size: 11.5px; line-height: 1.4; color: #64748b;">
+                      * <strong>局势分析：</strong>此造中五行最盛为【<strong :style="{ color: baziResult.maxEl === '金' ? '#64748b' : baziResult.maxEl === '木' ? '#10b981' : baziResult.maxEl === '水' ? '#3b82f6' : baziResult.maxEl === '火' ? '#ef4444' : '#d97706' }">{{ baziResult.maxEl }}</strong>】(占比{{ baziResult.elementRates[baziResult.maxEl] }}%)，较薄弱为【<strong>{{ baziResult.minEl }}</strong>】。建议日常运势调和以【{{ baziResult.minEl }}】属性为主。
+                    </div>
+                  </div>
+
+                  <!-- 3. 日元主命理解析看板 -->
+                  <div style="background: rgba(255,255,255,0.7); border-radius: 16px; padding: 16px; border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+                    <div>
+                      <h4 style="font-size: 13.5px; font-weight: 800; color: #1e293b; margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px;">
+                        <span>☯</span> {{ baziResult.advice.title }}
+                      </h4>
+                      <p style="font-size: 12px; line-height: 1.5; color: #475569; margin: 0 0 8px 0;">
+                        <strong>性格特质：</strong>{{ baziResult.advice.character }}
+                      </p>
+                      <p style="font-size: 12px; line-height: 1.5; color: #475569; margin: 0 0 8px 0;">
+                        <strong>先天命格：</strong>{{ baziResult.advice.destiny }}
+                      </p>
+                      <p style="font-size: 12px; line-height: 1.5; color: #b45309; margin: 0;">
+                        <strong>开运建议：</strong>{{ baziResult.advice.advice }}
+                      </p>
+                    </div>
+
+                    <div style="background: linear-gradient(135deg, #fffbeb, #fef3c7); border-radius: 10px; padding: 10px; border-left: 4px solid #f59e0b; margin: 0;">
+                      <div style="font-size: 12px; font-weight: bold; color: #b45309; margin-bottom: 2px;">开运太极谶：</div>
+                      <div style="font-size: 12px; font-weight: 800; color: #78350f; font-family: monospace; line-height: 1.4;">
+                        “{{ baziResult.advice.poem }}”
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </el-col>
+    </el-row>
 
     <!-- 3. 三大标准映射数据字典 -->
     <div class="glass-card tables-section-card">
@@ -847,9 +1028,9 @@
                 </div>
 
                 <!-- Row 3 -->
-                <div class="joint-cell cell-active-glow" :class="{ active: activeStem === '甲' }" @click="activeStem = '甲'">
-                  <span class="joint-name">甲</span>
-                  <span class="joint-pinyin">jiǎ</span>
+                <div class="joint-cell cell-active-glow" :class="{ active: activeStem === '乙' }" @click="activeStem = '乙'">
+                  <span class="joint-name">乙</span>
+                  <span class="joint-pinyin">yǐ</span>
                   <span class="joint-badge wood">木</span>
                 </div>
                 <div class="joint-cell cell-active-glow" :class="{ active: activeStem === '壬' }" @click="activeStem = '壬'">
@@ -859,9 +1040,9 @@
                 </div>
 
                 <!-- Row 4 -->
-                <div class="joint-cell cell-active-glow" :class="{ active: activeStem === '乙' }" @click="activeStem = '乙'">
-                  <span class="joint-name">乙</span>
-                  <span class="joint-pinyin">yǐ</span>
+                <div class="joint-cell cell-active-glow" :class="{ active: activeStem === '甲' }" @click="activeStem = '甲'">
+                  <span class="joint-name">甲</span>
+                  <span class="joint-pinyin">jiǎ</span>
                   <span class="joint-badge wood">木</span>
                 </div>
                 <div class="joint-cell cell-empty-place"></div>
@@ -969,9 +1150,9 @@
                 </div>
 
                 <!-- Row 3 -->
-                <div class="joint-cell cell-active-glow" :class="{ active: simulatedBranchInfo.name === '寅' }" @click="selectBranchByName('寅')">
-                  <span class="joint-name">寅</span>
-                  <span class="joint-pinyin">yín</span>
+                <div class="joint-cell cell-active-glow" :class="{ active: simulatedBranchInfo.name === '卯' }" @click="selectBranchByName('卯')">
+                  <span class="joint-name">卯</span>
+                  <span class="joint-pinyin">mǎo</span>
                   <span class="joint-badge wood">木</span>
                 </div>
                 <div class="joint-cell cell-active-glow" :class="{ active: simulatedBranchInfo.name === '戌' }" @click="selectBranchByName('戌')">
@@ -981,9 +1162,9 @@
                 </div>
 
                 <!-- Row 4 -->
-                <div class="joint-cell cell-active-glow" :class="{ active: simulatedBranchInfo.name === '卯' }" @click="selectBranchByName('卯')">
-                  <span class="joint-name">卯</span>
-                  <span class="joint-pinyin">mǎo</span>
+                <div class="joint-cell cell-active-glow" :class="{ active: simulatedBranchInfo.name === '寅' }" @click="selectBranchByName('寅')">
+                  <span class="joint-name">寅</span>
+                  <span class="joint-pinyin">yín</span>
                   <span class="joint-badge wood">木</span>
                 </div>
                 <div class="joint-cell cell-active-glow" :class="{ active: simulatedBranchInfo.name === '丑' }" @click="selectBranchByName('丑')">
@@ -1168,6 +1349,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { Solar } from 'lunar-javascript'
 import { Search, Clock, Opportunity, Pointer, MagicStick, WarningFilled, Notebook, Picture } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import traditionalHandMapImg from '../pic/traditional_hand_map.png'
@@ -1585,16 +1767,356 @@ const lunarHourOptions = [
 ]
 
 // 交互表单及状态
+const baziStems = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸']
+const baziBranches = [
+  { value: 1, label: '子 (1)' }, { value: 2, label: '丑 (2)' },
+  { value: 3, label: '寅 (3)' }, { value: 4, label: '卯 (4)' },
+  { value: 5, label: '辰 (5)' }, { value: 6, label: '巳 (6)' },
+  { value: 7, label: '午 (7)' }, { value: 8, label: '未 (8)' },
+  { value: 9, label: '申 (9)' }, { value: 10, label: '酉 (10)' },
+  { value: 11, label: '戌 (11)' }, { value: 12, label: '亥 (12)' }
+]
+
 const plumParams = ref({
-  type: 'time', // 'time' 或 'number'
+  type: 'time', // 'time', 'number' 或 'bazi'
   lunarYear: 7,
   lunarMonth: 5,
   lunarDay: 15,
   lunarHour: 7,
   num1: 520,
   num2: 1314,
-  num3: null
+  num3: null,
+  baziInputMode: 'solar', // 'solar' 表示录入生日数字转换，'manual' 表示手动选择干支
+  solarYear: 1995,
+  solarMonth: 8,
+  solarDay: 18,
+  solarHour: 12,
+  baziYearStem: '甲',
+  baziYearBranch: 1,
+  baziMonthStem: '丙',
+  baziMonthBranch: 3,
+  baziDayStem: '戊',
+  baziDayBranch: 7,
+  baziHourStem: '庚',
+  baziHourBranch: 9
 })
+
+const branchToValueMap = {
+  '子': 1, '丑': 2, '寅': 3, '卯': 4, '辰': 5, '巳': 6,
+  '午': 7, '未': 8, '申': 9, '酉': 10, '戌': 11, '亥': 12
+}
+
+const stemToElementMap = {
+  '甲': { name: '木', polar: '阳', color: '#10b981' },
+  '乙': { name: '木', polar: '阴', color: '#10b981' },
+  '丙': { name: '火', polar: '阳', color: '#ef4444' },
+  '丁': { name: '火', polar: '阴', color: '#ef4444' },
+  '戊': { name: '土', polar: '阳', color: '#d97706' },
+  '己': { name: '土', polar: '阴', color: '#d97706' },
+  '庚': { name: '金', polar: '阳', color: '#64748b' },
+  '辛': { name: '金', polar: '阴', color: '#64748b' },
+  '壬': { name: '水', polar: '阳', color: '#3b82f6' },
+  '癸': { name: '水', polar: '阴', color: '#3b82f6' }
+}
+
+const branchToElementMap = {
+  '子': { name: '水', color: '#3b82f6' },
+  '丑': { name: '土', color: '#d97706' },
+  '寅': { name: '木', color: '#10b981' },
+  '卯': { name: '木', color: '#10b981' },
+  '辰': { name: '土', color: '#d97706' },
+  '巳': { name: '火', color: '#ef4444' },
+  '午': { name: '火', color: '#ef4444' },
+  '未': { name: '土', color: '#d97706' },
+  '申': { name: '金', color: '#64748b' },
+  '酉': { name: '金', color: '#64748b' },
+  '戌': { name: '土', color: '#d97706' },
+  '亥': { name: '水', color: '#3b82f6' }
+}
+
+const computedConvertedBazi = computed(() => {
+  try {
+    const y = parseInt(plumParams.value.solarYear) || 1995
+    const m = parseInt(plumParams.value.solarMonth) || 8
+    const d = parseInt(plumParams.value.solarDay) || 18
+    const h = parseInt(plumParams.value.solarHour) || 12
+    
+    const solar = Solar.fromYmdHms(y, m, d, h, 0, 0)
+    const lunar = solar.getLunar()
+    const bazi = lunar.getEightChar()
+    
+    const yg = bazi.getYearGan()
+    const yz = bazi.getYearZhi()
+    const mg = bazi.getMonthGan()
+    const mz = bazi.getMonthZhi()
+    const dg = bazi.getDayGan()
+    const dz = bazi.getDayZhi()
+    const hg = bazi.getTimeGan()
+    const hz = bazi.getTimeZhi()
+    
+    return {
+      year: { gan: yg, zhi: yz, ganElement: stemToElementMap[yg], zhiElement: branchToElementMap[yz] },
+      month: { gan: mg, zhi: mz, ganElement: stemToElementMap[mg], zhiElement: branchToElementMap[mz] },
+      day: { gan: dg, zhi: dz, ganElement: stemToElementMap[dg], zhiElement: branchToElementMap[dz] },
+      hour: { gan: hg, zhi: hz, ganElement: stemToElementMap[hg], zhiElement: branchToElementMap[hz] },
+      raw: `${yg}${yz} ${mg}${mz} ${dg}${dz} ${hg}${hz}`
+    }
+  } catch (err) {
+    console.error(err)
+    return {
+      year: { gan: '甲', zhi: '子', ganElement: stemToElementMap['甲'], zhiElement: branchToElementMap['子'] },
+      month: { gan: '丙', zhi: '寅', ganElement: stemToElementMap['丙'], zhiElement: branchToElementMap['寅'] },
+      day: { gan: '戊', zhi: '午', ganElement: stemToElementMap['戊'], zhiElement: branchToElementMap['午'] },
+      hour: { gan: '庚', zhi: '申', ganElement: stemToElementMap['庚'], zhiElement: branchToElementMap['申'] },
+      raw: '甲子 丙寅 戊午 庚申'
+    }
+  }
+})
+
+// === 生辰八字全息命理独立模块数据与逻辑 ===
+const baziParams = ref({
+  solarYear: 1995,
+  solarMonth: 8,
+  solarDay: 18,
+  solarHour: 12
+})
+
+const baziDeducing = ref(false)
+const baziDeducingStep = ref(0) // 0: 未开始, 1: 动画中, 2: 完成
+const baziResult = ref(null)
+
+const baziStemMeta = {
+  '甲': { element: '木', polar: '阳' },
+  '乙': { element: '木', polar: '阴' },
+  '丙': { element: '火', polar: '阳' },
+  '丁': { element: '火', polar: '阴' },
+  '戊': { element: '土', polar: '阳' },
+  '己': { element: '土', polar: '阴' },
+  '庚': { element: '金', polar: '阳' },
+  '辛': { element: '金', polar: '阴' },
+  '壬': { element: '水', polar: '阳' },
+  '癸': { element: '水', polar: '阴' }
+}
+
+const getTenGod = (dayGan, targetGan) => {
+  if (!dayGan || !targetGan) return '比肩'
+  const me = baziStemMeta[dayGan]
+  const target = baziStemMeta[targetGan]
+  if (!me || !target) return '比肩'
+  
+  const relationMatrix = {
+    '木': { '木': '比劫', '火': '食伤', '土': '财星', '金': '官杀', '水': '印星' },
+    '火': { '火': '比劫', '土': '食伤', '金': '财星', '水': '官杀', '木': '印星' },
+    '土': { '土': '比劫', '金': '食伤', '水': '财星', '木': '官杀', '火': '印星' },
+    '金': { '金': '比劫', '水': '食伤', '木': '财星', '火': '官杀', '土': '印星' },
+    '水': { '水': '比劫', '木': '食伤', '火': '财星', '土': '官杀', '金': '印星' }
+  }
+  
+  const type = relationMatrix[me.element][target.element]
+  const isSamePolar = me.polar === target.polar
+  
+  const tenGodNames = {
+    '比劫': isSamePolar ? '比肩' : '劫财',
+    '食伤': isSamePolar ? '食神' : '伤官',
+    '财星': isSamePolar ? '偏财' : '正财',
+    '官杀': isSamePolar ? '七杀' : '正官',
+    '印星': isSamePolar ? '偏印' : '正印'
+  }
+  
+  return tenGodNames[type]
+}
+
+const getHideGan = (branch) => {
+  const hides = {
+    '子': ['癸'],
+    '丑': ['己', '癸', '辛'],
+    '寅': ['甲', '丙', '戊'],
+    '卯': ['乙'],
+    '辰': ['戊', '乙', '癸'],
+    '巳': ['丙', '庚', '戊'],
+    '午': ['丁', '己'],
+    '未': ['己', '丁', '乙'],
+    '申': ['庚', '壬', '戊'],
+    '酉': ['辛'],
+    '戌': ['戊', '辛', '丁'],
+    '亥': ['壬', '甲']
+  }
+  return hides[branch] || []
+}
+
+const getBaziAdvice = (dayGan) => {
+  const advices = {
+    '甲': {
+      title: '甲木命主 · 顶天立地',
+      character: '正直善良、极具进取心，拥有领袖气质与栋梁之材。但有时过于固执偏激，不愿妥协。',
+      destiny: '如参天大树，生机勃勃。春生则贵，夏生则秀，秋生有成，冬生需阳。一生多得贵人提携，志向高远。',
+      advice: '多注意倾听他人意见，凡事留有余地，刚柔并济，运势会更加顺遂。',
+      poem: '独木成林壮志扬，直冲云霄立庙堂。柔顺调和纳百川，乾坤稳步福禄长。'
+    },
+    '乙': {
+      title: '乙木命主 · 坚韧秀雅',
+      character: '温柔顺从、适应能力强，富有同理心与艺术细胞，具有野草般的坚韧生命力。缺点是容易优柔寡断，依附性强。',
+      destiny: '如藤萝花草，灵动蔓延。春光无限，夏火吐秀，秋金修剪，冬水养根。一生人缘极佳，处事圆滑，以柔克刚。',
+      advice: '坚定信念，培养独立决断的勇气，遇到困难多相信自己的直觉。',
+      poem: '春风野草绿漫天，柔韧随风化险难。立定乾坤求自强，芳华满路福寿全。'
+    },
+    '丙': {
+      title: '丙火命主 · 艳阳高照',
+      character: '热情大方、光明磊落、充满活力，乐于助人并极具号召力。缺点是性急如火，缺乏耐性，容易三分钟热度。',
+      destiny: '如太阳之火，普照大地。春木生身，夏火炽热（宜水调候），秋金发光，冬水激荡。一生行事光明，事业有开拓性。',
+      advice: '修身养性，克制急躁情绪，做事讲求循序渐进与持之以恒。',
+      poem: '烈日当空照九天，胸怀坦荡众生怜。中和克制调火气，福泽绵长瑞气缠。'
+    },
+    '丁': {
+      title: '丁火命主 · 烛照幽微',
+      character: '温和有礼、心思细腻、内敛且极具奉献精神，照亮他人。缺点是多疑敏感，内心想法不易表露，偶尔感到压抑。',
+      destiny: '如人间烛火、星光。春木滋养，夏火帮身，秋金炼铁，冬水衬辉。一生多有特殊才华，适合钻研与谋划。',
+      advice: '放宽心胸，凡事不要过多纠结与计较，适时释放内心压力。',
+      poem: '一点荧光烛火明，幽微深处见真情。通达明理修慧眼，福禄双全万事兴。'
+    },
+    '戊': {
+      title: '戊土命主 · 重厚宽广',
+      character: '沉稳厚重、忠实守信、包容力强，极具信用与原则性。缺点是墨守成规，偶尔显得固执呆板，缺乏变通。',
+      destiny: '如泰山之土，能防水能生金。春木克土，夏火生土，秋金泄秀，冬水财旺。一生性格稳健，得人信赖，适合做中流砥柱。',
+      advice: '多接受新事物，打破固有习惯，积极主动地进行人际交往。',
+      poem: '厚德载物稳如山，万物生生赖此宽。变通革新迎朝旭，乾坤造化福常安。'
+    },
+    '己': {
+      title: '己土命主 · 田园孕育',
+      character: '宽容包容、心地善良、多才多艺、乐于奉献与配合。缺点是心思多变，容易妥协，缺乏主见与魄力。',
+      destiny: '如湿土田园，善于孕育万物。春水滋润，夏火照暖，秋金吐秀，冬木稳根。一生多为贤内助或核心助手，家庭观念重。',
+      advice: '培养独立做决定的勇气，增强自身魄力与领导气场。',
+      poem: '田园湿土育英华，温润无声绽万花。坚定刚毅自立志，福运千秋至我家。'
+    },
+    '庚': {
+      title: '庚金命主 · 刚毅果决',
+      character: '刚强果断、讲义气、执行力极强、富有正义感与规矩意识。缺点是过于刚硬，说话直接，容易无意中伤害他人。',
+      destiny: '如刀剑之金，需要火炼、水泄。春木财旺，夏火淬炼（成器），秋金肃杀，冬水吐秀。一生多能担当重任，杀伐果决。',
+      advice: '言语温和一些，学会妥协与以柔克刚，能减少口舌纠纷。',
+      poem: '百炼成钢化纯锋，披荆斩棘建奇功。慈悲温润调刚烈，万事亨通福禄融。'
+    },
+    '辛': {
+      title: '辛金命主 · 珠玉温润',
+      character: '温润独特、精致追求完美、思维细腻、人际关系体面。缺点是好面子，容易虚荣，内心骄傲，感情多挑剔。',
+      destiny: '如金银珠宝，喜壬水淘洗。春木生财，夏火不宜过烈，秋金帮身，冬水澄清。一生气质高雅，多能从事高附加值行业。',
+      advice: '脚踏实地，不要过度在意他人眼光，保持朴实豁达的良好心态。',
+      poem: '珠玉玲珑照眼明，澄澈淘沙现至真。不逐虚华求实学，福泽深厚保安平。'
+    },
+    '壬': {
+      title: '壬水命主 · 江河奔腾',
+      character: '智慧超群、大局观强、有远见与胸怀、适应多变的环境。缺点是情绪起伏大，做事易冲动，奔波不定。',
+      destiny: '如江河湖海，滚滚向前。春木泄秀，夏火生财，秋金生水，冬水汹涌（需戊土筑堤）。一生多有大作为，心怀宽广。',
+      advice: '做事要专注，切忌虎头蛇尾，同时需要学会自我约束与防范情绪化。',
+      poem: '江河大水浩无涯，卷起千重万道花。静水流深修定力，福瑞临门万家达。'
+    },
+    '癸': {
+      title: '癸水命主 · 灵动雨露',
+      character: '聪明灵动、温柔细心、富有创意和幻想、直觉极强。缺点是敏感多疑，情绪化严重，容易多愁善感。',
+      destiny: '如雨露清泉，滋润万物。春木发芽，夏火解冻，秋金澄清，冬水相融。一生具有极强的艺术天分与玄学直觉。',
+      advice: '保持开朗乐观，多接触阳光正能量的活动，少陷入无端焦虑。',
+      poem: '清泉雨露润无声，灵动剔透映乾坤。淡泊宁静修心性，福禄自随运自伸。'
+    }
+  }
+  return advices[dayGan] || advices['甲']
+}
+
+const calculateBaziDestiny = () => {
+  baziDeducing.value = true
+  baziDeducingStep.value = 1
+  
+  setTimeout(() => {
+    try {
+      const y = parseInt(baziParams.value.solarYear) || 1995
+      const m = parseInt(baziParams.value.solarMonth) || 8
+      const d = parseInt(baziParams.value.solarDay) || 18
+      const h = parseInt(baziParams.value.solarHour) || 12
+      
+      const solar = Solar.fromYmdHms(y, m, d, h, 0, 0)
+      const lunar = solar.getLunar()
+      const bazi = lunar.getEightChar()
+      
+      const yg = bazi.getYearGan()
+      const yz = bazi.getYearZhi()
+      const mg = bazi.getMonthGan()
+      const mz = bazi.getMonthZhi()
+      const dg = bazi.getDayGan()
+      const dz = bazi.getDayZhi()
+      const hg = bazi.getTimeGan()
+      const hz = bazi.getTimeZhi()
+      
+      const elementCounts = { '金': 0, '木': 0, '水': 0, '火': 0, '土': 0 }
+      
+      const addStemElement = (gan) => {
+        const meta = baziStemMeta[gan]
+        if (meta) elementCounts[meta.element]++
+      }
+      
+      const addBranchElement = (zhi) => {
+        const zhiToElement = {
+          '子': '水', '亥': '水',
+          '寅': '木', '卯': '木',
+          '巳': '火', '午': '火',
+          '辰': '土', '戌': '土', '丑': '土', '未': '土',
+          '申': '金', '酉': '金'
+        }
+        const el = zhiToElement[zhi]
+        if (el) elementCounts[el]++
+      }
+      
+      addStemElement(yg); addStemElement(mg); addStemElement(dg); addStemElement(hg)
+      addBranchElement(yz); addBranchElement(mz); addBranchElement(dz); addBranchElement(hz)
+      
+      const totalCount = 8
+      const elementRates = {}
+      for (const el in elementCounts) {
+        elementRates[el] = Math.round((elementCounts[el] / totalCount) * 100)
+      }
+      
+      let maxEl = '木', minEl = '木'
+      let maxVal = -1, minVal = 999
+      for (const el in elementCounts) {
+        if (elementCounts[el] > maxVal) { maxVal = elementCounts[el]; maxEl = el }
+        if (elementCounts[el] < minVal) { minVal = elementCounts[el]; minEl = el }
+      }
+      
+      const yNy = bazi.getYearNaYin()
+      const mNy = bazi.getMonthNaYin()
+      const dNy = bazi.getDayNaYin()
+      const hNy = bazi.getTimeNaYin()
+      
+      const yearTenGod = getTenGod(dg, yg)
+      const monthTenGod = getTenGod(dg, mg)
+      const dayTenGod = '日元'
+      const hourTenGod = getTenGod(dg, hg)
+      
+      const adviceInfo = getBaziAdvice(dg)
+      
+      baziResult.value = {
+        solarDate: `${y}年${m}月${d}日 ${h}时`,
+        lunarDate: `农历 ${lunar.getYearInGanZhi()}年 ${lunar.getMonthInChinese()}月 ${lunar.getDayInChinese()}日`,
+        eightCharStr: `${yg}${yz} ${mg}${mz} ${dg}${dz} ${hg}${hz}`,
+        columns: [
+          { name: '年柱', gan: yg, zhi: yz, nayin: yNy, tenGod: yearTenGod, hideGan: getHideGan(yz), ganElement: stemToElementMap[yg], zhiElement: branchToElementMap[yz] },
+          { name: '月柱', gan: mg, zhi: mz, nayin: mNy, tenGod: monthTenGod, hideGan: getHideGan(mz), ganElement: stemToElementMap[mg], zhiElement: branchToElementMap[mz] },
+          { name: '日柱', gan: dg, zhi: dz, nayin: dNy, tenGod: dayTenGod, hideGan: getHideGan(dz), ganElement: stemToElementMap[dg], zhiElement: branchToElementMap[dz] },
+          { name: '时柱', gan: hg, zhi: hz, nayin: hNy, tenGod: hourTenGod, hideGan: getHideGan(hz), ganElement: stemToElementMap[hg], zhiElement: branchToElementMap[hz] }
+        ],
+        elementRates,
+        elementCounts,
+        maxEl,
+        minEl,
+        advice: adviceInfo
+      }
+      
+      baziDeducingStep.value = 2
+    } catch (err) {
+      console.error(err)
+      baziDeducingStep.value = 0
+    } finally {
+      baziDeducing.value = false
+    }
+  }, 1200)
+}
 
 const isDeducing = ref(false)
 const deducingStep = ref(0) // 0:未开始, 1:动画中, 2:推演完成
@@ -1606,6 +2128,7 @@ const randomizePlumNums = () => {
   plumParams.value.num2 = Math.floor(Math.random() * 9999) + 1
   plumParams.value.num3 = Math.floor(Math.random() * 999) + 1
 }
+
 
 // 核心起卦推演逻辑
 const calculatePlumBlossom = () => {
