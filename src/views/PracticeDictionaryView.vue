@@ -558,33 +558,33 @@
                       <div style="display: flex; flex-direction: column; gap: 8px;">
                         <!-- 金 -->
                         <div style="display: flex; align-items: center; gap: 8px;">
-                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #64748b;">金（白）</span>
+                          <span style="font-size: 11px; width: 52px; font-weight: bold; color: #64748b;">金（白）</span>
                           <el-progress :percentage="baziResult.elementRates['金']" color="#64748b" style="flex: 1;" :stroke-width="8" />
-                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['金'] }}字 ({{ baziResult.elementRates['金'] }}%)</span>
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 75px; text-align: right;">{{ baziResult.elementCounts['金'] }}字 ({{ baziResult.elementRates['金'] }}%)</span>
                         </div>
                         <!-- 木 -->
                         <div style="display: flex; align-items: center; gap: 8px;">
-                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #10b981;">木（青）</span>
+                          <span style="font-size: 11px; width: 52px; font-weight: bold; color: #10b981;">木（青）</span>
                           <el-progress :percentage="baziResult.elementRates['木']" color="#10b981" style="flex: 1;" :stroke-width="8" />
-                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['木'] }}字 ({{ baziResult.elementRates['木'] }}%)</span>
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 75px; text-align: right;">{{ baziResult.elementCounts['木'] }}字 ({{ baziResult.elementRates['木'] }}%)</span>
                         </div>
                         <!-- 水 -->
                         <div style="display: flex; align-items: center; gap: 8px;">
-                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #3b82f6;">水（黑）</span>
+                          <span style="font-size: 11px; width: 52px; font-weight: bold; color: #3b82f6;">水（黑）</span>
                           <el-progress :percentage="baziResult.elementRates['水']" color="#3b82f6" style="flex: 1;" :stroke-width="8" />
-                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['水'] }}字 ({{ baziResult.elementRates['水'] }}%)</span>
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 75px; text-align: right;">{{ baziResult.elementCounts['水'] }}字 ({{ baziResult.elementRates['水'] }}%)</span>
                         </div>
                         <!-- 火 -->
                         <div style="display: flex; align-items: center; gap: 8px;">
-                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #ef4444;">火（红）</span>
+                          <span style="font-size: 11px; width: 52px; font-weight: bold; color: #ef4444;">火（红）</span>
                           <el-progress :percentage="baziResult.elementRates['火']" color="#ef4444" style="flex: 1;" :stroke-width="8" />
-                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['火'] }}字 ({{ baziResult.elementRates['火'] }}%)</span>
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 75px; text-align: right;">{{ baziResult.elementCounts['火'] }}字 ({{ baziResult.elementRates['火'] }}%)</span>
                         </div>
                         <!-- 土 -->
                         <div style="display: flex; align-items: center; gap: 8px;">
-                          <span style="font-size: 11px; width: 36px; font-weight: bold; color: #d97706;">土（黄）</span>
+                          <span style="font-size: 11px; width: 52px; font-weight: bold; color: #d97706;">土（黄）</span>
                           <el-progress :percentage="baziResult.elementRates['土']" color="#d97706" style="flex: 1;" :stroke-width="8" />
-                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 45px; text-align: right;">{{ baziResult.elementCounts['土'] }}字 ({{ baziResult.elementRates['土'] }}%)</span>
+                          <span style="font-size: 11px; font-weight: bold; color: #475569; width: 75px; text-align: right;">{{ baziResult.elementCounts['土'] }}字 ({{ baziResult.elementRates['土'] }}%)</span>
                         </div>
                       </div>
                     </div>
