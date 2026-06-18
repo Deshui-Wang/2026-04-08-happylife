@@ -375,8 +375,8 @@
                     <div class="info-item"><span>样本编号：</span><strong>MZ0034</strong></div>
                     <div class="info-item"><span>床号：</span><strong>-</strong></div>
                     <div class="info-item"><span>检查科室：</span><strong>检验科</strong></div>
-                    <div class="info-item"><span>采集时间：</span><strong>2026-06-15 08:06</strong></div>
-                    <div class="info-item"><span>签收时间：</span><strong>2026-06-15 09:03</strong></div>
+                    <div class="info-item"><span>采集时间：</span><strong>2026-07-15 08:06</strong></div>
+                    <div class="info-item"><span>签收时间：</span><strong>2026-07-15 09:03</strong></div>
                     <div class="info-item"><span>申请医生：</span><strong>王春波</strong></div>
                     <div class="info-item"><span>临床诊断：</span><strong>甲状腺功能亢进症</strong></div>
                     <div class="info-item full-row"><span>检验项目：</span><strong>血清促甲状腺激素测定(发光法)、血清游离甲状腺素(FT4)测定(发光法)、血清游离三碘甲状腺原氨酸(FT3)测定(发光法)</strong></div>
@@ -426,7 +426,7 @@
                   </table>
 
                   <footer class="report-footer">
-                    <div class="time-stamp">报告时间：2026-06-15 10:04</div>
+                    <div class="time-stamp">报告时间：2026-07-15 10:04</div>
                     <div class="doctors">
                       <div class="doc-item">报告医生：<span class="signature">郝乐</span></div>
                       <div class="doc-item">审核医生：<span class="signature">孙宁</span></div>
