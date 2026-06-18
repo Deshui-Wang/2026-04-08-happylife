@@ -642,7 +642,7 @@
             注：天干代表天之气，共有十个，循环往复。它们分别对应着不同的阴阳五行属性和物象。
           </div>
 
-          <div class="branches-grid">
+          <div class="stems-grid">
             <div
               v-for="item in heavenlyStemsList"
               :key="item.id"
@@ -3363,6 +3363,19 @@ const getLuckClass = (level) => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
+}
+
+/* 天干卡片网格，宽屏下固定两行各5个 */
+.stems-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1200px) {
+  .stems-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
 }
 
 .branch-card-item {
