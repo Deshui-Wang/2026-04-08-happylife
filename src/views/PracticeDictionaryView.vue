@@ -4031,13 +4031,12 @@ const getLuckClass = (level) => {
 }
 
 .bagua-name-static:hover .trigram-chinese-char {
-  transform: scale(1.25);
+  font-size: 21px;
   filter: drop-shadow(0 0 8px var(--active-color));
 }
 
 .bagua-name-static.active .trigram-chinese-char {
-  transform: scale(1.35);
-  font-size: 19px;
+  font-size: 23px;
   filter: drop-shadow(0 0 12px var(--active-color));
   font-weight: 900;
 }
