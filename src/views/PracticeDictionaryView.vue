@@ -705,6 +705,9 @@
       </el-col>
     </el-row>
 
+    <!-- 2.5 洛书九宫飞星推演盘 -->
+    <LuoShuFlyingStars style="margin-bottom: 24px;" />
+
     <!-- 3. 三大标准映射数据字典 -->
     <div class="glass-card tables-section-card">
       <el-tabs v-model="activeTableTab" class="custom-tabs dictionary-tabs">
@@ -1432,6 +1435,7 @@ import { Solar } from 'lunar-javascript'
 import { Search, Clock, Opportunity, Pointer, MagicStick, WarningFilled, Notebook, Picture } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import traditionalHandMapImg from '../pic/traditional_hand_map.png'
+import LuoShuFlyingStars from '@/components/LuoShuFlyingStars.vue'
 
 // 搜索过滤与 Tab 状态
 const searchQuery = ref('')
