@@ -1521,14 +1521,14 @@ const hoursList = [
 ]
 
 const baguaList = [
-  { id: 1, name: '乾', pinyin: 'qián', nature: '天', trigram: '☰', code: '强健、一把手、头部' },
-  { id: 2, name: '兑', pinyin: 'duì', nature: '泽', trigram: '☱', code: '喜悦、开口、缺口、软件接口' },
-  { id: 3, name: '离', pinyin: 'lí', nature: '火', trigram: '☲', code: '光明、美丽、依赖、外刚内柔' },
-  { id: 4, name: '震', pinyin: 'zhèn', nature: '雷', trigram: '☳', code: '变动、出发、速度、创新' },
-  { id: 5, name: '巽', pinyin: 'xùn', nature: '风', trigram: '☴', code: '渗透、无孔不入、渠道、运营' },
-  { id: 6, name: '坎', pinyin: 'kǎn', nature: '水', trigram: '☵', code: '坎坷、陷阱、危机、核心算法' },
-  { id: 7, name: '艮', pinyin: 'gèn', nature: '山', trigram: '☶', code: '停止、阻碍、稳定、硬件底座' },
-  { id: 8, name: '坤', pinyin: 'kūn', nature: '地', trigram: '☷', code: '包容、承载、配合、用户数据库' }
+  { id: 1, name: '乾', pinyin: 'qián', nature: '天', trigram: '☰', code: '强健、一把手、头部。类象：圆形的、金属的、硬的、贵重之物、马、头、君父。' },
+  { id: 2, name: '兑', pinyin: 'duì', nature: '泽', trigram: '☱', code: '喜悦、开口、缺口、软件接口。类象：有口的、破损的、软原生、喜悦之物、羊、口、少女。' },
+  { id: 3, name: '离', pinyin: 'lí', nature: '火', trigram: '☲', code: '光明、美丽、依赖、外刚内柔。类象：红色的、发光的、中空的、文书、雉、目、中女。' },
+  { id: 4, name: '震', pinyin: 'zhèn', nature: '雷', trigram: '☳', code: '变动、出发、速度、创新。类象：有声响的、能动的、植物、龙、足、长子。' },
+  { id: 5, name: '巽', pinyin: 'xùn', nature: '风', trigram: '☴', code: '渗透、无孔不入、渠道、运营。类象：长条的、有气味的、可入的、鸡、股、长女。' },
+  { id: 6, name: '坎', pinyin: 'kǎn', nature: '水', trigram: '☵', code: '坎坷、陷阱、危机、核心算法。类象：液体的、凹陷的、隐藏的、猪、耳、中男。' },
+  { id: 7, name: '艮', pinyin: 'gèn', nature: '山', trigram: '☶', code: '停止、阻碍、稳定、硬件底座。类象：静止的、坚硬的、山石之物、狗、手、少男。' },
+  { id: 8, name: '坤', pinyin: 'kūn', nature: '地', trigram: '☷', code: '包容、承载、配合、用户数据库。类象：方形的、柔软的、盛物之器、牛、腹、母。' }
 ]
 
 // 天干与八卦状态及常量
