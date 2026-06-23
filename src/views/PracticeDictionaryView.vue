@@ -40,39 +40,118 @@
             <el-row :gutter="24">
               <!-- 左侧：时间与模拟 -->
               <el-col :xs="24" :md="12">
-                <div class="live-clock-section" style="display: flex; flex-direction: column; gap: 15px; height: 100%;">
-                  <!-- 左侧合并卡片 -->
-                  <div class="clock-display combined-clock-card" style="margin: 0; width: 100%; box-sizing: border-box;">
-                    <span class="time-num">
-                      {{ liveTime }}<span class="branch-paren"><!-- -->{{ currentBranchInfo.name }}时)</span>
-                    </span>
-                    <span class="time-label">现代时间 (对应地支时辰)</span>
-                  </div>
-                  <!-- 右侧模拟卡片 -->
-                  <div class="branch-display simulation-control-card" style="margin: 0; width: 100%; box-sizing: border-box; flex: 1;">
-                    <div class="sim-header-row">
-                      <span class="sim-title">手动模拟一天时间</span>
-                      <el-button
-                        type="success"
-                        size="small"
-                        :plain="!isAutoTime"
-                        class="sync-btn-compact"
-                        @click="resumeAutoTime"
+                <div class="live-clock-section" style="display: flex; flex-direction: row; gap: 15px; height: 100%; align-items: stretch; width: 100%; box-sizing: border-box;">
+                  <!-- 表盘圆盘卡片 -->
+                  <div class="dial-clock-card">
+                    <svg viewBox="0 0 200 200" class="dial-svg-plate">
+                      <!-- 1. 表盘外圈渐变与阴影 -->
+                      <defs>
+                        <radialGradient id="clockPlateGrad" cx="50%" cy="50%" r="50%">
+                          <stop offset="70%" stop-color="rgba(255, 255, 255, 0.9)" />
+                          <stop offset="100%" stop-color="rgba(99, 102, 241, 0.08)" />
+                        </radialGradient>
+                      </defs>
+                      <circle cx="100" cy="100" r="94" fill="url(#clockPlateGrad)" stroke="rgba(99, 102, 241, 0.2)" stroke-width="2" />
+                      <!-- 装饰环 -->
+                      <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(99, 102, 241, 0.08)" stroke-width="1" stroke-dasharray="3, 3" />
+                      
+                      <!-- 2. 数字刻度 1-12 -->
+                      <text
+                        v-for="num in dialNumbers"
+                        :key="'num-' + num.val"
+                        :x="num.x"
+                        :y="num.y"
+                        text-anchor="middle"
+                        dominant-baseline="central"
+                        class="dial-num-text"
                       >
-                        同步实时
-                      </el-button>
-                    </div>
-                    <div class="sim-body-row">
-                      <el-input-number
-                        v-model="simulatedHour"
-                        :min="0"
-                        :max="23"
-                        :step="1"
-                        size="default"
-                        class="simulation-input-field"
-                        @change="isAutoTime = false"
+                        {{ num.val }}
+                      </text>
+                      
+                      <!-- 3. 十二地支时辰字样 -->
+                      <text
+                        v-for="branch in dialBranches"
+                        :key="'branch-' + branch.name"
+                        :x="branch.x"
+                        :y="branch.y"
+                        text-anchor="middle"
+                        dominant-baseline="central"
+                        class="dial-branch-text"
+                        :class="[branch.element, { active: branch.isActive }]"
+                      >
+                        {{ branch.name }}
+                      </text>
+                      
+                      <!-- 4. 指针组合 -->
+                      <!-- 时针（时辰针） -->
+                      <line
+                        x1="100"
+                        y1="100"
+                        x2="100"
+                        y2="62"
+                        class="dial-hand-hour"
+                        :transform="`rotate(${(simulatedHour % 12) * 30 + (isAutoTime ? liveMinute * 0.5 : 0)}, 100, 100)`"
                       />
-                      <span class="sim-unit-text">点 (24时制)</span>
+                      <!-- 分针 -->
+                      <line
+                        x1="100"
+                        y1="100"
+                        x2="100"
+                        y2="50"
+                        class="dial-hand-minute"
+                        :transform="`rotate(${(isAutoTime ? liveMinute * 6 : 0)}, 100, 100)`"
+                      />
+                      <!-- 秒针（仅在同步实时时显示） -->
+                      <line
+                        v-if="isAutoTime"
+                        x1="100"
+                        y1="112"
+                        x2="100"
+                        y2="40"
+                        class="dial-hand-second"
+                        :transform="`rotate(${(liveSecond * 6)}, 100, 100)`"
+                      />
+                      <!-- 中心圆扣 -->
+                      <circle cx="100" cy="100" r="5" fill="#6366f1" />
+                      <circle cx="100" cy="100" r="2.5" fill="#ffffff" />
+                    </svg>
+                  </div>
+                  
+                  <!-- 右侧时间与模拟器（垂直排列） -->
+                  <div style="display: flex; flex-direction: column; gap: 15px; flex: 1; justify-content: space-between;">
+                    <!-- 现代时间卡片 -->
+                    <div class="clock-display combined-clock-card" style="margin: 0; width: 100%; box-sizing: border-box;">
+                      <span class="time-num">
+                        {{ liveTime }}<span class="branch-paren"><!-- -->{{ currentBranchInfo.name }}时)</span>
+                      </span>
+                      <span class="time-label">现代时间 (对应地支时辰)</span>
+                    </div>
+                    <!-- 手动模拟卡片 -->
+                    <div class="branch-display simulation-control-card" style="margin: 0; width: 100%; box-sizing: border-box; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                      <div class="sim-header-row">
+                        <span class="sim-title">手动模拟一天时间</span>
+                        <el-button
+                          type="success"
+                          size="small"
+                          :plain="!isAutoTime"
+                          class="sync-btn-compact"
+                          @click="resumeAutoTime"
+                        >
+                          同步实时
+                        </el-button>
+                      </div>
+                      <div class="sim-body-row">
+                        <el-input-number
+                          v-model="simulatedHour"
+                          :min="0"
+                          :max="23"
+                          :step="1"
+                          size="default"
+                          class="simulation-input-field"
+                          @change="isAutoTime = false"
+                        />
+                        <span class="sim-unit-text">点 (24时制)</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1361,6 +1440,8 @@ const showTraditionalHandDialog = ref(false)
 
 // 实时时间计算
 const liveTime = ref(dayjs().format('HH:mm:ss'))
+const liveMinute = ref(dayjs().minute())
+const liveSecond = ref(dayjs().second())
 const isAutoTime = ref(true)
 const simulatedHour = ref(dayjs().hour())
 
@@ -1374,6 +1455,8 @@ onMounted(() => {
   timer = setInterval(() => {
     const now = dayjs()
     liveTime.value = now.format('HH:mm:ss')
+    liveMinute.value = now.minute()
+    liveSecond.value = now.second()
     if (isAutoTime.value) {
       simulatedHour.value = now.hour()
     }
@@ -1386,7 +1469,10 @@ onUnmounted(() => {
 
 const resumeAutoTime = () => {
   isAutoTime.value = true
-  simulatedHour.value = dayjs().hour()
+  const now = dayjs()
+  simulatedHour.value = now.hour()
+  liveMinute.value = now.minute()
+  liveSecond.value = now.second()
 }
 
 // 格式化时间输出
@@ -1538,6 +1624,48 @@ const simulatedBranchInfo = computed(() => {
     timeSpan: hourInfo.timeSpan,
     rhyme: hourInfo.rhyme
   }
+})
+
+// 计算属性：表盘上的1-12数字刻度坐标计算
+const dialNumbers = computed(() => {
+  const nums = []
+  for (let h = 1; h <= 12; h++) {
+    const angle = h * 30 * Math.PI / 180
+    nums.push({
+      val: h,
+      x: 100 + 78 * Math.sin(angle),
+      y: 100 - 78 * Math.cos(angle)
+    })
+  }
+  return nums
+})
+
+// 计算属性：表盘上的12时辰刻度坐标计算（内圈为上午，外圈为下午，对应偶数小时整点方向）
+const dialBranches = computed(() => {
+  const branches = [
+    { name: '子', angle: 0, r: 48, element: 'water' },
+    { name: '丑', angle: 60, r: 48, element: 'earth' },
+    { name: '寅', angle: 120, r: 48, element: 'wood' },
+    { name: '卯', angle: 180, r: 48, element: 'wood' },
+    { name: '辰', angle: 240, r: 48, element: 'earth' },
+    { name: '巳', angle: 300, r: 48, element: 'fire' },
+    { name: '午', angle: 0, r: 62, element: 'fire' },
+    { name: '未', angle: 60, r: 62, element: 'earth' },
+    { name: '申', angle: 120, r: 62, element: 'metal' },
+    { name: '酉', angle: 180, r: 62, element: 'metal' },
+    { name: '戌', angle: 240, r: 62, element: 'earth' },
+    { name: '亥', angle: 300, r: 62, element: 'water' }
+  ]
+  return branches.map(b => {
+    const rad = b.angle * Math.PI / 180
+    return {
+      name: b.name,
+      x: 100 + b.r * Math.sin(rad),
+      y: 100 - b.r * Math.cos(rad),
+      isActive: simulatedBranchInfo.value.name === b.name,
+      element: b.element
+    }
+  })
 })
 
 // 起卦数余数与卦象计算
@@ -2768,6 +2896,95 @@ const getLuckClass = (level) => {
 .live-clock-section {
   display: flex;
   gap: 15px;
+}
+
+/* 十二时辰地支圆盘表盘卡片 */
+.dial-clock-card {
+  width: 200px;
+  min-width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(99, 102, 241, 0.12);
+  border-radius: 16px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+}
+
+.dial-svg-plate {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* 时钟数字文字 */
+.dial-num-text {
+  font-size: 11px;
+  font-weight: 800;
+  fill: #475569;
+}
+
+/* 地支时辰字符 */
+.dial-branch-text {
+  font-size: 11px;
+  font-weight: bold;
+  fill: #94a3b8;
+  opacity: 0.6;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 时辰活跃高亮 */
+.dial-branch-text.active {
+  font-size: 15px;
+  font-weight: 900;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px var(--theme-shadow, rgba(99, 102, 241, 0.5)));
+}
+
+/* 五行对应的高亮色彩 */
+.dial-branch-text.active.wood { fill: #10b981; --theme-shadow: rgba(16, 185, 129, 0.5); }
+.dial-branch-text.active.fire { fill: #ef4444; --theme-shadow: rgba(239, 68, 68, 0.5); }
+.dial-branch-text.active.earth { fill: #d97706; --theme-shadow: rgba(217, 119, 6, 0.5); }
+.dial-branch-text.active.metal { fill: #64748b; --theme-shadow: rgba(100, 116, 139, 0.5); }
+.dial-branch-text.active.water { fill: #3b82f6; --theme-shadow: rgba(59, 130, 246, 0.5); }
+
+/* 表盘指针 */
+.dial-hand-hour {
+  stroke: #4f46e5;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+}
+
+.dial-hand-minute {
+  stroke: #64748b;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.15);
+}
+
+.dial-hand-second {
+  stroke: #ef4444;
+  stroke-width: 1;
+  stroke-linecap: round;
+  transition: transform 0.15s cubic-bezier(0.1, 0.8, 0.2, 1.0);
+}
+
+@media (max-width: 768px) {
+  .live-clock-section {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .dial-clock-card {
+    width: 220px !important;
+    min-width: 220px !important;
+    height: 220px !important;
+  }
 }
 
 .clock-display,
