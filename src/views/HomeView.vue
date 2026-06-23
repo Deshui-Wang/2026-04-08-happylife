@@ -135,7 +135,7 @@ const today = dayjs()
 
 // 模拟核心数据（与 AlsoHomeView 保持一致）
 const assets = {
-  savings: 170000,
+  savings: 140000,
   backPay: 123250,
   compensation: 261000,
   workingIncome: 10000,
