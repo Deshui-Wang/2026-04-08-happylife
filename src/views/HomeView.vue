@@ -114,6 +114,22 @@
           </div>
         </div>
       </el-col>
+      <el-col :xs="24" :md="24" style="margin-bottom: 30px;">
+        <div class="nav-entry-card finded" @click="goTo('dictionary', 'find')">
+          <div class="entry-content">
+            <div class="entry-tag">易数演卦</div>
+            <h2 class="entry-title">梅花易数 · 古法寻物与射覆</h2>
+            <p class="entry-desc">运用古旧而神秘的《梅花易数》数理，融合求卦时刻与文字字数进行先天演演，为您指明失物方位；亦支持古人趣味的“射覆”数字猜物，一窥天机。</p>
+            <div class="entry-footer">
+              <span class="status">当前状态：支持古法寻物与数字射覆猜物</span>
+              <el-icon><Right /></el-icon>
+            </div>
+          </div>
+          <div class="entry-decoration">
+            <el-icon><MagicStick /></el-icon>
+          </div>
+        </div>
+      </el-col>
     </el-row>
 
     <!-- 4. 底部提醒 -->
@@ -126,7 +142,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Money, TrendCharts, CircleCheckFilled, Right, Histogram, Finished, Notification, Compass, Opportunity } from '@element-plus/icons-vue'
+import { Money, TrendCharts, CircleCheckFilled, Right, Histogram, Finished, Notification, Compass, Opportunity, MagicStick } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
 const emit = defineEmits(['navigate'])
@@ -151,7 +167,11 @@ const totalLiquidity = computed(() => assets.savings + assets.backPay + assets.c
 const annualNet = computed(() => (assets.workingIncome * 12) - (expenses.living + expenses.insurance))
 const safetyYears = computed(() => Math.floor(totalLiquidity.value / (expenses.living + expenses.insurance)))
 
-const goTo = (tab) => {
+const goTo = (tab, subTab) => {
+  if (subTab) {
+    localStorage.setItem('happylife_redirect_sub_tab', subTab)
+    window.dispatchEvent(new CustomEvent('change-sub-tab', { detail: subTab }))
+  }
   // 这里的 navigate 逻辑由 App.vue 处理
   // 我们通过 emit 通知父组件
   window.dispatchEvent(new CustomEvent('change-tab', { detail: tab }))
@@ -365,6 +385,15 @@ const goTo = (tab) => {
 .nav-entry-card.dictionary:hover {
   background: linear-gradient(135deg, #ffffff, #fffbeb);
   border-color: #fde68a;
+}
+
+.nav-entry-card.finded {
+  height: 240px;
+}
+
+.nav-entry-card.finded:hover {
+  background: linear-gradient(135deg, #ffffff, #fff1f2);
+  border-color: #fecdd3;
 }
 
 /* 里程碑横幅 */
