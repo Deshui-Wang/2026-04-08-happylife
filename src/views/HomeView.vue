@@ -73,7 +73,7 @@
             <h2 class="entry-title">显化确认中心</h2>
             <p class="entry-desc">确认已达成的财富里程碑与理想生活场景，增强财富显化能量。包含银行到账明细确认。</p>
             <div class="entry-footer">
-              <span class="status">最新达成：中联集团代发工资 12.3w</span>
+              <span class="status">最新达成：中联集团补发欠薪 12.3w，赔偿金n+3，共约36万。</span>
               <el-icon><Right /></el-icon>
             </div>
           </div>
@@ -151,7 +151,7 @@ const today = dayjs()
 
 // 模拟核心数据（与 AlsoHomeView 保持一致）
 const assets = {
-  savings: 140000,
+  savings: 100000,
   backPay: 123250,
   compensation: 261000,
   workingIncome: 10000,

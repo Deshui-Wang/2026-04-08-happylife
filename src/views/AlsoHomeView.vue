@@ -416,7 +416,7 @@ const renderedMarkdown = computed(() => {
   return html
 })
 const assets = reactive({ 
-  savings: 140000, 
+  savings: 100000, 
   backPay: 123250, // 欠薪追补
   compensation: 261000, // 裁员赔偿
   workingIncome: 20000,
