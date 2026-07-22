@@ -36,53 +36,14 @@
           <el-form label-position="top">
             <el-divider content-position="left" style="margin-top: 0;">核心资产</el-divider>
             <el-row :gutter="10" align="middle" class="core-assets-inputs">
-              <el-col :xs="24" :sm="7">
+              <el-col :xs="24" :sm="11">
                 <el-form-item label="当前存款 (元)">
                   <el-input-number v-model="assets.savings" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
-              <el-col :xs="24" :sm="7">
-                <el-form-item>
-                  <template #label>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                      <span>欠薪追补 (元)</span>
-                      <el-tooltip placement="top">
-                        <template #content>
-                          计算公式：29000 × 25% × {{ compensationInfo.restorationMonths }}个月<br/>
-                          (当前计算周期：2024年12月 - 至今)
-                        </template>
-                        <el-icon style="cursor: help; color: #94a3b8;"><QuestionFilled /></el-icon>
-                      </el-tooltip>
-                    </div>
-                  </template>
-                  <el-input-number v-model="assets.backPay" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
-                </el-form-item>
-              </el-col>
-              <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
-              <el-col :xs="24" :sm="8">
-                <el-form-item>
-                  <template #label>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                      <span>裁员赔偿 (元)</span>
-                      <el-tooltip placement="top">
-                        <template #content>
-                          计算方案：{{ severanceType }} 补偿<br/>
-                          计算公式：29000 × ({{ compensationInfo.n }} {{ severanceType === '2N' ? '× 2' : '' }})<br/>
-                          (工龄系数 N 按 2022-03 入职至今计算)
-                        </template>
-                        <el-icon 
-                          style="cursor: pointer; color: #6366f1; font-size: 16px; margin-left: 2px;"
-                          @click="severanceType = severanceType === '2N' ? 'N' : '2N'"
-                        >
-                          <QuestionFilled />
-                        </el-icon>
-                      </el-tooltip>
-                      <el-tag size="small" effect="plain" :type="severanceType === '2N' ? 'danger' : 'info'" style="cursor:pointer" @click="severanceType = severanceType === '2N' ? 'N' : '2N'">
-                        {{ severanceType }}
-                      </el-tag>
-                    </div>
-                  </template>
+              <el-col :xs="24" :sm="2" class="calc-symbol">+</el-col>
+              <el-col :xs="24" :sm="11">
+                <el-form-item label="欠薪+赔偿 (元)">
                   <el-input-number v-model="assets.compensation" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
@@ -92,7 +53,7 @@
               <div class="summary-label">
                 <el-icon><InfoFilled /></el-icon>
                 <span>静态资产总额</span>
-                <span class="formula-text">（存款 + 欠薪 + 赔偿金）</span>
+                <span class="formula-text">（存款 + 欠薪与赔偿）</span>
               </div>
               <div class="summary-value">
                 <span class="currency">¥</span>
@@ -224,7 +185,7 @@
                 <el-icon><Warning /></el-icon>
                 <span>资金分析 · 百岁推演</span>
               </div>
-              <span class="formula-pill">期初现金 {{ (totalAssets/10000).toFixed(1) }}w = 存款 {{ (assets.savings/10000).toFixed(1) }}w + 额外 {{ (assets.oneTimeIncome/10000).toFixed(1) }}w</span>
+              <span class="formula-pill">期初现金 {{ (totalAssets/10000).toFixed(1) }}w = 存款 {{ (assets.savings/10000).toFixed(1) }}w + 额外 {{ (assets.compensation/10000).toFixed(1) }}w</span>
             </div>
           </template>
 
@@ -236,7 +197,7 @@
             </div>
             <div class="summary-item is-info">
               <div class="summary-label">关键里程碑</div>
-              <div class="summary-value">55岁领退休金({{ retirementInfo.estimatedPension }}/月) · 60岁传世金生到账(90w)</div>
+              <div class="summary-value">53岁10个月领退休金({{ retirementInfo.estimatedPension }}/月) · 60岁传世金生到账(90w)</div>
             </div>
           </div>
 
@@ -260,14 +221,14 @@
               <tbody>
                 <tr v-for="(row, idx) in bridgeData" :key="idx"
                     :class="{
-                      milestone55: row.age === 55,
+                      milestone36: row.year === 2036,
                       milestone60: row.age === 60,
                       danger: row.balance <= 0,
                       warning: row.balance > 0 && row.balance < 50000
                     }">
                   <td class="age-cell">
                     <strong>{{ row.age }}</strong>
-                    <span v-if="row.age === 55" class="milestone-tag pension-tag">领退休金</span>
+                    <span v-if="row.year === 2036" class="milestone-tag pension-tag">退休</span>
                     <span v-if="row.age === 60" class="milestone-tag ins-tag">保险到期</span>
                   </td>
                   <td class="num-cell safe-bal"><strong>{{ (row.openBal/10000).toFixed(1) }}w</strong></td>
@@ -311,14 +272,14 @@ import { ref, computed, reactive, watch } from 'vue'
 import { User, Postcard, MagicStick, Warning, InfoFilled, QuestionFilled, Operation, Delete, Finished } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
-const userProfile = reactive({ gender: 'female', birthday: dayjs('1982-01-01').toDate() })
+const userProfile = reactive({ gender: 'female', birthday: dayjs('1982-07-01').toDate() })
 const severanceType = ref('2N') // 2N 或 N
 const assets = reactive({ 
   savings: 100000, 
-  backPay: 123250, // 欠薪追补
-  compensation: 261000, // 裁员赔偿
-  workingIncome: 0,
-  workingYears: 0,
+  backPay: 0, 
+  compensation: 311750, // 欠薪+赔偿 默认值
+  workingIncome: 20000,
+  workingYears: 10,
   estimatedPension: 5000,
   returns: [
     { name: '优享年年', amount: 19206, start: 60, end: 79, enabled: true },
@@ -326,7 +287,7 @@ const assets = reactive({
   ]
 })
 const totalAssets = computed(() => {
-  return assets.savings + assets.backPay + assets.compensation
+  return assets.savings + assets.compensation
 })
 
 const selectedCity = ref('tieling')
@@ -361,7 +322,10 @@ const compensationInfo = computed(() => {
   }
   
   const severance = 29000 * n * (severanceType.value === '2N' ? 2 : 1)
-  const restorationMonths = Math.max(0, now.diff(dayjs('2024-12-01'), 'month'))
+  // 为了匹配 6次入账总额为 311,750：
+  // 2N 方案下，裁员赔偿 = 261,000，所对应的实际欠薪追补 = 50,750 (即 7 个月)
+  // N 方案下，裁员赔偿 = 130,500，所对应的实际欠薪追补 = 50,750
+  const restorationMonths = 7
   const wageRestoration = 29000 * 0.25 * restorationMonths
   
   return {
@@ -372,10 +336,10 @@ const compensationInfo = computed(() => {
   }
 })
 
-// 自动同步到 assets 以供表单修改或展示
+// 自动同步 to assets 以供表单修改或展示
 watch(compensationInfo, (val) => {
-  assets.compensation = val.severance
-  assets.backPay = Math.round(val.wageRestoration)
+  assets.compensation = val.severance + Math.round(val.wageRestoration)
+  assets.backPay = 0
 }, { immediate: true })
 
 const syncCompResult = () => {
@@ -389,9 +353,9 @@ watch(() => insuranceList.value.find(i => i.name.includes('传世金生'))?.enab
   }
 }, { deep: true })
 
-const currentAge = computed(() => dayjs('2026-01-01').diff(dayjs(userProfile.birthday), 'year'))
+const currentAge = computed(() => dayjs('2026-07-01').diff(dayjs(userProfile.birthday), 'year'))
 const retirementInfo = computed(() => {
-  return { age: 55, yearsLeft: Math.max(0, 55 - currentAge.value), estimatedPension: assets.estimatedPension }
+  return { age: '53岁10个月', yearsLeft: Math.max(0, 53 - 43), estimatedPension: assets.estimatedPension }
 })
 
 const activeAnnualPremium = computed(() => insuranceList.value.filter(i => i.enabled && i.yearsLeft > 0).reduce((s, i) => s + i.premium, 0))
@@ -410,10 +374,22 @@ const bridgeData = computed(() => {
 
   for (let age = currentAge.value; age < maxAge; age++) {
     const t = age - currentAge.value
+    const year = 2026 + t
 
     // 收入
-    const jobIncome = t < assets.workingYears ? assets.workingIncome * 12 : 0
-    const pensionIncome = age >= 55 ? retirementInfo.value.estimatedPension * 12 : 0
+    let jobIncome = 0
+    let pensionIncome = 0
+    if (year < 2036) {
+      jobIncome = t < assets.workingYears ? assets.workingIncome * 12 : 0
+      pensionIncome = 0
+    } else if (year === 2036) {
+      // 2036年5月退休，前4个月工作，后8个月领退休金
+      jobIncome = assets.workingYears >= 10 ? assets.workingIncome * 4 : 0
+      pensionIncome = assets.estimatedPension * 8
+    } else {
+      jobIncome = t < assets.workingYears ? assets.workingIncome * 12 : 0
+      pensionIncome = assets.estimatedPension * 12
+    }
     let insIncome = 0
     if (assets.returns[0].enabled && age >= assets.returns[0].start && age <= assets.returns[0].end) {
       insIncome += assets.returns[0].amount
@@ -439,6 +415,7 @@ const bridgeData = computed(() => {
 
     rows.push({
       age,
+      year: 2026 + t,
       openBal,
       jobIncome,
       pensionIncome,
@@ -480,10 +457,22 @@ const simulation = computed(() => {
 
   for (let t = 0; t < maxSimYears; t++) {
     const age = currentAge.value + t
+    const year = 2026 + t
     
     // 年度流入 (Real Cash Flow)
-    const inJob = t < assets.workingYears ? assets.workingIncome * 12 : 0
-    const inPens = age >= 55 ? retirementInfo.value.estimatedPension * 12 : 0
+    let inJob = 0
+    let inPens = 0
+    if (year < 2036) {
+      inJob = t < assets.workingYears ? assets.workingIncome * 12 : 0
+      inPens = 0
+    } else if (year === 2036) {
+      // 2036年5月退休，前4个月工作，后8个月领退休金
+      inJob = assets.workingYears >= 10 ? assets.workingIncome * 4 : 0
+      inPens = assets.estimatedPension * 8
+    } else {
+      inJob = t < assets.workingYears ? assets.workingIncome * 12 : 0
+      inPens = assets.estimatedPension * 12
+    }
     let inY = (assets.returns[0].enabled && age >= assets.returns[0].start && age <= assets.returns[0].end) ? assets.returns[0].amount : 0
     let inC = (assets.returns[1].enabled && age === assets.returns[1].age) ? assets.returns[1].amount : 0
     
@@ -930,7 +919,7 @@ const handleCalcInput = (val) => {
 .bridge-table tbody tr:nth-child(even) { background: #f8fafc; }
 .bridge-table tbody tr:hover { background: #eef2ff; }
 
-.bridge-table tr.milestone55 { background: #fdf2f8 !important; border-left: 3px solid #d946ef; }
+.bridge-table tr.milestone36 { background: #fdf2f8 !important; border-left: 3px solid #d946ef; }
 .bridge-table tr.milestone60 { background: #f0fdf4 !important; border-left: 3px solid #22c55e; }
 .bridge-table tr.danger { background: #fef2f2 !important; }
 .bridge-table tr.danger td { color: #991b1b; }

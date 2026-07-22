@@ -72,154 +72,74 @@
                 <p class="section-subtitle">显化确认 · 各银行代发与转账记录</p>
               </div>
               <div class="mockup-container multi-mockup">
-                <!-- 1. 兴业银行 Mockup -->
-                <div class="mockup-unit">
-                  <h4 class="mockup-title">兴业银行</h4>
+                <!-- 循环展示 6 个月份的兴业银行 Mockup -->
+                <div v-for="(item, idx) in bankMockups" :key="idx" class="mockup-unit">
+                  <h4 class="mockup-title">{{ item.title }}</h4>
                   <div class="phone-mockup cibi-theme">
-                  <div class="phone-header">
-                    <span class="time">14:53</span>
-                    <div class="header-icons">
-                      <el-icon><Connection /></el-icon>
-                      <div class="battery">100</div>
-                    </div>
-                  </div>
-                  <div class="bank-app-content">
-                    <header class="app-nav">
-                      <el-icon class="back-icon"><ArrowLeft /></el-icon>
-                      <span class="app-title">交易明细</span>
-                      <div class="right-icons">
-                        <el-icon><Search /></el-icon>
-                        <el-icon><MoreFilled /></el-icon>
-                      </div>
-                    </header>
-                    <div class="warning-banner">
-                      温馨提示：本页面最多展示1500条查询结果...
-                    </div>
-                    <div class="card-info-section">
-                      <div class="bank-card-visual">
-                        <div class="card-chip"></div>
-                        <div class="card-logo">兴业银行</div>
-                        <div class="card-type">中联工资卡</div>
-                      </div>
-                      <div class="card-details">
-                        <span class="card-name">中联工资卡</span>
-                        <span class="card-number">622908 **** 5548</span>
+                    <div class="phone-header">
+                      <span class="time">14:53</span>
+                      <div class="header-icons">
+                        <el-icon><Connection /></el-icon>
+                        <div class="battery">100</div>
                       </div>
                     </div>
-                    <div class="action-links">
-                      <span class="link">隐藏余额</span>
-                      <span class="link">导出明细</span>
-                    </div>
-                    <div class="month-selector">
-                      <div class="tab-item active">本月</div>
-                      <div class="tab-item">5月</div>
-                      <div class="tab-item">4月</div>
-                      <div class="filter-btn">
-                        筛选 <el-icon><Filter /></el-icon>
-                      </div>
-                    </div>
-                    <div class="transactions-list">
-                      <div class="month-header">
-                        <div class="month-title">7月 <el-icon><ArrowDown /></el-icon></div>
-                        <div class="month-summary">收入 ¥128,654.99(2笔)</div>
-                      </div>
-                      <div class="transaction-item">
-                        <div class="item-left"><span class="date">07/08</span></div>
-                        <div class="item-center">
-                          <span class="target-name">中联集团教育科技有限公司</span>
-                          <span class="type-tag">[代发工资]</span>
+                    <div class="bank-app-content">
+                      <header class="app-nav">
+                        <el-icon class="back-icon"><ArrowLeft /></el-icon>
+                        <span class="app-title">交易明细</span>
+                        <div class="right-icons">
+                          <el-icon><Search /></el-icon>
+                          <el-icon><MoreFilled /></el-icon>
                         </div>
-                        <div class="item-right">
-                          <span class="amount plus">+5,404.99</span>
+                      </header>
+                      <div class="warning-banner">
+                        温馨提示：本页面最多展示1500条查询结果...
+                      </div>
+                      <div class="card-info-section">
+                        <div class="bank-card-visual">
+                          <div class="card-chip"></div>
+                          <div class="card-logo">兴业银行</div>
+                          <div class="card-type">中联工资卡</div>
+                        </div>
+                        <div class="card-details">
+                          <span class="card-name">中联工资卡</span>
+                          <span class="card-number">622908 **** 5548</span>
                         </div>
                       </div>
-                      <div class="transaction-item">
-                        <div class="item-left"><span class="date">07/08</span></div>
-                        <div class="item-center">
-                          <span class="target-name">中联集团教育科技有限公司</span>
-                          <span class="type-tag">[代发工资]</span>
-                        </div>
-                        <div class="item-right">
-                          <span class="amount plus">+123,250.00</span>
+                      <div class="action-links">
+                        <span class="link">隐藏余额</span>
+                        <span class="link">导出明细</span>
+                      </div>
+                      <div class="month-selector">
+                        <div class="tab-item active">{{ item.monthText }}</div>
+                        <div v-for="selm in item.selectorMonths" :key="selm" class="tab-item">{{ selm }}</div>
+                        <div class="filter-btn">
+                          筛选 <el-icon><Filter /></el-icon>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 2. 招商银行 Mockup (CMB) -->
-              <div class="mockup-unit">
-                <h4 class="mockup-title">招商银行</h4>
-                <div class="phone-mockup cmb-theme">
-                  <div class="phone-header">
-                    <span class="time">15:13</span>
-                    <div class="header-icons">
-                      <el-icon><Connection /></el-icon>
-                      <div class="battery">96</div>
-                    </div>
-                  </div>
-                  <div class="bank-app-content">
-                    <header class="app-nav cmb-nav">
-                      <el-icon class="back-icon"><ArrowLeft /></el-icon>
-                      <span class="app-title">收支</span>
-                      <div class="right-icons">
-                        <el-icon><Search /></el-icon>
-                        <el-icon><MoreFilled /></el-icon>
-                      </div>
-                    </header>
-                    
-                    <div class="cmb-filters">
-                      <span class="filter-item">2026.07 <el-icon><ArrowDown /></el-icon></span>
-                      <span class="filter-item">银行卡 <el-icon><ArrowDown /></el-icon></span>
-                      <span class="filter-item">按金额</span>
-                      <span class="filter-btn-text">筛选</span>
-                    </div>
-
-                    <div class="cmb-scroll-content">
-                      <div class="cmb-month-card">
-                        <div class="month-label">7<span>月</span></div>
-                        <div class="month-income">
-                          <span class="label">收入</span>
-                          <span class="value">¥ 22,000.00</span>
+                      <div class="transactions-list">
+                        <div class="month-header">
+                          <div class="month-title">{{ item.yearMonth }} <el-icon><ArrowDown /></el-icon></div>
+                          <div class="month-summary">{{ item.summary }}</div>
                         </div>
-                        <div class="analysis-btn">分析</div>
-                        
-                        <div class="cmb-transactions">
-                          <div class="day-group">
-                            <div class="day-badge">7.8</div>
-                            <div class="cmb-item">
-                              <div class="item-icon-wrap"><div class="cmb-icon-box transfer">转</div></div>
-                              <div class="cmb-item-main">
-                                <div class="cmb-item-top">
-                                  <span class="desc">转账-中联集团教育科技有限公司</span>
-                                  <span class="amount">+¥22,000.00</span>
-                                </div>
-                                <div class="cmb-item-bottom">
-                                  <span class="card-info">储蓄卡7546 10:24</span>
-                                  <span class="balance">余额:¥182,000.00</span>
-                                </div>
-                              </div>
-                            </div>
+                        <div class="transaction-item">
+                          <div class="item-left">
+                            <span class="date">{{ item.date }}</span>
+                            <span class="time">10:00</span>
+                          </div>
+                          <div class="item-center">
+                            <span class="target-name">中联集团教育科技有限公司</span>
+                            <span class="type-tag">[代发工资]</span>
+                          </div>
+                          <div class="item-right">
+                            <span class="amount plus">{{ item.amount }}</span>
                           </div>
                         </div>
                       </div>
                     </div>
-
-                    <div class="cmb-tab-bar">
-                      <div class="tab-item active">
-                        <el-icon><Postcard /></el-icon>
-                        <span>明细</span>
-                      </div>
-                      <div class="tab-item">
-                        <el-icon><Notebook /></el-icon>
-                        <span>账本</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
-            </div>
           </div>
 
             <!-- 2. Angel 上班内容 -->
@@ -456,6 +376,63 @@ import {
 } from '@element-plus/icons-vue'
 
 const activeManifest = ref('bank')
+
+const bankMockups = [
+  {
+    title: '兴业银行（第1个月）',
+    monthText: '10月',
+    selectorMonths: ['9月', '8月'],
+    yearMonth: '2026年10月',
+    summary: '收入 ¥50,000.00(1笔)',
+    date: '10/15',
+    amount: '+50,000.00'
+  },
+  {
+    title: '兴业银行（第2个月）',
+    monthText: '11月',
+    selectorMonths: ['10月', '9月'],
+    yearMonth: '2026年11月',
+    summary: '收入 ¥50,000.00(1笔)',
+    date: '11/15',
+    amount: '+50,000.00'
+  },
+  {
+    title: '兴业银行（第3个月）',
+    monthText: '12月',
+    selectorMonths: ['11月', '10月'],
+    yearMonth: '2026年12月',
+    summary: '收入 ¥50,000.00(1笔)',
+    date: '12/15',
+    amount: '+50,000.00'
+  },
+  {
+    title: '兴业银行（第4个月）',
+    monthText: '1月',
+    selectorMonths: ['12月', '11月'],
+    yearMonth: '2027年1月',
+    summary: '收入 ¥50,000.00(1笔)',
+    date: '01/15',
+    amount: '+50,000.00'
+  },
+  {
+    title: '兴业银行（第5个月）',
+    monthText: '2月',
+    selectorMonths: ['1月', '12月'],
+    yearMonth: '2027年2月',
+    summary: '收入 ¥50,000.00(1笔)',
+    date: '02/15',
+    amount: '+50,000.00'
+  },
+  {
+    title: '兴业银行（第6个月）',
+    monthText: '3月',
+    selectorMonths: ['2月', '1月'],
+    yearMonth: '2027年3月',
+    summary: '收入 ¥61,750.00(1笔)',
+    date: '03/15',
+    amount: '+61,750.00'
+  }
+]
 </script>
 
 <style scoped>
@@ -671,190 +648,17 @@ const activeManifest = ref('bank')
 .amount.plus { color: #d97706; }
 .balance { font-size: 11px; color: #94a3b8; margin-top: 4px; }
 
-/* ★★★ 招商银行 (CMB) 专属样式 ★★★ */
-.cmb-theme {
-  background: #f4f6f8;
-}
-
-.cmb-nav {
-  border-bottom: none;
-}
-
-.cmb-filters {
-  display: flex;
-  padding: 10px 15px;
-  gap: 15px;
-  align-items: center;
-  background: white;
-  font-size: 13px;
-  color: #333;
-}
-
-.cmb-filters .filter-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.cmb-filters .filter-btn-text {
-  margin-left: auto;
-  color: #436eee;
-}
-
-.cmb-scroll-content {
-  flex: 1;
-  padding: 15px;
-  overflow-y: auto;
-}
-
-.cmb-month-card {
-  background: white;
-  border-radius: 16px;
-  padding: 20px 15px;
-  position: relative;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-  background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,255,1) 100%);
-}
-
-.month-label {
-  font-size: 28px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.month-label span {
-  font-size: 14px;
-  margin-left: 2px;
-}
-
-.month-income {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.month-income .label {
-  font-size: 14px;
-  color: #666;
-}
-
-.month-income .value {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.analysis-btn {
-  position: absolute;
-  top: 20px;
-  right: 15px;
-  background: #000;
-  color: #fff;
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-
-.day-badge {
-  background: #f1f5f9;
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 6px;
-  font-size: 11px;
-  color: #64748b;
-  margin-bottom: 12px;
-}
-
-.cmb-item {
-  display: flex;
-  gap: 7px;
-}
-
-.item-icon-wrap {
-  display: flex;
-  align-items: flex-start;
-}
-
-.cmb-icon-box {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  border-radius: 4px;
-  color: #64748b;
-}
-
-.cmb-item-main {
-  flex: 1;
-}
-
-.cmb-item-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.cmb-item-top .desc {
-  font-size: 13px;
-  color: #333;
-  font-weight: 500;
-  max-width: 135px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex-grow: 1;
-}
-
-.cmb-item-top .amount {
-  font-size: 15px;
-  font-weight: bold;
-  color: #333;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-left: 8px;
-}
-
-.cmb-item-bottom {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: #999;
-}
-
-.cmb-tab-bar {
-  height: 60px;
-  border-top: 1px solid #f1f5f9;
-  background: white;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding-bottom: 5px;
-}
-
-.cmb-tab-bar .tab-item {
+/* 兴业银行交易列表滚动优化 */
+.transactions-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  color: #94a3b8;
 }
 
-.cmb-tab-bar .tab-item.active {
-  color: #000;
-}
-
-.cmb-tab-bar .tab-item .el-icon {
-  font-size: 20px;
-}
-
-.cmb-tab-bar .tab-item span {
-  font-size: 11px;
+@media (min-width: 769px) {
+  .transactions-list {
+    flex: 1;
+    overflow-y: auto;
+  }
 }
 
 /* ★★★ 任务卡片内部样式 ★★★ */
