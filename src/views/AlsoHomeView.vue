@@ -311,7 +311,10 @@
                     {{ row.insIncome > 0 ? '+' + (row.insIncome/10000).toFixed(1) + 'w' : '-' }}
                     <span v-if="row.hasSurrender" style="display:block;font-size:10px;line-height:1;margin-top:2px;color:#f59e0b">(含13.6w退保)</span>
                   </td>
-                  <td class="num-cell expense">{{ row.insPremium > 0 ? '-' + (row.insPremium/10000).toFixed(1) + 'w' : '-' }}</td>
+                  <td class="num-cell expense">
+                    {{ row.insPremium > 0 ? '-' + (row.insPremium < 10000 ? (row.insPremium/10000).toFixed(2) : (row.insPremium/10000).toFixed(1)) + 'w' : '-' }}
+                    <span v-if="row.isCurrentYearPartial" style="display:block;font-size:10px;line-height:1;margin-top:2px;color:#6366f1">(当年剩余保费)</span>
+                  </td>
                   <td class="num-cell expense">-{{ (row.livingCost/10000).toFixed(1) }}w</td>
                   <td class="num-cell" :class="row.yearNet >= 0 ? 'income' : 'expense'">
                     {{ row.yearNet >= 0 ? '+' : '' }}{{ (row.yearNet/10000).toFixed(1) }}w
@@ -343,6 +346,7 @@
       size="60%"
       direction="rtl"
       destroy-on-close
+      append-to-body
       class="policy-drawer"
     >
       <div class="markdown-body" v-html="renderedMarkdown"></div>
@@ -360,20 +364,235 @@ import reportMd from '@/PRD/友邦保险13份合同全面梳理分析报告.md?r
 const userProfile = reactive({ gender: 'female', birthday: dayjs('1982-07-01').toDate() })
 const severanceType = ref('2N') // 2N 或 N
 const drawerVisible = ref(false)
-const renderedMarkdown = computed(() => {
-  const html = marked(reportMd)
-  console.log('--- 保单说明 Markdown 调试信息 ---')
-  console.log('1. 文本原始字数 (Length):', reportMd ? reportMd.length : 0)
+// 13份合同的基础元数据
+const contractsData = [
+  { id: 1, name: '优享年年年金保险', code: 'C333555552', type: '年金保险', startDate: '2024-01-01', premium: 12000.00, totalYears: 19, durationText: '39年（至2063年）', shortName: '优享年年年金' },
+  { id: 2, name: '优享长伴终身护理保险', code: 'C305600781', type: '终身护理险', startDate: '2024-08-30', premium: 5000.00, totalYears: 13, durationText: '终身', shortName: '优享长伴护理' },
+  { id: 3, name: '传世金生荣耀尊享版年金(分红型)', code: 'C871568001', type: '分红型年金', startDate: '2020-06-28', premium: 38365.20, totalYears: 15, durationText: '至105岁', shortName: '传世金生分红型' },
+  { id: 4, name: '全佑惠享(2019)重大疾病保险', code: 'C116350330', type: '重大疾病险', startDate: '2019-01-01', premium: 11029.00, totalYears: 25, durationText: '终身', shortName: '全佑惠享(2019)重疾' },
+  { id: 5, name: '全佑惠享荣耀珍藏版重大疾病保险', code: 'C991015298', type: '重大疾病险', startDate: '2019-12-07', premium: 4242.00, totalYears: 17, durationText: '终身', shortName: '全佑惠享荣耀珍藏版' },
+  { id: 6, name: '卓越海外特药医疗保险', code: 'H122717572', type: '医疗保险', startDate: '2025-11-19', premium: 129.00, totalYears: 1, durationText: '1年（至2026/11）', shortName: '卓越海外特药' },
+  { id: 7, name: '增利宝(2020)终身寿险(万能型)', code: 'C302105360', type: '万能型终身寿险', startDate: '2024-06-21', premium: 100.00, totalYears: 5, durationText: '终身', shortName: '增利宝万能型' },
+  { id: 8, name: '安行无忧A款两全保险', code: 'C116350291', type: '两全保险', startDate: '2019-01-01', premium: 1800.00, totalYears: 10, durationText: '30年（至2049年）', shortName: '安行无忧两全' },
+  { id: 9, name: '智选康逸荣耀(2022)医疗保险', code: 'H117784578', type: '医疗保险', startDate: '2026-01-01', premium: 4060.00, totalYears: 1, durationText: '1年（至2027/01）', shortName: '智选康逸医疗' },
+  { id: 10, name: '欣安益(2023)意外伤害保险', code: 'A913344918', type: '意外伤害险', startDate: '2026-01-01', premium: 363.65, totalYears: 1, durationText: '1年（至2027/01）', shortName: '欣安益 A913' },
+  { id: 11, name: '欣安益(2023)意外伤害保险', code: 'A921096368', type: '意外伤害险', startDate: '2026-03-12', premium: 1453.25, totalYears: 1, durationText: '1年（至2027/03）', shortName: '欣安益 A921' }
+]
+
+function getContractStatus(startDateStr, totalYears, refDate) {
+  const now = refDate ? dayjs(refDate) : dayjs()
+  const start = dayjs(startDateStr)
   
-  // 精确检索 HTML 中 2039年 所在的位置，截取并输出前后共 800 字符的 HTML 片段
-  const idx = html.indexOf('2039年')
-  if (idx !== -1) {
-    console.log('2. 2039年 在 HTML 中的字符偏移量:', idx)
-    console.log('3. 2039年 前后片段 (HTML fragment around 2039):')
-    console.log(html.substring(Math.max(0, idx - 150), Math.min(html.length, idx + 650)))
-  } else {
-    console.log('2. HTML 中未能检索到 "2039年" 字符！')
+  if (totalYears === 1) {
+    return {
+      paidCount: 1,
+      remainingCount: 0,
+      nextPaymentDate: '已到期',
+      lastPaymentDate: '—'
+    }
   }
+
+  let paidCount = 0
+  for (let k = 1; k <= totalYears; k++) {
+    const pDate = start.add(k - 1, 'year')
+    if (now.isSame(pDate, 'day') || now.isAfter(pDate, 'day')) {
+      paidCount = k
+    } else {
+      break
+    }
+  }
+
+  const remainingCount = Math.max(0, totalYears - paidCount)
+  let nextPaymentDate = '已结清'
+  if (remainingCount > 0) {
+    nextPaymentDate = start.add(paidCount, 'year').format('YYYY/MM/DD')
+  }
+  const lastPaymentDate = start.add(totalYears - 1, 'year').format('YYYY/MM/DD')
+
+  return {
+    paidCount,
+    remainingCount,
+    nextPaymentDate,
+    lastPaymentDate
+  }
+}
+
+const renderedMarkdown = computed(() => {
+  // 订阅 drawerVisible 变更以确保每次打开侧滑抽屉时重新计算当前实时时间与年龄
+  const _ = drawerVisible.value
+  const now = dayjs()
+  const currentDateStr = now.format('YYYY年M月D日')
+  const currentAge = now.diff(dayjs(userProfile.birthday), 'year')
+
+  let processedMd = reportMd || ''
+  // 移除 markdown 顶部的 h1 标题，避免与 el-drawer 顶部标题栏重复
+  processedMd = processedMd.replace(/^[\s\n]*#\s+友邦保险13份合同全面梳理分析报告[\s\n]*/, '')
+  processedMd = processedMd
+    .replace(
+      /当前年龄：\d+岁（截至[^）]+）/,
+      `当前年龄：${currentAge}岁（截至${currentDateStr}）`
+    )
+    .replace(
+      /报告基准日\*\*：[^\n]+/,
+      `报告基准日**：${currentDateStr}`
+    )
+
+  const summaryBlock = `\n\n<div class="summary-cards-section">
+<div class="summary-cards-header">
+<span class="title">保单分类资产与保障总览</span>
+<span class="tag">共 11 份生效合同</span>
+</div>
+<div class="summary-cards-grid">
+<div class="summary-card card-annuity">
+<div class="card-title">年金保险 <span class="count-badge">2份</span></div>
+<div class="card-subtitle">优享年年 · 传世金生</div>
+<div class="card-metric">
+<span class="label">累计总应缴保费</span>
+<span class="value">¥80.35万</span>
+</div>
+<div class="card-metric">
+<span class="label">预期总领取收益</span>
+<span class="value purple">¥184.30万</span>
+</div>
+<div class="card-metric">
+<span class="label">60岁总现金价值</span>
+<span class="value main">¥101.50万</span>
+</div>
+</div>
+<div class="summary-card card-illness">
+<div class="card-title">重大疾病险 <span class="count-badge">2份</span></div>
+<div class="card-subtitle">全佑惠享2019 · 珍藏版</div>
+<div class="card-metric">
+<span class="label">累计总应缴保费</span>
+<span class="value">¥34.78万</span>
+</div>
+<div class="card-metric">
+<span class="label">重疾保障保额</span>
+<span class="value purple">40-45万元</span>
+</div>
+<div class="card-metric">
+<span class="label">保障期限</span>
+<span class="value main">终身保障</span>
+</div>
+</div>
+<div class="summary-card card-care">
+<div class="card-title">终身护理险 <span class="count-badge">1份</span></div>
+<div class="card-subtitle">优享长伴终身护理</div>
+<div class="card-metric">
+<span class="label">累计总应缴保费</span>
+<span class="value">¥6.50万</span>
+</div>
+<div class="card-metric">
+<span class="label">护理金保底</span>
+<span class="value purple">¥16.75万</span>
+</div>
+<div class="card-metric">
+<span class="label">61岁+现价</span>
+<span class="value main">¥16.75万+</span>
+</div>
+</div>
+<div class="summary-card card-universal">
+<div class="card-title">两全与万能 <span class="count-badge">2份</span></div>
+<div class="card-subtitle">安行无忧 · 增利宝</div>
+<div class="card-metric">
+<span class="label">累计总应缴保费</span>
+<span class="value">¥1.85万</span>
+</div>
+<div class="card-metric">
+<span class="label">交通意外最高</span>
+<span class="value purple">¥100万元</span>
+</div>
+<div class="card-metric">
+<span class="label">账户增值机制</span>
+<span class="value main">复利滚存</span>
+</div>
+</div>
+<div class="summary-card card-medical">
+<div class="card-title">医疗与意外 <span class="count-badge">4份</span></div>
+<div class="card-subtitle">智选康逸 · 特药 · 欣安益</div>
+<div class="card-metric">
+<span class="label">年缴保费</span>
+<span class="value">¥0.60万/年</span>
+</div>
+<div class="card-metric">
+<span class="label">医疗特药保额</span>
+<span class="value purple">800万/年</span>
+</div>
+<div class="card-metric">
+<span class="label">意外身故/伤残</span>
+<span class="value main">¥90万元</span>
+</div>
+</div>
+</div>
+</div>\n\n`
+
+  processedMd = processedMd.replace(
+    /(> \*\*报告基准日\*\*：[^\n]+)/,
+    `$1${summaryBlock}`
+  )
+
+  // 动态构建 13份合同总览 双行展示表格 (0 缩进以防 marked 解析为 code block)
+  const sec1RowsHtml = contractsData.map((c) => {
+    const st = getContractStatus(c.startDate, c.totalYears, now)
+    const remStr = c.totalYears === 1 ? '0（到期）' : `${st.remainingCount}年`
+    const premStr = c.premium.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    return `<tr class="contract-header-row">
+<td colspan="8">
+<span class="contract-num">${c.id}</span>
+<span class="contract-name">${c.name}</span>
+</td>
+</tr>
+<tr class="contract-detail-row">
+<td>${c.code}</td>
+<td>${c.type}</td>
+<td>${c.startDate.replace(/-/g, '/')}</td>
+<td>¥${premStr}</td>
+<td>${c.totalYears}年</td>
+<td>${st.paidCount}</td>
+<td><strong class="highlight-rem">${remStr}</strong></td>
+<td>${c.durationText}</td>
+</tr>`
+  }).join('\n')
+
+  const sec1Table = `<div class="overview-table-wrap">
+<table class="overview-table">
+<thead>
+<tr>
+<th>合同编号</th>
+<th>险种类型</th>
+<th>生效日</th>
+<th>年缴保费</th>
+<th>付费年限</th>
+<th>已缴次数</th>
+<th>剩余次数</th>
+<th>保险期间</th>
+</tr>
+</thead>
+<tbody>
+${sec1RowsHtml}
+</tbody>
+</table>
+</div>`
+
+  // 动态构建 剩余缴费年限明细 表格
+  const sec4Header = `| 合同 | 生效日 | 付费年限 | 下次缴费日 | 已缴 | 剩余 | 最后一期缴费 |\n|------|---------|:------:|---------|:---:|:---:|------------|`
+  const sec4Body = contractsData.map((c) => {
+    const st = getContractStatus(c.startDate, c.totalYears, now)
+    const remStr = c.totalYears === 1 ? '0' : `${st.remainingCount}次`
+    return `| ${c.shortName} | ${c.startDate.replace(/-/g, '/')} | ${c.totalYears}年 | ${st.nextPaymentDate} | ${st.paidCount}次 | ${remStr} | ${st.lastPaymentDate} |`
+  }).join('\n')
+  const sec4Table = `${sec4Header}\n${sec4Body}`
+
+  processedMd = processedMd.replace(
+    /\| 序号 \| 合同名称 \|[\s\S]*?\| 11 \| 欣安益\(2023\)意外伤害保险[^\n]+/,
+    sec1Table
+  )
+  processedMd = processedMd.replace(
+    /\| 合同 \| 生效日 \| 付费年限 \|[\s\S]*?\| 欣安益 A921[^\n]+/,
+    sec4Table
+  )
+
+  const html = marked(processedMd)
   return html
 })
 const assets = reactive({ 
@@ -413,16 +632,37 @@ watch(cityCostsList, (newVal) => {
 }, { deep: true })
 
 
-// 严格按照您的截图(2026/44岁时刻)
-const insuranceList = ref([
-  { enabled: true, name: '1月优享年年养老金', yearsLeft: 17, premium: 12000 },
-  { enabled: true, name: '全佑惠享(2019)重疾', yearsLeft: 17, premium: 11029 },
-  { enabled: true, name: '智选康逸荣耀医疗(年交)', yearsLeft: 40, premium: 4060 },
-  { enabled: true, name: '安行无忧A款两全', yearsLeft: 4, premium: 1800 },
-  { enabled: true, name: '6月传世金生年金', yearsLeft: 10, premium: 38364 },
-  { enabled: true, name: '8月优享长伴护理', yearsLeft: 11, premium: 5000 },
-  { enabled: true, name: '全佑惠享荣耀重疾', yearsLeft: 10, premium: 4216.95 },
-])
+// 动态精准计算各保单在当前时间节点下的剩余缴费年限
+const getInitialInsuranceList = () => {
+  const now = dayjs()
+  const c1 = getContractStatus('2024-01-01', 19, now)
+  const c2 = getContractStatus('2024-08-30', 13, now)
+  const c3 = getContractStatus('2020-06-28', 15, now)
+  const c4 = getContractStatus('2019-01-01', 25, now)
+  const c5 = getContractStatus('2019-12-07', 17, now)
+  const c6 = getContractStatus('2025-11-19', 1, now)
+  const c7 = getContractStatus('2024-06-21', 5, now)
+  const c8 = getContractStatus('2019-01-01', 10, now)
+  const c9 = getContractStatus('2026-01-01', 1, now)
+  const c10 = getContractStatus('2026-01-01', 1, now)
+  const c11 = getContractStatus('2026-03-12', 1, now)
+
+  return [
+    { enabled: true, name: '1月优享年年养老金', startDate: '2024-01-01', totalYears: 19, yearsLeft: c1.remainingCount, premium: 12000 },
+    { enabled: true, name: '8月优享长伴护理', startDate: '2024-08-30', totalYears: 13, yearsLeft: c2.remainingCount, premium: 5000 },
+    { enabled: true, name: '6月传世金生年金', startDate: '2020-06-28', totalYears: 15, yearsLeft: c3.remainingCount, premium: 38365.20 },
+    { enabled: true, name: '1月全佑惠享(2019)重疾', startDate: '2019-01-01', totalYears: 25, yearsLeft: c4.remainingCount, premium: 11029 },
+    { enabled: true, name: '12月全佑惠享荣耀重疾', startDate: '2019-12-07', totalYears: 17, yearsLeft: c5.remainingCount, premium: 4242 },
+    { enabled: true, name: '11月卓越海外特药', startDate: '2025-11-19', totalYears: 1, yearsLeft: c6.remainingCount, premium: 129 },
+    { enabled: true, name: '6月增利宝万能型', startDate: '2024-06-21', totalYears: 5, yearsLeft: c7.remainingCount, premium: 100 },
+    { enabled: true, name: '1月安行无忧A款两全', startDate: '2019-01-01', totalYears: 10, yearsLeft: c8.remainingCount, premium: 1800 },
+    { enabled: true, name: '1月智选康逸荣耀医疗', startDate: '2026-01-01', totalYears: 1, yearsLeft: 40, premium: 4060 },
+    { enabled: true, name: '1月欣安益意外 A913', startDate: '2026-01-01', totalYears: 1, yearsLeft: c10.remainingCount, premium: 363.65 },
+    { enabled: true, name: '3月欣安益意外 A921', startDate: '2026-03-12', totalYears: 1, yearsLeft: c11.remainingCount, premium: 1453.25 }
+  ]
+}
+
+const insuranceList = ref(getInitialInsuranceList())
 
 // ★★★ 核心资产自动计算逻辑 ★★★
 const compensationInfo = computed(() => {
@@ -526,8 +766,27 @@ const bridgeData = computed(() => {
       insIncome += 136000
     }
 
-    // 支出
-    const insPremium = insuranceList.value.filter(i => i.enabled && i.yearsLeft > t).reduce((s, i) => s + i.premium, 0)
+    // 支出：对于首年（2026年），仅统计当前月份之后尚未交的剩余保费；后续年份统计全额保费支出
+    let insPremium = 0
+    let isCurrentYearPartial = false
+
+    if (t === 0) {
+      const now = dayjs()
+      insuranceList.value.forEach(i => {
+        if (!i.enabled || i.yearsLeft <= 0) return
+        if (i.startDate) {
+          const paymentDateThisYear = dayjs(i.startDate).year(now.year())
+          if (now.isBefore(paymentDateThisYear, 'day')) {
+            insPremium += i.premium
+          }
+        } else {
+          insPremium += i.premium
+        }
+      })
+      isCurrentYearPartial = true
+    } else {
+      insPremium = insuranceList.value.filter(i => i.enabled && i.yearsLeft >= t).reduce((s, i) => s + i.premium, 0)
+    }
     
     // 计算当前年龄居住的城市支出（支持多城市按年龄段配置）
     let livingCost = 0
@@ -552,7 +811,8 @@ const bridgeData = computed(() => {
       yearNet,
       balance: bal,
       barPct: Math.max(0, Math.min(100, (bal / maxBal) * 100)),
-      hasSurrender
+      hasSurrender,
+      isCurrentYearPartial
     })
   }
   return rows
@@ -607,7 +867,23 @@ const simulation = computed(() => {
     const totalIn = inJob + inPens + inY + inC
 
     // 年度支出 (Real Cash Flow)
-    const outIns = insuranceList.value.filter(i => i.enabled && i.yearsLeft > t).reduce((s, i) => s + i.premium, 0)
+    let outIns = 0
+    if (t === 0) {
+      const now = dayjs()
+      insuranceList.value.forEach(i => {
+        if (!i.enabled || i.yearsLeft <= 0) return
+        if (i.startDate) {
+          const paymentDateThisYear = dayjs(i.startDate).year(now.year())
+          if (now.isBefore(paymentDateThisYear, 'day')) {
+            outIns += i.premium
+          }
+        } else {
+          outIns += i.premium
+        }
+      })
+    } else {
+      outIns = insuranceList.value.filter(i => i.enabled && i.yearsLeft >= t).reduce((s, i) => s + i.premium, 0)
+    }
     
     // 计算当前年龄居住的城市支出（支持多城市按年龄段配置）
     let outCity = 0
@@ -1369,6 +1645,11 @@ const handleCalcInput = (val) => {
 .policy-drawer {
   height: 100vh !important; /* 强制锁定抽屉总体高度为视口高度 */
 }
+@media (max-width: 768px) {
+  .policy-drawer {
+    width: 100% !important;
+  }
+}
 .policy-drawer .el-drawer__header {
   margin-bottom: 0;
   padding: 20px 24px;
@@ -1385,6 +1666,196 @@ const handleCalcInput = (val) => {
   background-color: #fafbfc;
   height: calc(100vh - 65px) !important; /* 锁定Body高度为窗口减去Header，严防溢出屏幕 */
   overflow-y: auto !important; /* 强制启用独立的Y轴垂直滚动条 */
+}
+
+/* ★★★ 13份合同总览 双行展示表格样式 ★★★ */
+.overview-table-wrap {
+  margin: 20px 0 28px 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  background: #ffffff;
+}
+
+.overview-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-bottom: 2px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.overview-table .contract-header-row td {
+  background: linear-gradient(90deg, #f1f5f9 0%, #f8fafc 100%);
+  padding: 10px 16px;
+  border-top: 1px solid #cbd5e1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.overview-table .contract-num {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  text-align: center;
+  border-radius: 50%;
+  background: #6366f1;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  margin-right: 8px;
+}
+
+.overview-table .contract-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e1b4b;
+}
+
+.overview-table .contract-detail-row td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.overview-table .highlight-rem {
+  color: #6366f1;
+  font-weight: 800;
+}
+
+/* ★★★ 横向 5 组分类卡片样式 ★★★ */
+.summary-cards-section {
+  margin: 20px 0 24px 0;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.summary-cards-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.summary-cards-header .title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e1b4b;
+}
+
+.summary-cards-header .tag {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6366f1;
+  background: #e0e7ff;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.summary-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(99, 102, 241, 0.08);
+}
+
+.summary-card .card-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e1b4b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.summary-card .count-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #4f46e5;
+  background: #f0f4ff;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.summary-card .card-subtitle {
+  font-size: 10.5px;
+  color: #94a3b8;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summary-card .card-metric {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 7px;
+  background: #f8fafc;
+  border-radius: 6px;
+  margin-bottom: 5px;
+}
+.summary-card .card-metric:last-child {
+  margin-bottom: 0;
+}
+
+.summary-card .card-metric .label {
+  font-size: 10px;
+  color: #64748b;
+  margin-bottom: 1px;
+}
+
+.summary-card .card-metric .value {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.summary-card .card-metric .value.purple {
+  color: #6366f1;
+}
+
+.summary-card .card-metric .value.main {
+  color: #059669;
+}
+
+@media (max-width: 1200px) {
+  .summary-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .summary-cards-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
 
 .markdown-body {
@@ -1526,11 +1997,9 @@ const handleCalcInput = (val) => {
 .markdown-body code {
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
   background-color: #f1f5f9;
-  padding: 3px 6px;
   border-radius: 4px;
   font-size: 11.5px;
   color: #e11d48;
-  border: 1px solid #e2e8f0;
 }
 
 @media (max-width: 768px) {
@@ -1564,10 +2033,6 @@ const handleCalcInput = (val) => {
   .bridge-summary {
     flex-direction: column;
     gap: 10px;
-  }
-  /* 覆盖抽屉宽度 */
-  :deep(.policy-drawer) {
-    width: 100% !important;
   }
 }
 </style>
