@@ -197,18 +197,17 @@ onUnmounted(() => {
   }
 }
 
-/* 2. 实时计时主屏 */
+/* 2. 实时计时主屏 (纯净展示，无最外层白底与任何方框边框) */
 .main-timer-section {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 24px;
-  padding: 24px 28px;
-  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.07);
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+  padding: 10px 0;
   margin-bottom: 0;
 }
 
-/* 计时大卡片网格 */
+/* 计时大数展示 (无背景底块与无框线) */
 .timer-cards-grid {
   display: flex;
   align-items: center;
@@ -220,25 +219,25 @@ onUnmounted(() => {
 
 .timer-unit-card {
   flex: 1;
-  min-width: 120px;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border: 2px solid #e0e7ff;
-  border-radius: 18px;
-  padding: 16px 12px;
+  min-width: 110px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 10px 8px;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.04);
-  transition: all 0.3s ease;
+  box-shadow: none;
+  transition: transform 0.3s ease;
 }
 
 .timer-unit-card:hover {
   transform: translateY(-3px);
-  border-color: #6366f1;
-  box-shadow: 0 12px 28px rgba(99, 102, 241, 0.1);
+  border: none;
+  box-shadow: none;
 }
 
 .highlight-card {
-  background: linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%);
-  border-color: #a855f7;
+  background: transparent;
+  border: none;
 }
 
 .number-glow {
