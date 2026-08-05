@@ -54,19 +54,8 @@
 
               <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
 
-              <el-col :xs="24" :sm="8">
-                <el-form-item>
-                  <template #label>
-                    <div class="custom-asset-label-wrap">
-                      <el-input 
-                        v-model="assets.supplementaryName" 
-                        placeholder="资产名称" 
-                        size="small"
-                        class="custom-asset-name-input"
-                      />
-                      <span class="unit-text">(元)</span>
-                    </div>
-                  </template>
+              <el-col :xs="24" :sm="7">
+                <el-form-item label="补充资产 (元)">
                   <el-input-number 
                     v-model="assets.supplementary" 
                     :precision="0" 
@@ -82,7 +71,7 @@
               <div class="summary-label">
                 <el-icon><InfoFilled /></el-icon>
                 <span>静态资产总额</span>
-                <span class="formula-text">（存款 + 欠薪与赔偿{{ assets.supplementary ? ' + ' + (assets.supplementaryName || '补充资产') : '' }}）</span>
+                <span class="formula-text">（存款 + 欠薪与赔偿{{ assets.supplementary ? ' + 补充资产' : '' }}）</span>
               </div>
               <div class="summary-value">
                 <span class="currency">¥</span>
@@ -282,7 +271,7 @@
                 <el-icon><Warning /></el-icon>
                 <span>资金分析 · 百岁推演</span>
               </div>
-              <span class="formula-pill">期初现金 {{ (totalAssets/10000).toFixed(1) }}w = 存款 {{ (assets.savings/10000).toFixed(1) }}w + 额外 {{ (assets.compensation/10000).toFixed(1) }}w{{ assets.supplementary ? ' + ' + (assets.supplementaryName || '补充') + ' ' + (assets.supplementary/10000).toFixed(1) + 'w' : '' }}</span>
+              <span class="formula-pill">期初现金 {{ (totalAssets/10000).toFixed(1) }}w = 存款 {{ (assets.savings/10000).toFixed(1) }}w + 额外 {{ (assets.compensation/10000).toFixed(1) }}w{{ assets.supplementary ? ' + 补充 ' + (assets.supplementary/10000).toFixed(1) + 'w' : '' }}</span>
             </div>
           </template>
 
@@ -627,8 +616,7 @@ const assets = reactive({
   savings: 100000, 
   backPay: 0, 
   compensation: 311750, // 欠薪+赔偿 默认值，对应6个月入账总额
-  supplementaryName: '补充资产 1', // 补充资产名称（可编辑）
-  supplementary: 0, // 补充资产金额
+  supplementary: 0, // 补充资产金额 (元)
   workingIncome: 20000,
   workingYears: 10,
   estimatedPension: 5000,
