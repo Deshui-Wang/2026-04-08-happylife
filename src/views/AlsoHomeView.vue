@@ -35,15 +35,10 @@
           </template>
           
           <el-form label-position="top">
-            <div class="core-assets-header">
-              <el-divider content-position="left" style="margin-top: 0; margin-bottom: 0; flex: 1;">核心资产</el-divider>
-              <el-button type="primary" plain size="small" class="add-asset-btn" @click="addCustomAsset">
-                <el-icon><Plus /></el-icon> <span>添加资产</span>
-              </el-button>
-            </div>
+            <el-divider content-position="left" style="margin-top: 0;">核心资产</el-divider>
             
-            <el-row :gutter="10" align="middle" class="core-assets-inputs mt-10">
-              <el-col :xs="24" :sm="assets.customAssets && assets.customAssets.length ? 7 : 10">
+            <el-row :gutter="10" align="middle" class="core-assets-inputs">
+              <el-col :xs="24" :sm="7">
                 <el-form-item label="当前存款 (元)">
                   <el-input-number v-model="assets.savings" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
@@ -51,54 +46,35 @@
 
               <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
 
-              <el-col :xs="24" :sm="assets.customAssets && assets.customAssets.length ? 7 : 10">
+              <el-col :xs="24" :sm="7">
                 <el-form-item label="欠薪+赔偿 (元)">
                   <el-input-number v-model="assets.compensation" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
 
-              <!-- 动态新增自定义资产项目 -->
-              <template v-for="(item, index) in assets.customAssets" :key="item.id">
-                <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
-                <el-col :xs="24" :sm="7" class="custom-asset-col">
-                  <el-form-item>
-                    <template #label>
-                      <div class="custom-asset-label-wrap">
-                        <el-input 
-                          v-model="item.name" 
-                          placeholder="资产名称" 
-                          size="small"
-                          class="custom-asset-name-input"
-                        />
-                        <span class="unit-text">(元)</span>
-                        <el-button 
-                          type="danger" 
-                          link 
-                          size="small" 
-                          class="del-asset-btn"
-                          @click="removeCustomAsset(index)"
-                          title="删除资产"
-                        >
-                          <el-icon><Delete /></el-icon>
-                        </el-button>
-                      </div>
-                    </template>
-                    <el-input-number 
-                      v-model="item.amount" 
-                      :precision="0" 
-                      :step="1000" 
-                      style="width: 100%" 
-                      controls-position="right" 
-                    />
-                  </el-form-item>
-                </el-col>
-              </template>
+              <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
 
-              <!-- 行内添加资产按钮 -->
-              <el-col :xs="24" :sm="3" class="inline-add-col">
-                <el-button type="primary" plain size="small" class="inline-add-btn" @click="addCustomAsset" title="点击添加新资产项">
-                  <el-icon><Plus /></el-icon> <span>添加</span>
-                </el-button>
+              <el-col :xs="24" :sm="8">
+                <el-form-item>
+                  <template #label>
+                    <div class="custom-asset-label-wrap">
+                      <el-input 
+                        v-model="assets.supplementaryName" 
+                        placeholder="资产名称" 
+                        size="small"
+                        class="custom-asset-name-input"
+                      />
+                      <span class="unit-text">(元)</span>
+                    </div>
+                  </template>
+                  <el-input-number 
+                    v-model="assets.supplementary" 
+                    :precision="0" 
+                    :step="1000" 
+                    style="width: 100%" 
+                    controls-position="right" 
+                  />
+                </el-form-item>
               </el-col>
             </el-row>
 
@@ -106,7 +82,7 @@
               <div class="summary-label">
                 <el-icon><InfoFilled /></el-icon>
                 <span>静态资产总额</span>
-                <span class="formula-text">（存款 + 欠薪与赔偿{{ assets.customAssets && assets.customAssets.length ? ' + 自定义资产' : '' }}）</span>
+                <span class="formula-text">（存款 + 欠薪与赔偿{{ assets.supplementary ? ' + ' + (assets.supplementaryName || '补充资产') : '' }}）</span>
               </div>
               <div class="summary-value">
                 <span class="currency">¥</span>
@@ -306,7 +282,7 @@
                 <el-icon><Warning /></el-icon>
                 <span>资金分析 · 百岁推演</span>
               </div>
-              <span class="formula-pill">期初现金 {{ (totalAssets/10000).toFixed(1) }}w = 存款 {{ (assets.savings/10000).toFixed(1) }}w + 额外 {{ (assets.compensation/10000).toFixed(1) }}w{{ customAssetsTotal ? ' + 其他 (' + (customAssetsTotal/10000).toFixed(1) + 'w)' : '' }}</span>
+              <span class="formula-pill">期初现金 {{ (totalAssets/10000).toFixed(1) }}w = 存款 {{ (assets.savings/10000).toFixed(1) }}w + 额外 {{ (assets.compensation/10000).toFixed(1) }}w{{ assets.supplementary ? ' + ' + (assets.supplementaryName || '补充') + ' ' + (assets.supplementary/10000).toFixed(1) + 'w' : '' }}</span>
             </div>
           </template>
 
@@ -651,7 +627,8 @@ const assets = reactive({
   savings: 100000, 
   backPay: 0, 
   compensation: 311750, // 欠薪+赔偿 默认值，对应6个月入账总额
-  customAssets: [], // 自定义增加的核心资产列表
+  supplementaryName: '补充资产 1', // 补充资产名称（可编辑）
+  supplementary: 0, // 补充资产金额
   workingIncome: 20000,
   workingYears: 10,
   estimatedPension: 5000,
@@ -661,27 +638,8 @@ const assets = reactive({
   ]
 })
 
-const addCustomAsset = () => {
-  if (!assets.customAssets) {
-    assets.customAssets = []
-  }
-  assets.customAssets.push({
-    id: Date.now(),
-    name: `补充资产 ${assets.customAssets.length + 1}`,
-    amount: 0
-  })
-}
-
-const removeCustomAsset = (index) => {
-  assets.customAssets.splice(index, 1)
-}
-
-const customAssetsTotal = computed(() => {
-  return (assets.customAssets || []).reduce((sum, item) => sum + Number(item.amount || 0), 0)
-})
-
 const totalAssets = computed(() => {
-  return Number(assets.savings || 0) + Number(assets.compensation || 0) + customAssetsTotal.value
+  return Number(assets.savings || 0) + Number(assets.compensation || 0) + Number(assets.supplementary || 0)
 })
 
 const cityCostsList = ref([
