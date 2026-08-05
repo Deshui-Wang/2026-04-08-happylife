@@ -81,54 +81,12 @@
         </div>
       </div>
     </div>
-
-    <!-- 3. 功能导航入口 (保持快速跳转) -->
-    <div class="quick-nav-section">
-      <div class="section-title-wrap mb-20">
-        <el-icon><Menu /></el-icon>
-        <h3>家庭财富与生活功能入口</h3>
-      </div>
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 20px;">
-          <div class="nav-card calc" @click="goTo('also-home')">
-            <div class="card-icon"><el-icon><Histogram /></el-icon></div>
-            <h4>财富测算与推演</h4>
-            <p>百岁资金断层与收益模拟</p>
-            <div class="card-arrow"><el-icon><Right /></el-icon></div>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 20px;">
-          <div class="nav-card confirm" @click="goTo('confirmation')">
-            <div class="card-icon"><el-icon><Finished /></el-icon></div>
-            <h4>显化确认中心</h4>
-            <p>财富成就与银行到账确认</p>
-            <div class="card-arrow"><el-icon><Right /></el-icon></div>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 20px;">
-          <div class="nav-card footprint" @click="goTo('footprint')">
-            <div class="card-icon"><el-icon><Compass /></el-icon></div>
-            <h4>幸福足迹地图</h4>
-            <p>记录与家人共同打卡足迹</p>
-            <div class="card-arrow"><el-icon><Right /></el-icon></div>
-          </div>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 20px;">
-          <div class="nav-card dictionary" @click="goTo('dictionary')">
-            <div class="card-icon"><el-icon><Opportunity /></el-icon></div>
-            <h4>人生修行字典</h4>
-            <p>梅花易数、寻物与八卦推演</p>
-            <div class="card-arrow"><el-icon><Right /></el-icon></div>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { Calendar, Clock, Histogram, Finished, Compass, Opportunity, Menu, Right } from '@element-plus/icons-vue'
+import { Calendar, Clock } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
 const startTime = dayjs('2020-01-14T00:00:00')
@@ -171,14 +129,6 @@ const updateTimer = () => {
   timeDiff.totalDays = totalDays
   timeDiff.totalHours = Math.floor(totalSec / 3600)
   timeDiff.totalSeconds = totalSec
-}
-
-const goTo = (tab, subTab) => {
-  if (subTab) {
-    localStorage.setItem('happylife_redirect_sub_tab', subTab)
-    window.dispatchEvent(new CustomEvent('change-sub-tab', { detail: subTab }))
-  }
-  window.dispatchEvent(new CustomEvent('change-tab', { detail: tab }))
 }
 
 onMounted(() => {
