@@ -1,16 +1,22 @@
 <template>
   <div class="family-dashboard animate-fade-in">
-    <!-- 1. 顶部全家福艺术字页眉 (图片在上层 z-2，天数在底层 z-1 重叠) -->
-    <div class="family-hero-banner">
-      <!-- 底层大字号浅色相伴天数 -->
-      <div class="background-days-text">
-        <span class="prefix">相伴</span>
-        <span class="num">{{ timeDiff.totalDays.toLocaleString() }}</span>
-        <span class="unit">天</span>
+    <!-- 1. 顶部全家福页眉 (左右结构：左图右天数) -->
+    <div class="family-hero-banner-row">
+      <!-- 左侧：透明底粉色书法字艺术图 -->
+      <div class="banner-left">
+        <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
       </div>
 
-      <!-- 上层透明底粉色书法字图 -->
-      <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
+      <!-- 右侧：大字号相伴天数卡片 -->
+      <div class="banner-right">
+        <div class="days-side-card">
+          <div class="card-label">已相伴同行</div>
+          <div class="days-value-wrap">
+            <span class="num">{{ timeDiff.totalDays.toLocaleString() }}</span>
+            <span class="unit">天</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 2. 超大实时计时主屏 (大字号 Ticking Counter) -->
@@ -131,71 +137,88 @@ onUnmounted(() => {
   justify-content: center;
 }
 
-/* 1. 顶部全家福艺术字页眉 */
-.family-hero-banner {
-  position: relative;
+/* 1. 顶部全家福页眉 (左右结构) */
+.family-hero-banner-row {
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 15px 0 10px 0;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px 10px 15px 10px;
   margin-bottom: 10px;
-  overflow: visible;
 }
 
-/* 底层：大字号浅色文字 (z-index: 1) */
-.background-days-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  pointer-events: none;
-  white-space: nowrap;
-  user-select: none;
+.banner-left {
+  flex: 1;
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-.background-days-text .prefix {
-  font-size: clamp(2.2rem, 5vw, 4rem);
-  font-weight: 900;
-  color: #f43f5e;
-  opacity: 0.42;
-  letter-spacing: 4px;
-}
-
-.background-days-text .num {
-  font-size: clamp(8.5rem, 22vw, 16rem);
-  font-weight: 900;
-  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-  background: linear-gradient(135deg, #f43f5e 0%, #a855f7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  opacity: 0.48;
-  letter-spacing: -6px;
-  line-height: 0.85;
-  filter: drop-shadow(0 10px 30px rgba(244, 63, 94, 0.2));
-}
-
-.background-days-text .unit {
-  font-size: clamp(2.2rem, 5vw, 4rem);
-  font-weight: 900;
-  color: #f43f5e;
-  opacity: 0.42;
-  letter-spacing: 4px;
-}
-
-/* 上层：透明底图片 (z-index: 2) */
 .hero-romantic-img {
-  position: relative;
-  z-index: 2;
-  max-width: 380px;
+  max-width: 420px;
   width: 100%;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 10px 22px rgba(244, 114, 182, 0.22));
+  filter: drop-shadow(0 10px 22px rgba(244, 114, 182, 0.25));
   transition: transform 0.3s ease;
+}
+
+.hero-romantic-img:hover {
+  transform: scale(1.02);
+}
+
+.banner-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.days-side-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 242, 248, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 2px solid #fbcfe8;
+  border-radius: 24px;
+  padding: 18px 32px;
+  box-shadow: 0 12px 30px rgba(244, 63, 94, 0.08);
+  text-align: right;
+  transition: all 0.3s ease;
+}
+
+.days-side-card:hover {
+  transform: translateY(-2px);
+  border-color: #f472b6;
+  box-shadow: 0 16px 36px rgba(244, 63, 94, 0.14);
+}
+
+.days-side-card .card-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #9d174d;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.days-value-wrap {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.days-value-wrap .num {
+  font-size: 3.6rem;
+  font-weight: 900;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  background: linear-gradient(135deg, #e11d48 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.days-value-wrap .unit {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #e11d48;
 }
 
 .hero-romantic-img:hover {
