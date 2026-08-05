@@ -1,21 +1,8 @@
 <template>
   <div class="family-dashboard animate-fade-in">
-    <!-- 1. 顶部全家福英雄主题页眉 -->
-    <div class="family-hero-card">
-      <div class="hero-bg-glow"></div>
-      <div class="hero-content">
-        <div class="hero-badge">
-          <el-icon><Calendar /></el-icon>
-          <span>始于 2020 年 1 月 14 日 00:00:00</span>
-        </div>
-        <h1 class="hero-title">
-          <span class="gradient-text">全家福</span>
-          <span class="sub-title">· 幸福计时与相伴见证</span>
-        </h1>
-        <p class="hero-slogan">
-          岁月沉淀爱与陪伴，每一分每一秒都是显化的财富与家庭的温暖。
-        </p>
-      </div>
+    <!-- 1. 顶部全家福艺术字页眉 -->
+    <div class="family-hero-banner">
+      <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
     </div>
 
     <!-- 2. 超大实时计时主屏 (大字号 Ticking Counter) -->
@@ -88,6 +75,7 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { Calendar, Clock } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
+import romanticImg from '@/pic/yuzhou_romantic_text_transparent.png'
 
 const startTime = dayjs('2020-01-14T00:00:00')
 
@@ -149,73 +137,26 @@ onUnmounted(() => {
   margin: 0 auto;
 }
 
-/* 1. 英雄海报卡片 */
-.family-hero-card {
-  position: relative;
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
-  border-radius: 28px;
-  padding: 40px;
-  color: white;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(49, 46, 129, 0.25);
-  margin-bottom: 24px;
-}
-
-.hero-bg-glow {
-  position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(99, 102, 241, 0) 70%);
-  border-radius: 50%;
-  filter: blur(50px);
-  pointer-events: none;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.hero-title {
-  font-size: 2.8rem;
-  font-weight: 900;
-  margin: 0 0 12px 0;
-  letter-spacing: -0.5px;
+/* 1. 顶部全家福艺术字页眉 */
+.family-hero-banner {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
-  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0 20px 0;
+  margin-bottom: 10px;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, #a5b4fc 0%, #f472b6 50%, #fbbf24 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.hero-romantic-img {
+  max-width: 480px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 24px rgba(244, 114, 182, 0.2));
+  transition: transform 0.3s ease;
 }
 
-.sub-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #e0e7ff;
-}
-
-.hero-slogan {
-  font-size: 1.1rem;
-  color: #c7d2fe;
-  margin: 0;
-  max-width: 650px;
-  line-height: 1.6;
+.hero-romantic-img:hover {
+  transform: scale(1.03);
 }
 
 /* 2. 实时计时主屏 */
