@@ -54,24 +54,6 @@
           <div class="unit-label">秒 (SECONDS)</div>
         </div>
       </div>
-
-      <!-- 全景总数明细横幅 (总天数 / 总小时 / 总秒数) -->
-      <div class="totals-banner">
-        <div class="total-item">
-          <div class="label">累计陪伴总天数</div>
-          <div class="value">{{ timeDiff.totalDays.toLocaleString() }} <span class="unit">天</span></div>
-        </div>
-        <div class="divider-line"></div>
-        <div class="total-item">
-          <div class="label">累计陪伴总小时</div>
-          <div class="value">{{ timeDiff.totalHours.toLocaleString() }} <span class="unit">小时</span></div>
-        </div>
-        <div class="divider-line"></div>
-        <div class="total-item">
-          <div class="label">累计陪伴总秒数</div>
-          <div class="value">{{ timeDiff.totalSeconds.toLocaleString() }} <span class="unit">秒</span></div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -265,7 +247,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-bottom: 36px;
+  margin-bottom: 0;
   flex-wrap: wrap;
 }
 
@@ -321,46 +303,6 @@ onUnmounted(() => {
   font-weight: 900;
   color: #a5b4fc;
   margin-bottom: 20px;
-}
-
-/* 全景总数明细 */
-.totals-banner {
-  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
-  border-radius: 20px;
-  padding: 20px 30px;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  border: 1px solid #e0e7ff;
-}
-
-.total-item {
-  text-align: center;
-}
-
-.total-item .label {
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.total-item .value {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #312e81;
-}
-
-.total-item .value .unit {
-  font-size: 14px;
-  color: #6366f1;
-  font-weight: 600;
-}
-
-.divider-line {
-  width: 1px;
-  height: 40px;
-  background-color: #cbd5e1;
 }
 
 /* 3. 快捷入口 */
