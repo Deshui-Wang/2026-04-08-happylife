@@ -1,12 +1,13 @@
 <template>
   <div class="family-dashboard animate-fade-in">
-    <!-- 1. 顶部全家福页眉 (图片与相伴天数有机融合成一句话，无任何底框) -->
+    <!-- 1. 顶部全家福页眉 (甜蜜浪漫流字连贯诗意句) -->
     <div class="family-hero-banner-inline">
       <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
       <div class="days-inline-text">
-        <span class="prefix">—— 相伴</span>
+        <span class="prefix">—— 已经</span>
         <span class="num">{{ timeDiff.totalDays.toLocaleString() }}</span>
         <span class="unit">天</span>
+        <span class="heart-sparkle">💕</span>
       </div>
     </div>
 
@@ -157,29 +158,52 @@ onUnmounted(() => {
   align-items: baseline;
   gap: 6px;
   user-select: none;
+  filter: drop-shadow(0 4px 14px rgba(244, 63, 94, 0.25));
 }
 
 .days-inline-text .prefix {
-  font-size: 1.8rem;
-  font-weight: 900;
+  font-size: 1.9rem;
+  font-weight: 800;
   color: #f43f5e;
   letter-spacing: 1px;
+  font-family: 'Comfortaa', 'PingFang SC', sans-serif;
 }
 
 .days-inline-text .num {
-  font-size: 3.6rem;
+  font-size: 4rem;
   font-weight: 900;
-  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-  background: linear-gradient(135deg, #f43f5e 0%, #d946ef 100%);
+  font-family: 'Dancing Script', 'Caveat', 'Comfortaa', cursive, sans-serif;
+  background: linear-gradient(135deg, #ff4d6d 0%, #ff758c 45%, #c084fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1;
+  letter-spacing: 1px;
+  padding: 0 4px;
 }
 
 .days-inline-text .unit {
-  font-size: 1.8rem;
-  font-weight: 900;
+  font-size: 1.9rem;
+  font-weight: 800;
   color: #f43f5e;
+  font-family: 'Comfortaa', 'PingFang SC', sans-serif;
+}
+
+.days-inline-text .heart-sparkle {
+  font-size: 1.5rem;
+  margin-left: 2px;
+  display: inline-block;
+  animation: gentle-heartbeat 2.4s infinite ease-in-out;
+}
+
+@keyframes gentle-heartbeat {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.22);
+    opacity: 1;
+  }
 }
 
 /* 2. 实时计时主屏 */
