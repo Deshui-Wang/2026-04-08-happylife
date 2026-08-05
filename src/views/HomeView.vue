@@ -162,18 +162,19 @@ onUnmounted(() => {
 }
 
 .days-inline-text .prefix {
-  font-size: 1.9rem;
-  font-weight: 800;
-  color: #f43f5e;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #ec6b8b;
   letter-spacing: 1px;
   font-family: 'Comfortaa', 'PingFang SC', sans-serif;
+  opacity: 0.92;
 }
 
 .days-inline-text .num {
-  font-size: 4rem;
+  font-size: 3.8rem;
   font-weight: 900;
   font-family: 'Dancing Script', 'Caveat', 'Comfortaa', cursive, sans-serif;
-  background: linear-gradient(135deg, #ff4d6d 0%, #ff758c 45%, #c084fc 100%);
+  background: linear-gradient(135deg, #ec6b8b 0%, #ff85a1 45%, #b87cf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1;
@@ -182,10 +183,11 @@ onUnmounted(() => {
 }
 
 .days-inline-text .unit {
-  font-size: 1.9rem;
-  font-weight: 800;
-  color: #f43f5e;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #ec6b8b;
   font-family: 'Comfortaa', 'PingFang SC', sans-serif;
+  opacity: 0.92;
 }
 
 .days-inline-text .heart-sparkle {
