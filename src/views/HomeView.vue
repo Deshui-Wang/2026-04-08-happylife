@@ -158,26 +158,31 @@ onUnmounted(() => {
 }
 
 .background-days-text .prefix {
-  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  font-size: clamp(2.2rem, 5vw, 4rem);
   font-weight: 900;
-  color: rgba(244, 114, 182, 0.22);
+  color: #f43f5e;
+  opacity: 0.42;
   letter-spacing: 4px;
 }
 
 .background-days-text .num {
-  font-size: clamp(6rem, 14vw, 11.5rem);
+  font-size: clamp(8.5rem, 22vw, 16rem);
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-  color: rgba(244, 114, 182, 0.22);
-  letter-spacing: -4px;
-  text-shadow: 0 10px 40px rgba(244, 114, 182, 0.12);
-  line-height: 0.9;
+  background: linear-gradient(135deg, #f43f5e 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0.48;
+  letter-spacing: -6px;
+  line-height: 0.85;
+  filter: drop-shadow(0 10px 30px rgba(244, 63, 94, 0.2));
 }
 
 .background-days-text .unit {
-  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  font-size: clamp(2.2rem, 5vw, 4rem);
   font-weight: 900;
-  color: rgba(244, 114, 182, 0.22);
+  color: #f43f5e;
+  opacity: 0.42;
   letter-spacing: 4px;
 }
 
