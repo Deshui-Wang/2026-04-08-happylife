@@ -79,23 +79,32 @@
               </div>
             </div>
 
-            <el-divider content-position="left">工作/未来流入</el-divider>
+            <el-divider content-position="left">工作收入</el-divider>
             <el-row :gutter="10">
-              <el-col :xs="24" :sm="8">
+              <el-col :xs="24" :sm="12">
                 <el-form-item label="月预计工作收入 (元)">
                   <el-input-number v-model="assets.workingIncome" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :sm="8">
+              <el-col :xs="24" :sm="12">
                 <el-form-item label="预计工作年限 (年)">
                   <el-input-number v-model="assets.workingYears" :precision="0" :step="1" :min="0" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :sm="8">
+            </el-row>
+
+            <el-divider content-position="left">退休收入</el-divider>
+            <el-row :gutter="10">
+              <el-col :xs="24" :sm="12">
+                <el-form-item label="退休金预计金额 (元/月)">
+                  <el-input-number v-model="assets.estimatedPension" :precision="0" :step="500" :min="0" style="width: 100%" controls-position="right" />
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12">
                 <el-form-item>
                   <template #label>
                     <div style="display: flex; align-items: center; gap: 4px;">
-                      <span>未来退休金 (月)</span>
+                      <span>预计退休年龄 (岁)</span>
                       <el-tooltip placement="top">
                         <template #content>
                           {{ retirementInfo.age }}退休 | 距离退休 {{ retirementInfo.yearsLeft }} 年
@@ -104,7 +113,7 @@
                       </el-tooltip>
                     </div>
                   </template>
-                  <el-input-number v-model="assets.estimatedPension" :precision="0" :step="500" :min="0" style="width: 100%" controls-position="right" />
+                  <el-input-number v-model="assets.retirementAge" :precision="0" :step="1" :min="30" :max="100" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -308,14 +317,14 @@
               <tbody>
                 <tr v-for="(row, idx) in bridgeData" :key="idx"
                     :class="{
-                      milestone36: row.year === 2036,
+                      milestone36: row.year === (1982 + Number(assets.retirementAge || 54)),
                       milestone60: row.age === 60,
                       danger: row.balance <= 0,
                       warning: row.balance > 0 && row.balance < 50000
                     }">
                   <td class="age-cell">
                     <strong>{{ row.age }}</strong>
-                    <span v-if="row.year === 2036" class="milestone-tag pension-tag">退休</span>
+                    <span v-if="row.year === (1982 + Number(assets.retirementAge || 54))" class="milestone-tag pension-tag">退休</span>
                     <span v-if="row.age === 60" class="milestone-tag ins-tag">保险到期</span>
                   </td>
                   <td class="num-cell" style="color: #64748b; font-weight: 500;">
@@ -620,6 +629,7 @@ const assets = reactive({
   workingIncome: 20000,
   workingYears: 10,
   estimatedPension: 5000,
+  retirementAge: 54, // 预计退休年龄 (岁)
   returns: [
     { name: '优享年年', amount: 19206, start: 60, end: 79, enabled: true },
     { name: '传世金生', amount: 900000, age: 60, enabled: true }
@@ -731,7 +741,9 @@ watch(() => insuranceList.value.find(i => i.name.includes('传世金生'))?.enab
 
 const currentAge = computed(() => dayjs('2026-07-01').diff(dayjs(userProfile.birthday), 'year'))
 const retirementInfo = computed(() => {
-  return { age: '53岁10个月', yearsLeft: Math.max(0, 53 - 43), estimatedPension: assets.estimatedPension }
+  const retAge = Number(assets.retirementAge || 54)
+  const yearsLeft = Math.max(0, retAge - currentAge.value)
+  return { age: `${retAge}岁`, yearsLeft, estimatedPension: assets.estimatedPension }
 })
 
 const activeAnnualPremium = computed(() => insuranceList.value.filter(i => i.enabled && i.yearsLeft > 0).reduce((s, i) => s + i.premium, 0))
@@ -751,6 +763,7 @@ const bridgeData = computed(() => {
   let bal = totalAssets.value // 期初现金池
   const maxBal = totalAssets.value // 用于水位条百分比基准
   const maxAge = 100
+  const retYear = 1982 + Number(assets.retirementAge || 54)
 
   for (let age = currentAge.value; age < maxAge; age++) {
     const t = age - currentAge.value
@@ -759,12 +772,12 @@ const bridgeData = computed(() => {
     // 收入
     let jobIncome = 0
     let pensionIncome = 0
-    if (year < 2036) {
+    if (year < retYear) {
       jobIncome = t < assets.workingYears ? assets.workingIncome * 12 : 0
       pensionIncome = 0
-    } else if (year === 2036) {
-      // 2036年5月退休，前4个月工作，后8个月领退休金
-      jobIncome = assets.workingYears >= 10 ? assets.workingIncome * 4 : 0
+    } else if (year === retYear) {
+      // 退休当年：前4个月工作，后8个月领退休金
+      jobIncome = assets.workingYears >= (retYear - 2026) ? assets.workingIncome * 4 : 0
       pensionIncome = assets.estimatedPension * 8
     } else {
       jobIncome = t < assets.workingYears ? assets.workingIncome * 12 : 0
