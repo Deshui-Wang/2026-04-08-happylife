@@ -1,21 +1,12 @@
 <template>
   <div class="family-dashboard animate-fade-in">
-    <!-- 1. 顶部全家福页眉 (左右结构：左图右天数) -->
-    <div class="family-hero-banner-row">
-      <!-- 左侧：透明底粉色书法字艺术图 -->
-      <div class="banner-left">
-        <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
-      </div>
-
-      <!-- 右侧：大字号相伴天数卡片 -->
-      <div class="banner-right">
-        <div class="days-side-card">
-          <div class="card-label">已相伴同行</div>
-          <div class="days-value-wrap">
-            <span class="num">{{ timeDiff.totalDays.toLocaleString() }}</span>
-            <span class="unit">天</span>
-          </div>
-        </div>
+    <!-- 1. 顶部全家福页眉 (图片与相伴天数有机融合成一句话，无任何底框) -->
+    <div class="family-hero-banner-inline">
+      <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
+      <div class="days-inline-text">
+        <span class="prefix">—— 相伴</span>
+        <span class="num">{{ timeDiff.totalDays.toLocaleString() }}</span>
+        <span class="unit">天</span>
       </div>
     </div>
 
@@ -137,25 +128,19 @@ onUnmounted(() => {
   justify-content: center;
 }
 
-/* 1. 顶部全家福页眉 (左右结构) */
-.family-hero-banner-row {
+/* 1. 顶部全家福页眉 (图片与相伴天数有机连成完整句子，纯字无底框) */
+.family-hero-banner-inline {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 10px 10px 15px 10px;
-  margin-bottom: 10px;
-}
-
-.banner-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 0;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .hero-romantic-img {
-  max-width: 420px;
+  max-width: 440px;
   width: 100%;
   height: auto;
   object-fit: contain;
@@ -167,62 +152,34 @@ onUnmounted(() => {
   transform: scale(1.02);
 }
 
-.banner-right {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.days-side-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 242, 248, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border: 2px solid #fbcfe8;
-  border-radius: 24px;
-  padding: 18px 32px;
-  box-shadow: 0 12px 30px rgba(244, 63, 94, 0.08);
-  text-align: right;
-  transition: all 0.3s ease;
-}
-
-.days-side-card:hover {
-  transform: translateY(-2px);
-  border-color: #f472b6;
-  box-shadow: 0 16px 36px rgba(244, 63, 94, 0.14);
-}
-
-.days-side-card .card-label {
-  font-size: 13px;
-  font-weight: 800;
-  color: #9d174d;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-
-.days-value-wrap {
+.days-inline-text {
   display: flex;
   align-items: baseline;
-  justify-content: flex-end;
   gap: 6px;
+  user-select: none;
 }
 
-.days-value-wrap .num {
+.days-inline-text .prefix {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #f43f5e;
+  letter-spacing: 1px;
+}
+
+.days-inline-text .num {
   font-size: 3.6rem;
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-  background: linear-gradient(135deg, #e11d48 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #f43f5e 0%, #d946ef 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1;
 }
 
-.days-value-wrap .unit {
-  font-size: 1.4rem;
+.days-inline-text .unit {
+  font-size: 1.8rem;
   font-weight: 900;
-  color: #e11d48;
-}
-
-.hero-romantic-img:hover {
-  transform: scale(1.03);
+  color: #f43f5e;
 }
 
 /* 2. 实时计时主屏 */
