@@ -37,24 +37,24 @@
           <el-form label-position="top">
             <el-divider content-position="left" style="margin-top: 0;">核心资产</el-divider>
             
-            <el-row :gutter="10" align="middle" class="core-assets-inputs">
-              <el-col :xs="24" :sm="7">
+            <div class="core-assets-inputs">
+              <div class="asset-input-col">
                 <el-form-item label="当前存款 (元)">
                   <el-input-number v-model="assets.savings" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
-              </el-col>
+              </div>
 
-              <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
+              <div class="calc-symbol">+</div>
 
-              <el-col :xs="24" :sm="7">
+              <div class="asset-input-col">
                 <el-form-item label="欠薪+赔偿 (元)">
                   <el-input-number v-model="assets.compensation" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
-              </el-col>
+              </div>
 
-              <el-col :xs="24" :sm="1" class="calc-symbol">+</el-col>
+              <div class="calc-symbol">+</div>
 
-              <el-col :xs="24" :sm="7">
+              <div class="asset-input-col">
                 <el-form-item label="补充资产 (元)">
                   <el-input-number 
                     v-model="assets.supplementary" 
@@ -64,8 +64,8 @@
                     controls-position="right" 
                   />
                 </el-form-item>
-              </el-col>
-            </el-row>
+              </div>
+            </div>
 
             <div class="asset-summary-banner mt-10">
               <div class="summary-label">
@@ -1203,12 +1203,24 @@ const handleCalcInput = (val) => {
   font-size: 16px;
 }
 
+.core-assets-inputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.core-assets-inputs .asset-input-col {
+  flex: 1;
+  min-width: 0;
+}
+
 .calc-symbol {
+  flex: 0 0 auto;
   text-align: center;
   font-size: 20px;
   color: #6366f1;
   font-weight: bold;
-  padding-top: 18px;
+  padding-top: 8px;
 }
 
 .tool-btn-square {
@@ -2083,11 +2095,14 @@ const handleCalcInput = (val) => {
     padding: 10px 0px;
   }
   .core-assets-inputs {
+    flex-direction: column;
     align-items: stretch !important;
+    gap: 4px;
   }
   .calc-symbol {
     text-align: center;
-    padding: 5px 0 !important;
+    padding: 0 !important;
+    margin: -4px 0;
     font-size: 18px;
     font-weight: bold;
     color: #6366f1;
