@@ -1,13 +1,16 @@
 <template>
   <div class="family-dashboard animate-fade-in">
-    <!-- 1. 顶部全家福艺术字页眉 -->
+    <!-- 1. 顶部全家福艺术字页眉 (图片在上层 z-2，天数在底层 z-1 重叠) -->
     <div class="family-hero-banner">
-      <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
-      <div class="days-sub-banner">
-        <span>已相伴同行</span>
-        <span class="days-highlight">{{ timeDiff.totalDays.toLocaleString() }}</span>
-        <span>天</span>
+      <!-- 底层大字号浅色相伴天数 -->
+      <div class="background-days-text">
+        <span class="prefix">相伴</span>
+        <span class="num">{{ timeDiff.totalDays.toLocaleString() }}</span>
+        <span class="unit">天</span>
       </div>
+
+      <!-- 上层透明底粉色书法字图 -->
+      <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
     </div>
 
     <!-- 2. 超大实时计时主屏 (大字号 Ticking Counter) -->
@@ -126,48 +129,67 @@ onUnmounted(() => {
 
 /* 1. 顶部全家福艺术字页眉 */
 .family-hero-banner {
+  position: relative;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 10px 0 15px 0;
-  margin-bottom: 10px;
+  padding: 35px 0 25px 0;
+  margin-bottom: 20px;
+  overflow: visible;
 }
 
+/* 底层：大字号浅色文字 (z-index: 1) */
+.background-days-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+  white-space: nowrap;
+  user-select: none;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.background-days-text .prefix {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: rgba(244, 114, 182, 0.28);
+  letter-spacing: 2px;
+}
+
+.background-days-text .num {
+  font-size: 7rem;
+  font-weight: 900;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  color: rgba(244, 114, 182, 0.28);
+  letter-spacing: -2px;
+  text-shadow: 0 10px 30px rgba(244, 114, 182, 0.15);
+}
+
+.background-days-text .unit {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: rgba(244, 114, 182, 0.28);
+  letter-spacing: 2px;
+}
+
+/* 上层：透明底图片 (z-index: 2) */
 .hero-romantic-img {
-  max-width: 480px;
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
   width: 100%;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 12px 24px rgba(244, 114, 182, 0.2));
+  filter: drop-shadow(0 12px 28px rgba(244, 114, 182, 0.25));
   transition: transform 0.3s ease;
 }
 
 .hero-romantic-img:hover {
   transform: scale(1.03);
-}
-
-.days-sub-banner {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 12px;
-  padding: 6px 20px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  border: 1px solid rgba(244, 114, 182, 0.25);
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 4px 16px rgba(244, 114, 182, 0.08);
-}
-
-.days-sub-banner .days-highlight {
-  font-size: 22px;
-  font-weight: 900;
-  color: #f43f5e;
-  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 /* 2. 实时计时主屏 */
