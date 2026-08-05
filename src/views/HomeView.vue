@@ -11,6 +11,9 @@
       </div>
     </div>
 
+    <!-- 浅色精致分割线 -->
+    <div class="hero-timer-divider"></div>
+
     <!-- 2. 超大实时计时主屏 (大字号 Ticking Counter) -->
     <div class="main-timer-section">
       <!-- 实时计时器大数块 (年 / 天 / 时 / 分 / 秒) -->
@@ -110,23 +113,33 @@ onUnmounted(() => {
 
 <style scoped>
 .family-dashboard {
-  padding: 0;
+  padding: 10px 0;
   margin: 0 auto;
-  min-height: calc(100vh - 160px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-/* 1. 顶部全家福页眉 (图片与相伴天数有机连成完整句子，纯字无底框) */
+/* 1. 顶部全家福页眉 */
 .family-hero-banner-inline {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 10px 0;
-  margin-bottom: 8px;
+  gap: 36px;
+  padding: 10px 0 5px 0;
+  margin-top: 5px;
+  margin-bottom: 5px;
   flex-wrap: wrap;
+}
+
+/* 浅色精致渐变分割线 */
+.hero-timer-divider {
+  width: 85%;
+  max-width: 900px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(244, 114, 182, 0) 0%, rgba(244, 114, 182, 0.3) 50%, rgba(244, 114, 182, 0) 100%);
+  margin: 15px auto 25px auto;
 }
 
 .hero-romantic-img {
