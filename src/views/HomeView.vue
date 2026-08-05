@@ -3,6 +3,11 @@
     <!-- 1. 顶部全家福艺术字页眉 -->
     <div class="family-hero-banner">
       <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
+      <div class="days-sub-banner">
+        <span>已相伴同行</span>
+        <span class="days-highlight">{{ timeDiff.totalDays.toLocaleString() }}</span>
+        <span>天</span>
+      </div>
     </div>
 
     <!-- 2. 超大实时计时主屏 (大字号 Ticking Counter) -->
@@ -140,9 +145,10 @@ onUnmounted(() => {
 /* 1. 顶部全家福艺术字页眉 */
 .family-hero-banner {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 10px 0 20px 0;
+  padding: 10px 0 15px 0;
   margin-bottom: 10px;
 }
 
@@ -157,6 +163,29 @@ onUnmounted(() => {
 
 .hero-romantic-img:hover {
   transform: scale(1.03);
+}
+
+.days-sub-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px 20px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(244, 114, 182, 0.25);
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(244, 114, 182, 0.08);
+}
+
+.days-sub-banner .days-highlight {
+  font-size: 22px;
+  font-weight: 900;
+  color: #f43f5e;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 /* 2. 实时计时主屏 */
