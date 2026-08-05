@@ -1,494 +1,564 @@
 <template>
-  <div class="home-dashboard animate-fade-in">
-    <!-- 1. 欢迎页眉 -->
-    <div class="welcome-section">
-      <div class="welcome-content">
-        <h1 class="greeting">下午好，RICH 家族</h1>
-        <p class="manifest-slogan">财富是认知的补偿，更是显化的能量。您的资产正在稳健流动中。</p>
-      </div>
-      <div class="date-badge">
-        <div class="day">{{ today.format('DD') }}</div>
-        <div class="month-year">{{ today.format('MMM YYYY') }}</div>
+  <div class="family-dashboard animate-fade-in">
+    <!-- 1. 顶部全家福英雄主题页眉 -->
+    <div class="family-hero-card">
+      <div class="hero-bg-glow"></div>
+      <div class="hero-content">
+        <div class="hero-badge">
+          <el-icon><Calendar /></el-icon>
+          <span>始于 2020 年 1 月 14 日 00:00:00</span>
+        </div>
+        <h1 class="hero-title">
+          <span class="gradient-text">全家福</span>
+          <span class="sub-title">· 幸福计时与相伴见证</span>
+        </h1>
+        <p class="hero-slogan">
+          岁月沉淀爱与陪伴，每一分每一秒都是显化的财富与家庭的温暖。
+        </p>
       </div>
     </div>
 
-    <!-- 2. 核心指标卡片 -->
-    <el-row :gutter="20" class="kpi-row">
-      <el-col :xs="24" :sm="8">
-        <div class="kpi-card">
-          <div class="kpi-icon total"><el-icon><Money /></el-icon></div>
-          <div class="kpi-data">
-            <div class="label">当前总流动性</div>
-            <div class="value">¥ {{ totalLiquidity.toLocaleString() }}</div>
-            <div class="sub-label">存款 + 补偿 + 欠薪</div>
-          </div>
+    <!-- 2. 超大实时计时主屏 (大字号 Ticking Counter) -->
+    <div class="main-timer-section">
+      <div class="timer-section-header">
+        <div class="title-wrap">
+          <el-icon class="heart-icon"><Clock /></el-icon>
+          <span>相伴时光实时计时器</span>
         </div>
-      </el-col>
-      <el-col :xs="24" :sm="8">
-        <div class="kpi-card">
-          <div class="kpi-icon balance"><el-icon><TrendCharts /></el-icon></div>
-          <div class="kpi-data">
-            <div class="label">预计年度结余</div>
-            <div class="value" :class="{ plus: annualNet > 0 }">
-              {{ annualNet > 0 ? '+' : '' }}¥ {{ annualNet.toLocaleString() }}
-            </div>
-            <div class="sub-label">年收入 - 年开支 (铁岭标准)</div>
-          </div>
+        <div class="pulse-indicator">
+          <span class="dot"></span>
+          <span>实时同步中</span>
         </div>
-      </el-col>
-      <el-col :xs="24" :sm="8">
-        <div class="kpi-card">
-          <div class="kpi-icon safety"><el-icon><CircleCheckFilled /></el-icon></div>
-          <div class="kpi-data">
-            <div class="label">财富安全边际</div>
-            <div class="value">{{ safetyYears }} <span class="unit">年</span></div>
-            <div class="sub-label">无收入状态下可维持时长</div>
-          </div>
-        </div>
-      </el-col>
-    </el-row>
+      </div>
 
-    <!-- 3. 功能导航卡片 -->
-    <el-row :gutter="30" class="nav-row">
-      <el-col :xs="24" :md="12" style="margin-bottom: 30px;">
-        <div class="nav-entry-card calc" @click="goTo('also-home')">
-          <div class="entry-content">
-            <div class="entry-tag">核心工具</div>
-            <h2 class="entry-title">财富测算与推演</h2>
-            <p class="entry-desc">基于 2026 年基准，对资产、保险及未来流入进行百岁深度模拟，掌握资金断层风险。</p>
-            <div class="entry-footer">
-              <span class="status">当前状态：推演覆盖至 100 岁</span>
-              <el-icon><Right /></el-icon>
-            </div>
-          </div>
-          <div class="entry-decoration">
-            <el-icon><Histogram /></el-icon>
-          </div>
+      <!-- 实时计时器大数块 (年 / 天 / 时 / 分 / 秒) -->
+      <div class="timer-cards-grid">
+        <div class="timer-unit-card">
+          <div class="number-glow">{{ timeDiff.years }}</div>
+          <div class="unit-label">年 (YEARS)</div>
         </div>
-      </el-col>
-      <el-col :xs="24" :md="12" style="margin-bottom: 30px;">
-        <div class="nav-entry-card confirm" @click="goTo('confirmation')">
-          <div class="entry-content">
-            <div class="entry-tag">显化成就</div>
-            <h2 class="entry-title">显化确认中心</h2>
-            <p class="entry-desc">确认已达成的财富里程碑与理想生活场景，增强财富显化能量。包含银行到账明细确认。</p>
-            <div class="entry-footer">
-              <span class="status">最新达成：中联集团补发欠薪 12.3w，赔偿金n+3，共约36万。</span>
-              <el-icon><Right /></el-icon>
-            </div>
-          </div>
-          <div class="entry-decoration">
-            <el-icon><Finished /></el-icon>
-          </div>
+        <div class="colon-separator">:</div>
+        
+        <div class="timer-unit-card">
+          <div class="number-glow">{{ padZero(timeDiff.days) }}</div>
+          <div class="unit-label">天 (DAYS)</div>
         </div>
-      </el-col>
-      <el-col :xs="24" :md="12" style="margin-bottom: 30px;">
-        <div class="nav-entry-card footprint" @click="goTo('footprint')">
-          <div class="entry-content">
-            <div class="entry-tag">足迹见证</div>
-            <h2 class="entry-title">家庭幸福足迹</h2>
-            <p class="entry-desc">记录与家人共同点亮的旅行足迹，在地图与档案中双重见证生活中的幸福与闪光点。</p>
-            <div class="entry-footer">
-              <span class="status">当前状态：已点亮 3 个省级行政区</span>
-              <el-icon><Right /></el-icon>
-            </div>
-          </div>
-          <div class="entry-decoration">
-            <el-icon><Compass /></el-icon>
-          </div>
-        </div>
-      </el-col>
-      <el-col :xs="24" :md="12" style="margin-bottom: 30px;">
-        <div class="nav-entry-card dictionary" @click="goTo('dictionary')">
-          <div class="entry-content">
-            <div class="entry-tag">国学智慧</div>
-            <h2 class="entry-title">人生修行字典</h2>
-            <p class="entry-desc">融合地支五行与先天八卦哲学，查阅时辰布局与乾坤奥妙，助力人生修行与自我觉察。</p>
-            <div class="entry-footer">
-              <span class="status">当前状态：支持地支与八卦双重推演</span>
-              <el-icon><Right /></el-icon>
-            </div>
-          </div>
-          <div class="entry-decoration">
-            <el-icon><Opportunity /></el-icon>
-          </div>
-        </div>
-      </el-col>
-      <el-col :xs="24" :md="24" style="margin-bottom: 30px;">
-        <div class="nav-entry-card finded" @click="goTo('dictionary', 'find')">
-          <div class="entry-content">
-            <div class="entry-tag">易数演卦</div>
-            <h2 class="entry-title">梅花易数 · 古法寻物与射覆</h2>
-            <p class="entry-desc">运用古旧而神秘的《梅花易数》数理，融合求卦时刻与文字字数进行先天演演，为您指明失物方位；亦支持古人趣味的“射覆”数字猜物，一窥天机。</p>
-            <div class="entry-footer">
-              <span class="status">当前状态：支持古法寻物与数字射覆猜物</span>
-              <el-icon><Right /></el-icon>
-            </div>
-          </div>
-          <div class="entry-decoration">
-            <el-icon><MagicStick /></el-icon>
-          </div>
-        </div>
-      </el-col>
-    </el-row>
+        <div class="colon-separator">:</div>
 
-    <!-- 4. 底部提醒 -->
-    <div class="milestone-banner">
-      <el-icon><Notification /></el-icon>
-      <span class="text">关键里程碑：距离 55 岁领取退休金（¥5000/月）还有 9 年</span>
+        <div class="timer-unit-card">
+          <div class="number-glow">{{ padZero(timeDiff.hours) }}</div>
+          <div class="unit-label">小时 (HOURS)</div>
+        </div>
+        <div class="colon-separator">:</div>
+
+        <div class="timer-unit-card">
+          <div class="number-glow">{{ padZero(timeDiff.minutes) }}</div>
+          <div class="unit-label">分钟 (MINUTES)</div>
+        </div>
+        <div class="colon-separator">:</div>
+
+        <div class="timer-unit-card highlight-card">
+          <div class="number-glow sec-anim">{{ padZero(timeDiff.seconds) }}</div>
+          <div class="unit-label">秒 (SECONDS)</div>
+        </div>
+      </div>
+
+      <!-- 全景总数明细横幅 (总天数 / 总小时 / 总秒数) -->
+      <div class="totals-banner">
+        <div class="total-item">
+          <div class="label">累计陪伴总天数</div>
+          <div class="value">{{ timeDiff.totalDays.toLocaleString() }} <span class="unit">天</span></div>
+        </div>
+        <div class="divider-line"></div>
+        <div class="total-item">
+          <div class="label">累计陪伴总小时</div>
+          <div class="value">{{ timeDiff.totalHours.toLocaleString() }} <span class="unit">小时</span></div>
+        </div>
+        <div class="divider-line"></div>
+        <div class="total-item">
+          <div class="label">累计陪伴总秒数</div>
+          <div class="value">{{ timeDiff.totalSeconds.toLocaleString() }} <span class="unit">秒</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 功能导航入口 (保持快速跳转) -->
+    <div class="quick-nav-section">
+      <div class="section-title-wrap mb-20">
+        <el-icon><Menu /></el-icon>
+        <h3>家庭财富与生活功能入口</h3>
+      </div>
+      <el-row :gutter="20">
+        <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 20px;">
+          <div class="nav-card calc" @click="goTo('also-home')">
+            <div class="card-icon"><el-icon><Histogram /></el-icon></div>
+            <h4>财富测算与推演</h4>
+            <p>百岁资金断层与收益模拟</p>
+            <div class="card-arrow"><el-icon><Right /></el-icon></div>
+          </div>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 20px;">
+          <div class="nav-card confirm" @click="goTo('confirmation')">
+            <div class="card-icon"><el-icon><Finished /></el-icon></div>
+            <h4>显化确认中心</h4>
+            <p>财富成就与银行到账确认</p>
+            <div class="card-arrow"><el-icon><Right /></el-icon></div>
+          </div>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 20px;">
+          <div class="nav-card footprint" @click="goTo('footprint')">
+            <div class="card-icon"><el-icon><Compass /></el-icon></div>
+            <h4>幸福足迹地图</h4>
+            <p>记录与家人共同打卡足迹</p>
+            <div class="card-arrow"><el-icon><Right /></el-icon></div>
+          </div>
+        </el-col>
+        <el-col :xs="24" :sm="12" :md="6" style="margin-bottom: 20px;">
+          <div class="nav-card dictionary" @click="goTo('dictionary')">
+            <div class="card-icon"><el-icon><Opportunity /></el-icon></div>
+            <h4>人生修行字典</h4>
+            <p>梅花易数、寻物与八卦推演</p>
+            <div class="card-arrow"><el-icon><Right /></el-icon></div>
+          </div>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { Money, TrendCharts, CircleCheckFilled, Right, Histogram, Finished, Notification, Compass, Opportunity, MagicStick } from '@element-plus/icons-vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { Calendar, Clock, Histogram, Finished, Compass, Opportunity, Menu, Right } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 
-const emit = defineEmits(['navigate'])
+const startTime = dayjs('2020-01-14T00:00:00')
 
-const today = dayjs()
+const timeDiff = reactive({
+  years: 0,
+  days: 0,
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+  totalDays: 0,
+  totalHours: 0,
+  totalSeconds: 0
+})
 
-// 模拟核心数据（与 AlsoHomeView 保持一致）
-const assets = {
-  savings: 100000,
-  backPay: 123250,
-  compensation: 261000,
-  workingIncome: 10000,
-  workingYears: 1
+let timer = null
+
+const padZero = (num) => {
+  return String(num).padStart(2, '0')
 }
 
-const expenses = {
-  living: 2000 * 12, // 默认铁岭标准
-  insurance: 12000 + 11029 + 4060 + 1800 + 38364 + 5000 + 4216.95
-}
+const updateTimer = () => {
+  const now = dayjs()
+  const diffMs = Math.max(0, now.diff(startTime))
+  
+  const totalSec = Math.floor(diffMs / 1000)
+  const totalDays = Math.floor(totalSec / 86400)
+  
+  const years = Math.floor(totalDays / 365.25)
+  const days = Math.floor(totalDays % 365.25)
+  const hours = Math.floor((totalSec % 86400) / 3600)
+  const minutes = Math.floor((totalSec % 3600) / 60)
+  const seconds = totalSec % 60
 
-const totalLiquidity = computed(() => assets.savings + assets.backPay + assets.compensation)
-const annualNet = computed(() => (assets.workingIncome * 12) - (expenses.living + expenses.insurance))
-const safetyYears = computed(() => Math.floor(totalLiquidity.value / (expenses.living + expenses.insurance)))
+  timeDiff.years = years
+  timeDiff.days = days
+  timeDiff.hours = hours
+  timeDiff.minutes = minutes
+  timeDiff.seconds = seconds
+  timeDiff.totalDays = totalDays
+  timeDiff.totalHours = Math.floor(totalSec / 3600)
+  timeDiff.totalSeconds = totalSec
+}
 
 const goTo = (tab, subTab) => {
   if (subTab) {
     localStorage.setItem('happylife_redirect_sub_tab', subTab)
     window.dispatchEvent(new CustomEvent('change-sub-tab', { detail: subTab }))
   }
-  // 这里的 navigate 逻辑由 App.vue 处理
-  // 我们通过 emit 通知父组件
   window.dispatchEvent(new CustomEvent('change-tab', { detail: tab }))
 }
+
+onMounted(() => {
+  updateTimer()
+  timer = setInterval(updateTimer, 1000)
+})
+
+onUnmounted(() => {
+  if (timer) {
+    clearInterval(timer)
+  }
+})
 </script>
 
 <style scoped>
-.home-dashboard {
+.family-dashboard {
   padding: 10px 0;
   margin: 0 auto;
 }
 
-/* 欢迎模块 */
-.welcome-section {
+/* 1. 英雄海报卡片 */
+.family-hero-card {
+  position: relative;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
+  border-radius: 28px;
+  padding: 40px;
+  color: white;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(49, 46, 129, 0.25);
+  margin-bottom: 24px;
+}
+
+.hero-bg-glow {
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(99, 102, 241, 0) 70%);
+  border-radius: 50%;
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #a5b4fc 0%, #f472b6 50%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sub-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #e0e7ff;
+}
+
+.hero-slogan {
+  font-size: 1.1rem;
+  color: #c7d2fe;
+  margin: 0;
+  max-width: 650px;
+  line-height: 1.6;
+}
+
+/* 2. 实时计时主屏 */
+.main-timer-section {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 28px;
+  padding: 36px;
+  box-shadow: 0 20px 50px rgba(99, 102, 241, 0.08);
+  margin-bottom: 30px;
+}
+
+.timer-section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
-  padding: 0 10px;
+  margin-bottom: 30px;
+  border-bottom: 1px dashed #e2e8f0;
+  padding-bottom: 16px;
 }
 
-.greeting {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: #1e293b;
-  margin: 0;
-  letter-spacing: -0.5px;
-}
-
-.manifest-slogan {
-  color: #64748b;
-  margin-top: 10px;
-  font-size: 16px;
-}
-
-.date-badge {
-  background: white;
-  padding: 12px 20px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  border: 1px solid #f1f5f9;
-}
-
-.date-badge .day {
-  font-size: 24px;
-  font-weight: 800;
-  color: #6366f1;
-  line-height: 1;
-}
-
-.date-badge .month-year {
-  font-size: 11px;
-  color: #94a3b8;
-  text-transform: uppercase;
-  margin-top: 4px;
-  letter-spacing: 1px;
-}
-
-/* KPI 卡片 */
-.kpi-row {
-  margin-bottom: 40px;
-}
-
-.kpi-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 24px;
-  padding: 25px;
+.title-wrap {
   display: flex;
   align-items: center;
-  gap: 20px;
-  transition: transform 0.3s ease;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1e293b;
 }
 
-.kpi-card:hover {
-  transform: translateY(-5px);
+.heart-icon {
+  font-size: 24px;
+  color: #6366f1;
 }
 
-.kpi-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
+.pulse-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid #a7f3d0;
+}
+
+.pulse-indicator .dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* 计时大卡片网格 */
+.timer-cards-grid {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  color: white;
+  gap: 12px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
 }
 
-.kpi-icon.total { background: linear-gradient(135deg, #6366f1, #4f46e5); }
-.kpi-icon.balance { background: linear-gradient(135deg, #10b981, #059669); }
-.kpi-icon.safety { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.timer-unit-card {
+  flex: 1;
+  min-width: 130px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px solid #e0e7ff;
+  border-radius: 20px;
+  padding: 24px 16px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.05);
+  transition: all 0.3s ease;
+}
 
-.kpi-data .label {
+.timer-unit-card:hover {
+  transform: translateY(-4px);
+  border-color: #6366f1;
+  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.12);
+}
+
+.highlight-card {
+  background: linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%);
+  border-color: #a855f7;
+}
+
+.number-glow {
+  font-size: 3.6rem;
+  font-weight: 900;
+  line-height: 1;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  background: linear-gradient(135deg, #312e81 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+.sec-anim {
+  background: linear-gradient(135deg, #7e22ce 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.unit-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.5px;
+}
+
+.colon-separator {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #a5b4fc;
+  margin-bottom: 20px;
+}
+
+/* 全景总数明细 */
+.totals-banner {
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+  border-radius: 20px;
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border: 1px solid #e0e7ff;
+}
+
+.total-item {
+  text-align: center;
+}
+
+.total-item .label {
   font-size: 13px;
   color: #64748b;
   font-weight: 600;
+  margin-bottom: 6px;
 }
 
-.kpi-data .value {
-  font-size: 22px;
+.total-item .value {
+  font-size: 1.8rem;
   font-weight: 800;
-  color: #1e293b;
-  margin: 4px 0;
+  color: #312e81;
 }
 
-.kpi-data .value.plus { color: #059669; }
-
-.kpi-data .sub-label {
-  font-size: 11px;
-  color: #94a3b8;
+.total-item .value .unit {
+  font-size: 14px;
+  color: #6366f1;
+  font-weight: 600;
 }
 
-.unit { font-size: 14px; font-weight: normal; margin-left: 2px; }
-
-/* 导航入口卡片 */
-.nav-row {
-  margin-bottom: 40px;
+.divider-line {
+  width: 1px;
+  height: 40px;
+  background-color: #cbd5e1;
 }
 
-.nav-entry-card {
+/* 3. 快捷入口 */
+.quick-nav-section {
+  margin-top: 10px;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-size: 16px;
+}
+
+.section-title-wrap h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.nav-card {
   position: relative;
   background: white;
-  border-radius: 30px;
-  padding: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 20px;
   cursor: pointer;
-  overflow: hidden;
-  height: 280px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.nav-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(99, 102, 241, 0.1);
+  border-color: #818cf8;
+}
+
+.card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #eef2ff;
+  color: #4f46e5;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.04);
-  border: 1px solid #f1f5f9;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 12px;
 }
 
-.nav-entry-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 30px 60px rgba(0,0,0,0.08);
-}
-
-.entry-tag {
-  display: inline-block;
-  padding: 4px 12px;
-  background: #f1f5f9;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: bold;
-  color: #64748b;
-  margin-bottom: 15px;
-}
-
-.entry-title {
-  font-size: 24px;
+.nav-card h4 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
   font-weight: 800;
   color: #1e293b;
-  margin: 0 0 15px 0;
 }
 
-.entry-desc {
-  font-size: 15px;
+.nav-card p {
+  margin: 0;
+  font-size: 12px;
   color: #64748b;
-  line-height: 1.6;
-  max-width: 80%;
+  line-height: 1.5;
 }
 
-.entry-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.entry-footer .status {
-  font-size: 13px;
-  font-weight: bold;
-  color: #6366f1;
-}
-
-.entry-footer .el-icon {
-  font-size: 20px;
-  color: #6366f1;
-}
-
-.entry-decoration {
+.card-arrow {
   position: absolute;
-  right: -20px;
-  bottom: -20px;
-  font-size: 180px;
-  opacity: 0.03;
-  transform: rotate(-15deg);
+  right: 16px;
+  bottom: 16px;
+  color: #a5b4fc;
+  font-size: 18px;
+  transition: transform 0.2s ease;
 }
 
-.nav-entry-card.calc:hover {
-  background: linear-gradient(135deg, #ffffff, #f5f3ff);
-  border-color: #c7d2fe;
-}
-
-.nav-entry-card.confirm:hover {
-  background: linear-gradient(135deg, #ffffff, #f0fdf4);
-  border-color: #bbf7d0;
-}
-
-.nav-entry-card.footprint:hover {
-  background: linear-gradient(135deg, #ffffff, #eff6ff);
-  border-color: #bfdbfe;
-}
-
-.nav-entry-card.dictionary:hover {
-  background: linear-gradient(135deg, #ffffff, #fffbeb);
-  border-color: #fde68a;
-}
-
-.nav-entry-card.finded {
-  height: 240px;
-}
-
-.nav-entry-card.finded:hover {
-  background: linear-gradient(135deg, #ffffff, #fff1f2);
-  border-color: #fecdd3;
-}
-
-/* 里程碑横幅 */
-.milestone-banner {
-  background: #1e293b;
-  border-radius: 20px;
-  padding: 18px 25px;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  color: white;
-  box-shadow: 0 15px 30px rgba(30, 41, 59, 0.2);
-}
-
-.milestone-banner .el-icon {
-  font-size: 20px;
-  color: #fbbf24;
-}
-
-.milestone-banner .text {
-  font-size: 14px;
-  font-weight: 500;
+.nav-card:hover .card-arrow {
+  transform: translateX(4px);
+  color: #4f46e5;
 }
 
 @media (max-width: 768px) {
-  .welcome-section {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    gap: 15px;
-    margin-bottom: 24px;
+  .family-hero-card {
+    padding: 24px;
+    border-radius: 20px;
   }
-  .greeting {
-    font-size: 1.8rem;
+  .hero-title {
+    font-size: 2rem;
   }
-  .manifest-slogan {
-    font-size: 14px;
-    margin-top: 8px;
+  .sub-title {
+    font-size: 1.1rem;
   }
-  .date-badge {
-    padding: 8px 16px;
-    border-radius: 12px;
+  .hero-slogan {
+    font-size: 0.95rem;
   }
-  .date-badge .day {
-    font-size: 20px;
-  }
-  .kpi-row {
-    margin-bottom: 20px;
-  }
-  .kpi-card {
-    padding: 16px;
-    gap: 12px;
-    border-radius: 16px;
-    margin-bottom: 12px;
-  }
-  .kpi-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 20px;
-    border-radius: 12px;
-  }
-  .kpi-data .value {
-    font-size: 18px;
-  }
-  .nav-row {
-    margin-bottom: 20px;
-  }
-  .nav-entry-card {
-    height: auto;
+  .main-timer-section {
     padding: 20px;
     border-radius: 20px;
-    margin-bottom: 15px;
-    gap: 20px;
   }
-  .entry-title {
-    font-size: 20px;
-    margin-bottom: 8px;
+  .number-glow {
+    font-size: 2.2rem;
   }
-  .entry-desc {
-    font-size: 13px;
-    max-width: 100%;
+  .colon-separator {
+    display: none;
   }
-  .entry-decoration {
-    font-size: 120px;
-    right: -10px;
-    bottom: -10px;
-    opacity: 0.02;
+  .timer-cards-grid {
+    gap: 8px;
   }
-  .milestone-banner {
-    padding: 12px 16px;
-    border-radius: 14px;
-    gap: 10px;
+  .timer-unit-card {
+    min-width: 45%;
+    padding: 16px 10px;
   }
-  .milestone-banner .text {
-    font-size: 12px;
-    line-height: 1.4;
+  .totals-banner {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+  .divider-line {
+    width: 80%;
+    height: 1px;
   }
 }
 </style>

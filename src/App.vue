@@ -7,7 +7,7 @@
           <span class="gradient-text">RICH</span>
         </div>
         <el-tabs v-model="activeTab" class="custom-tabs header-tabs">
-          <el-tab-pane label="首页" name="home"></el-tab-pane>
+          <el-tab-pane label="全家福" name="home"></el-tab-pane>
           <el-tab-pane label="财富测算" name="also-home"></el-tab-pane>
           <el-tab-pane label="显化确认" name="confirmation"></el-tab-pane>
           <el-tab-pane label="幸福足迹" name="footprint"></el-tab-pane>
