@@ -13,17 +13,6 @@
 
     <!-- 2. 超大实时计时主屏 (大字号 Ticking Counter) -->
     <div class="main-timer-section">
-      <div class="timer-section-header">
-        <div class="title-wrap">
-          <el-icon class="heart-icon"><Clock /></el-icon>
-          <span>相伴时光实时计时器</span>
-        </div>
-        <div class="pulse-indicator">
-          <span class="dot"></span>
-          <span>实时同步中</span>
-        </div>
-      </div>
-
       <!-- 实时计时器大数块 (年 / 天 / 时 / 分 / 秒) -->
       <div class="timer-cards-grid">
         <div class="timer-unit-card">
@@ -217,66 +206,6 @@ onUnmounted(() => {
   padding: 24px 28px;
   box-shadow: 0 15px 40px rgba(99, 102, 241, 0.07);
   margin-bottom: 0;
-}
-
-.timer-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-  border-bottom: 1px dashed #e2e8f0;
-  padding-bottom: 12px;
-}
-
-.title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 800;
-  color: #1e293b;
-}
-
-.heart-icon {
-  font-size: 22px;
-  color: #6366f1;
-}
-
-.pulse-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #059669;
-  background: #ecfdf5;
-  padding: 4px 12px;
-  border-radius: 12px;
-  border: 1px solid #a7f3d0;
-}
-
-.pulse-indicator .dot {
-  width: 8px;
-  height: 8px;
-  background-color: #10b981;
-  border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  animation: pulse-dot 1.5s infinite;
-}
-
-@keyframes pulse-dot {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
 }
 
 /* 计时大卡片网格 */
