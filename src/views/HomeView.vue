@@ -123,8 +123,12 @@ onUnmounted(() => {
 
 <style scoped>
 .family-dashboard {
-  padding: 10px 0;
+  padding: 0;
   margin: 0 auto;
+  min-height: calc(100vh - 160px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* 1. 顶部全家福艺术字页眉 */
@@ -133,8 +137,8 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 35px 0 25px 0;
-  margin-bottom: 20px;
+  padding: 15px 0 10px 0;
+  margin-bottom: 10px;
   overflow: visible;
 }
 
@@ -154,14 +158,14 @@ onUnmounted(() => {
 }
 
 .background-days-text .prefix {
-  font-size: 2.2rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: rgba(244, 114, 182, 0.28);
   letter-spacing: 2px;
 }
 
 .background-days-text .num {
-  font-size: 7rem;
+  font-size: 5rem;
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
   color: rgba(244, 114, 182, 0.28);
@@ -170,7 +174,7 @@ onUnmounted(() => {
 }
 
 .background-days-text .unit {
-  font-size: 2.2rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: rgba(244, 114, 182, 0.28);
   letter-spacing: 2px;
@@ -180,11 +184,11 @@ onUnmounted(() => {
 .hero-romantic-img {
   position: relative;
   z-index: 2;
-  max-width: 520px;
+  max-width: 380px;
   width: 100%;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 12px 28px rgba(244, 114, 182, 0.25));
+  filter: drop-shadow(0 10px 22px rgba(244, 114, 182, 0.22));
   transition: transform 0.3s ease;
 }
 
@@ -197,32 +201,32 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 28px;
-  padding: 36px;
-  box-shadow: 0 20px 50px rgba(99, 102, 241, 0.08);
-  margin-bottom: 30px;
+  border-radius: 24px;
+  padding: 24px 28px;
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.07);
+  margin-bottom: 0;
 }
 
 .timer-section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 18px;
   border-bottom: 1px dashed #e2e8f0;
-  padding-bottom: 16px;
+  padding-bottom: 12px;
 }
 
 .title-wrap {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: #1e293b;
 }
 
 .heart-icon {
-  font-size: 24px;
+  font-size: 22px;
   color: #6366f1;
 }
 
@@ -230,7 +234,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #059669;
   background: #ecfdf5;
@@ -275,20 +279,20 @@ onUnmounted(() => {
 
 .timer-unit-card {
   flex: 1;
-  min-width: 130px;
+  min-width: 120px;
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   border: 2px solid #e0e7ff;
-  border-radius: 20px;
-  padding: 24px 16px;
+  border-radius: 18px;
+  padding: 16px 12px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.05);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.04);
   transition: all 0.3s ease;
 }
 
 .timer-unit-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   border-color: #6366f1;
-  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.12);
+  box-shadow: 0 12px 28px rgba(99, 102, 241, 0.1);
 }
 
 .highlight-card {
@@ -297,14 +301,14 @@ onUnmounted(() => {
 }
 
 .number-glow {
-  font-size: 3.6rem;
+  font-size: 2.8rem;
   font-weight: 900;
   line-height: 1;
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
   background: linear-gradient(135deg, #312e81 0%, #6366f1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
 .sec-anim {
