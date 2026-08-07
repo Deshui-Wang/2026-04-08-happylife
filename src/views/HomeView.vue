@@ -13,7 +13,7 @@
         <span class="prefix">已经</span>
         <span class="num">{{ timeDiff.totalDays.toLocaleString() }}</span>
         <span class="unit">天</span>
-        <span class="heart-sparkle">💕</span>
+        <img :src="gifTextSuffix" class="inline-gif-suffix" alt="浪漫动效点缀" />
       </div>
     </div>
 
@@ -64,6 +64,7 @@ import dayjs from 'dayjs'
 import romanticImg from '@/pic/yuzhou_romantic_text_transparent.png'
 import gifDeco1 from '@/pic/huaban-6444827080.gif'
 import gifDeco2 from '@/pic/huaban-6444812456.gif'
+import gifTextSuffix from '@/pic/huaban-6659614929.gif'
 
 const startTime = dayjs('2020-01-14T00:00:00')
 
@@ -248,22 +249,18 @@ onUnmounted(() => {
   opacity: 0.95;
 }
 
-.days-inline-text .heart-sparkle {
-  font-size: 1.5rem;
-  margin-left: 2px;
-  display: inline-block;
-  animation: gentle-heartbeat 2.4s infinite ease-in-out;
+.inline-gif-suffix {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-left: 6px;
+  filter: drop-shadow(0 4px 10px rgba(244, 114, 182, 0.35));
+  transition: transform 0.3s ease;
 }
 
-@keyframes gentle-heartbeat {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.85;
-  }
-  50% {
-    transform: scale(1.22);
-    opacity: 1;
-  }
+.inline-gif-suffix:hover {
+  transform: scale(1.1);
 }
 
 /* 2. 实时计时主屏 (纯净展示，无最外层白底与任何方框边框) */
