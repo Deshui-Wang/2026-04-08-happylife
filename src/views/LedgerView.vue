@@ -41,7 +41,6 @@
             @click="openAddModal"
           />
           <button class="btn-primary-add" @click="openAddModal">
-            <el-icon><Plus /></el-icon>
             <span>点我</span>
           </button>
         </div>
@@ -355,7 +354,6 @@
     <!-- 6. 移动端悬浮记账按钮 (Mobile FAB) -->
     <div class="mobile-fab-wrap" @click="openAddModal">
       <button class="fab-btn">
-        <el-icon><Plus /></el-icon>
         <span class="fab-text">点我</span>
       </button>
     </div>
