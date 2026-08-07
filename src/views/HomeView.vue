@@ -1,15 +1,14 @@
 <template>
   <div class="family-dashboard animate-fade-in">
-    <!-- 4角浪漫风趣花卉/点缀图框架 (四角关系) -->
-    <div class="hero-deco-wrap">
+    <!-- 1. 顶部全家福页眉 (含四角浪漫插图包围框架) -->
+    <div class="family-hero-banner-inline">
+      <!-- 4角包围点缀图 -->
       <img :src="gifDeco1" class="deco-gif deco-top-left" alt="浪漫点缀-左上" />
       <img :src="gifDeco2" class="deco-gif deco-top-right" alt="浪漫点缀-右上" />
       <img :src="bottomDeco1" class="deco-gif deco-bottom-left" alt="浪漫点缀-左下" />
       <img :src="bottomDeco2" class="deco-gif deco-bottom-right" alt="浪漫点缀-右下" />
-    </div>
 
-    <!-- 1. 顶部全家福页眉 (甜蜜浪漫流字连贯诗意句) -->
-    <div class="family-hero-banner-inline">
+      <!-- 被四角图全包围的主体：浪漫字句大图 + 已经天数 -->
       <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
       <div class="days-inline-text">
         <span class="prefix">已经</span>
@@ -136,81 +135,55 @@ onUnmounted(() => {
   overflow: visible;
 }
 
-/* GIF 浪漫花卉/动态点缀 (四角框架关系) */
-.hero-deco-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 5;
-}
-
-.deco-gif {
-  position: absolute;
-  width: 85px;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(244, 114, 182, 0.3));
-}
-
-.deco-top-left {
-  top: 0px;
-  left: 10px;
-  transform: rotate(-10deg);
-}
-
-.deco-top-right {
-  top: 0px;
-  right: 10px;
-  transform: rotate(10deg);
-}
-
-.deco-bottom-left {
-  top: 155px;
-  left: 10px;
-  transform: rotate(-5deg);
-}
-
-.deco-bottom-right {
-  top: 155px;
-  right: 10px;
-  transform: rotate(5deg);
-}
-
-@media (max-width: 900px) {
-  .deco-gif {
-    width: 50px;
-  }
-  .deco-top-left {
-    top: -5px;
-    left: 0px;
-  }
-  .deco-top-right {
-    top: -5px;
-    right: 0px;
-  }
-  .deco-bottom-left {
-    top: 250px;
-    left: 0px;
-  }
-  .deco-bottom-right {
-    top: 250px;
-    right: 0px;
-  }
-}
-
-/* 1. 顶部全家福页眉 */
+/* 1. 顶部全家福页眉 (含4角图全面包围关系) */
 .family-hero-banner-inline {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 36px;
-  padding: 10px 0 5px 0;
+  padding: 20px 40px;
   margin-top: 5px;
   margin-bottom: 5px;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 1000px;
+  box-sizing: border-box;
+}
+
+/* GIF 浪漫花卉/动态点缀 (四角包围框架) */
+.deco-gif {
+  position: absolute;
+  width: 80px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(244, 114, 182, 0.3));
+  pointer-events: none;
+  z-index: 5;
+}
+
+.deco-top-left {
+  top: -10px;
+  left: 0px;
+  transform: rotate(-10deg);
+}
+
+.deco-top-right {
+  top: -10px;
+  right: 0px;
+  transform: rotate(10deg);
+}
+
+.deco-bottom-left {
+  bottom: -10px;
+  left: 0px;
+  transform: rotate(-5deg);
+}
+
+.deco-bottom-right {
+  bottom: -10px;
+  right: 0px;
+  transform: rotate(5deg);
 }
 
 /* 浅色精致渐变分割线 */
@@ -468,8 +441,27 @@ onUnmounted(() => {
     padding: 10px 4px;
   }
   .family-hero-banner-inline {
-    gap: 10px;
-    padding: 5px 0;
+    padding: 15px 25px;
+    gap: 12px;
+  }
+  .deco-gif {
+    width: 46px;
+  }
+  .deco-top-left {
+    top: -8px;
+    left: -2px;
+  }
+  .deco-top-right {
+    top: -8px;
+    right: -2px;
+  }
+  .deco-bottom-left {
+    bottom: -8px;
+    left: -2px;
+  }
+  .deco-bottom-right {
+    bottom: -8px;
+    right: -2px;
   }
   .hero-romantic-img {
     max-width: 270px;
