@@ -1137,42 +1137,44 @@ onMounted(() => {
   color: #ef4444;
 }
 
-/* 5. 弹窗与表单 (滚动截断修复 & 深墨绿鎏金奢华黑金风) */
+/* 5. 弹窗与表单 (修复对比度与全盘高清视效 #0D2B2E 深墨绿 & #E8C268 鎏金) */
 :deep(.custom-add-ledger-dialog) {
   top: 4vh !important;
   margin: 0 auto !important;
-  max-height: 90vh !important;
+  max-height: 88vh !important;
   display: flex !important;
   flex-direction: column !important;
   border-radius: 24px !important;
-  border: 1.5px solid #E8C268 !important;
-  background: #0D2B2E !important;
-  color: #fff !important;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
+  border: 2px solid #0D2B2E !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
+  box-shadow: 0 20px 50px rgba(13, 43, 46, 0.25) !important;
   overflow: hidden !important;
 }
 
 :deep(.custom-add-ledger-dialog .el-dialog__header) {
   margin-right: 0 !important;
   padding: 16px 20px !important;
-  background: #081e20 !important;
-  border-bottom: 1px dashed rgba(232, 194, 104, 0.3) !important;
+  background: #f8fafc !important;
+  border-bottom: 1.5px solid #e2e8f0 !important;
 }
 
 :deep(.custom-add-ledger-dialog .el-dialog__title) {
-  color: #E8C268 !important;
+  color: #0D2B2E !important;
   font-weight: 900 !important;
-  font-size: 1.15rem !important;
+  font-size: 1.2rem !important;
 }
 
 :deep(.custom-add-ledger-dialog .el-dialog__headerbtn .el-dialog__close) {
-  color: #E8C268 !important;
+  color: #0D2B2E !important;
+  font-size: 18px !important;
 }
 
 :deep(.custom-add-ledger-dialog .el-dialog__body) {
   flex: 1 !important;
   overflow-y: auto !important;
   padding: 18px 20px !important;
+  background: #ffffff !important;
 }
 
 .add-form {
@@ -1188,9 +1190,10 @@ onMounted(() => {
 }
 
 .form-label {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 800;
-  color: #E8C268;
+  color: #0D2B2E;
+  letter-spacing: 0.3px;
 }
 
 .member-selector-grid {
@@ -1200,15 +1203,19 @@ onMounted(() => {
 }
 
 .member-select-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e2e8f0;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  color: #1e293b;
   border-radius: 12px;
   padding: 9px 0;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.member-select-btn:hover {
+  border-color: #0D2B2E;
 }
 
 .category-selector-grid {
@@ -1218,8 +1225,8 @@ onMounted(() => {
 }
 
 .cat-select-btn {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
   border-radius: 12px;
   padding: 8px 4px;
   display: flex;
@@ -1230,27 +1237,37 @@ onMounted(() => {
   transition: all 0.2s;
 }
 
+.cat-select-btn:hover {
+  border-color: #0D2B2E;
+}
+
 .cat-select-btn.selected {
-  background: rgba(232, 194, 104, 0.15);
+  background: #0D2B2E;
   border-color: #E8C268;
-  box-shadow: 0 4px 12px rgba(232, 194, 104, 0.25);
+  box-shadow: 0 6px 16px rgba(13, 43, 46, 0.3);
+  transform: scale(1.02);
+}
+
+.cat-select-btn.selected .cat-btn-name {
+  color: #E8C268;
+  font-weight: 900;
 }
 
 .cat-btn-icon {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .cat-btn-name {
-  font-size: 11px;
-  font-weight: 700;
-  color: #f1f5f9;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #1e293b;
 }
 
 .amount-input-box {
   display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1.5px solid rgba(232, 194, 104, 0.4);
+  background: #f8fafc;
+  border: 2px solid #0D2B2E;
   border-radius: 14px;
   padding: 4px 14px;
   transition: border-color 0.2s;
@@ -1258,13 +1275,14 @@ onMounted(() => {
 
 .amount-input-box:focus-within {
   border-color: #E8C268;
-  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 3px rgba(232, 194, 104, 0.25);
+  background: #ffffff;
 }
 
 .amount-input-box .symbol {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 900;
-  color: #E8C268;
+  color: #0D2B2E;
   margin-right: 6px;
 }
 
@@ -1276,7 +1294,7 @@ onMounted(() => {
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, monospace;
   width: 100%;
-  color: #E8C268;
+  color: #0D2B2E;
 }
 
 .quick-amounts-row {
@@ -1287,23 +1305,31 @@ onMounted(() => {
 
 .quick-amt-btn {
   flex: 1;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(232, 194, 104, 0.3);
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
-  padding: 5px 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: #E8C268;
+  padding: 6px 0;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #0D2B2E;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .quick-amt-btn:hover {
-  background: rgba(232, 194, 104, 0.2);
+  background: #0D2B2E;
+  color: #E8C268;
 }
 
 .quick-amt-btn.reset {
-  color: #f43f5e;
-  border-color: rgba(244, 63, 94, 0.3);
+  color: #ef4444;
+  background: #fee2e2;
+  border-color: #fca5a5;
+}
+
+.quick-amt-btn.reset:hover {
+  background: #ef4444;
+  color: #ffffff;
 }
 
 .dialog-footer-actions {
@@ -1312,30 +1338,40 @@ onMounted(() => {
   gap: 12px;
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px dashed rgba(232, 194, 104, 0.25);
+  border-top: 1px dashed #e2e8f0;
 }
 
 .btn-cancel {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #cbd5e1;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
   border-radius: 12px;
-  padding: 8px 18px;
-  font-size: 13px;
-  font-weight: 700;
+  padding: 9px 20px;
+  font-size: 13.5px;
+  font-weight: 800;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #e2e8f0;
 }
 
 .btn-submit-gold {
-  background: linear-gradient(135deg, #E8C268 0%, #d4a73b 100%);
-  color: #0D2B2E;
-  border: none;
+  background: linear-gradient(135deg, #0D2B2E 0%, #174e54 100%);
+  color: #E8C268;
+  border: 1.5px solid #E8C268;
   border-radius: 12px;
-  padding: 8px 24px;
+  padding: 9px 28px;
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(232, 194, 104, 0.35);
+  box-shadow: 0 6px 18px rgba(13, 43, 46, 0.3);
+  transition: transform 0.2s;
+}
+
+.btn-submit-gold:hover {
+  transform: translateY(-1px);
 }
 
 /* 6. 移动端悬浮 FAB 按键 */
