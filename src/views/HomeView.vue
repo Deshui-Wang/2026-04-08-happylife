@@ -65,7 +65,7 @@ import dayjs from 'dayjs'
 import romanticImg from '@/pic/yuzhou_romantic_text_transparent.png'
 import gifDeco1 from '@/pic/huaban-6444827080.gif'
 import gifDeco2 from '@/pic/huaban-6444812456.gif'
-import bottomDeco1 from '@/pic/huaban-6786074053.webp'
+import bottomDeco1 from '@/pic/huaban-6786074053.gif'
 import bottomDeco2 from '@/pic/huaban-6862020249.png'
 import gifTextSuffix from '@/pic/huaban-6659614929.gif'
 
@@ -442,8 +442,8 @@ onUnmounted(() => {
     padding: 10px 4px;
   }
   .family-hero-banner-inline {
-    padding: 15px 25px;
-    gap: 12px;
+    padding: 35px 25px;
+    gap: 16px;
   }
   .deco-gif {
     width: 46px;
