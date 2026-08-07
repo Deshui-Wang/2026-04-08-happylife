@@ -42,7 +42,7 @@
           />
           <button class="btn-primary-add" @click="openAddModal">
             <el-icon><Plus /></el-icon>
-            <span>记账</span>
+            <span>点我</span>
           </button>
         </div>
       </div>
@@ -193,7 +193,7 @@
       <!-- 空状态 -->
       <div v-if="filteredRecords.length === 0" class="empty-state-card">
         <el-empty description="暂无符合条件的账单记录">
-          <button class="btn-primary-add inline-empty-btn" @click="openAddModal">记账</button>
+          <button class="btn-primary-add inline-empty-btn" @click="openAddModal">点我</button>
         </el-empty>
       </div>
 
@@ -356,7 +356,7 @@
     <div class="mobile-fab-wrap" @click="openAddModal">
       <button class="fab-btn">
         <el-icon><Plus /></el-icon>
-        <span class="fab-text">记账</span>
+        <span class="fab-text">点我</span>
       </button>
     </div>
   </div>
