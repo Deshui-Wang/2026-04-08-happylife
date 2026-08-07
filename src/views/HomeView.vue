@@ -124,6 +124,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&display=swap');
+
 .family-dashboard {
   position: relative;
   padding: 10px 0;
@@ -222,14 +224,17 @@ onUnmounted(() => {
 .days-inline-text .prefix {
   font-size: 2.6rem;
   font-weight: 400;
-  color: #ec6b8b;
-  letter-spacing: 2px;
-  font-family: 'Zhi Mang Xing', 'Ma Shan Zheng', 'Long Cang', 'STKaiti', 'KaiTi', cursive;
-  opacity: 0.95;
+  font-family: 'ZCOOL KuaiLe', 'ZCOOL QingKe HuangYou', 'Comfortaa', cursive, sans-serif;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #ff5e7e 0%, #ff85a1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0.98;
   white-space: nowrap;
   word-break: keep-all;
   flex-shrink: 0;
   display: inline-block;
+  filter: drop-shadow(0 2px 4px rgba(255, 94, 126, 0.25));
 }
 
 .days-inline-text .num {
@@ -249,14 +254,17 @@ onUnmounted(() => {
 .days-inline-text .unit {
   font-size: 2.6rem;
   font-weight: 400;
-  color: #ec6b8b;
-  letter-spacing: 2px;
-  font-family: 'Zhi Mang Xing', 'Ma Shan Zheng', 'Long Cang', 'STKaiti', 'KaiTi', cursive;
-  opacity: 0.95;
+  font-family: 'ZCOOL KuaiLe', 'ZCOOL QingKe HuangYou', 'Comfortaa', cursive, sans-serif;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #ff5e7e 0%, #ff85a1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0.98;
   white-space: nowrap;
   word-break: keep-all;
   flex-shrink: 0;
   display: inline-block;
+  filter: drop-shadow(0 2px 4px rgba(255, 94, 126, 0.25));
 }
 
 .inline-gif-suffix {
@@ -476,6 +484,7 @@ onUnmounted(() => {
   .days-inline-text .prefix,
   .days-inline-text .unit {
     font-size: 1.4rem !important;
+    font-family: 'ZCOOL KuaiLe', 'ZCOOL QingKe HuangYou', cursive, sans-serif !important;
     white-space: nowrap !important;
     word-break: keep-all !important;
     flex-shrink: 0 !important;
