@@ -175,46 +175,53 @@
       </template>
     </el-drawer>
 
-    <!-- 4. 统计分析与进度条 (Member & Category Breakdown) -->
-    <div v-if="filteredRecords.length > 0" class="stats-breakdown-grid">
-      <!-- 消费者支出占比 -->
-      <div class="breakdown-card">
-        <div class="card-header">
-          <h3>消费者支出占比</h3>
-        </div>
-        <div class="progress-list">
-          <div v-for="st in memberStats" :key="st.name" class="progress-item">
-            <div class="progress-info">
-              <span class="name">
-                <span class="color-indicator" :style="{ backgroundColor: st.color }"></span>
-                {{ st.name }}
-              </span>
-              <span class="amount-percent">¥{{ st.amount.toLocaleString() }} ({{ st.percentage }}%)</span>
-            </div>
-            <div class="progress-bar-bg">
-              <div class="progress-bar-fill" :style="{ width: st.percentage + '%', backgroundColor: st.color }"></div>
-            </div>
+    <!-- 4. 统计分析与页签切换 (消费者 & 消费类型 页签切换查看) -->
+    <div v-if="filteredRecords.length > 0" class="stats-breakdown-card">
+      <div class="stats-tabs-header">
+        <button 
+          class="stats-tab-btn" 
+          :class="{ active: activeStatsTab === 'consumer' }" 
+          @click="activeStatsTab = 'consumer'"
+        >
+          消费者
+        </button>
+        <button 
+          class="stats-tab-btn" 
+          :class="{ active: activeStatsTab === 'category' }" 
+          @click="activeStatsTab = 'category'"
+        >
+          消费类型
+        </button>
+      </div>
+
+      <!-- Tab 1: 消费者支出占比 -->
+      <div v-if="activeStatsTab === 'consumer'" class="progress-list animate-fade-in">
+        <div v-for="st in memberStats" :key="st.name" class="progress-item">
+          <div class="progress-info">
+            <span class="name">
+              <span class="color-indicator" :style="{ backgroundColor: st.color }"></span>
+              {{ st.name }}
+            </span>
+            <span class="amount-percent">¥{{ st.amount.toLocaleString() }} ({{ st.percentage }}%)</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" :style="{ width: st.percentage + '%', backgroundColor: st.color }"></div>
           </div>
         </div>
       </div>
 
-      <!-- 消费类型构成 -->
-      <div class="breakdown-card">
-        <div class="card-header">
-          <h3>消费类型构成</h3>
-        </div>
-        <div class="progress-list">
-          <div v-for="cs in categoryStats.slice(0, 5)" :key="cs.name" class="progress-item">
-            <div class="progress-info">
-              <span class="name">
-                <span class="cat-icon">{{ cs.icon }}</span>
-                {{ cs.name }}
-              </span>
-              <span class="amount-percent">¥{{ cs.amount.toLocaleString() }} ({{ cs.percentage }}%)</span>
-            </div>
-            <div class="progress-bar-bg">
-              <div class="progress-bar-fill" :style="{ width: cs.percentage + '%', backgroundColor: cs.color }"></div>
-            </div>
+      <!-- Tab 2: 消费类型构成 -->
+      <div v-else-if="activeStatsTab === 'category'" class="progress-list animate-fade-in">
+        <div v-for="cs in categoryStats.slice(0, 5)" :key="cs.name" class="progress-item">
+          <div class="progress-info">
+            <span class="name">
+              <span class="cat-icon">{{ cs.icon }}</span>
+              {{ cs.name }}
+            </span>
+            <span class="amount-percent">¥{{ cs.amount.toLocaleString() }} ({{ cs.percentage }}%)</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" :style="{ width: cs.percentage + '%', backgroundColor: cs.color }"></div>
           </div>
         </div>
       </div>
@@ -441,6 +448,7 @@ const selectedMember = ref('all')
 const selectedCategory = ref('all')
 const searchKeyword = ref('')
 const isFilterDrawerOpen = ref(false)
+const activeStatsTab = ref('consumer')
 
 const timeOptions = [
   { label: '本周', value: 'week' },
@@ -1196,29 +1204,47 @@ onMounted(() => {
   box-shadow: 0 6px 16px rgba(13, 43, 46, 0.3);
 }
 
-/* 4. 统计分析与进度条 */
-.stats-breakdown-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.breakdown-card {
+/* 4. 统计分析与页签切换 */
+.stats-breakdown-card {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
   border: 1.5px solid rgba(13, 43, 46, 0.1);
   border-radius: 20px;
   padding: 16px 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+  margin-bottom: 20px;
 }
 
-.breakdown-card h3 {
-  font-size: 14px;
+.stats-tabs-header {
+  display: flex;
+  gap: 10px;
+  border-bottom: 1.5px solid #f1f5f9;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.stats-tab-btn {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  color: #334155;
+  border-radius: 12px;
+  padding: 6px 18px;
+  font-size: 13.5px;
   font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stats-tab-btn:hover {
+  border-color: #0D2B2E;
   color: #0D2B2E;
-  margin-top: 0;
-  margin-bottom: 12px;
+}
+
+.stats-tab-btn.active {
+  background: #0D2B2E;
+  border-color: #E8C268;
+  color: #E8C268;
+  box-shadow: 0 4px 12px rgba(13, 43, 46, 0.25);
 }
 
 .progress-list {
