@@ -1,17 +1,42 @@
 <template>
   <div class="ledger-container animate-fade-in">
-    <!-- 1. 顶栏总览卡片 (#0D2B2E 深墨绿 & #E8C268 鎏金) -->
+    <!-- 1. 顶栏总览卡片 (左右结构 #0D2B2E 深墨绿 & #E8C268 鎏金) -->
     <div class="overview-header-card">
-      <div class="overview-top-row">
-        <div class="summary-title-wrap">
-          <span class="badge-tag">家庭账本</span>
-          <h2>总支出概览</h2>
+      <div class="overview-flex-layout">
+        <!-- 左侧数据与统计区 -->
+        <div class="overview-left-col">
+          <div class="summary-title-wrap">
+            <span class="badge-tag">家庭账本</span>
+            <h2>总支出概览</h2>
+          </div>
+
+          <div class="summary-amount-box">
+            <div class="currency-symbol">¥</div>
+            <div class="amount-num">{{ formattedTotalAmount }}</div>
+          </div>
+
+          <div class="summary-meta-row">
+            <div class="meta-item">
+              <span class="meta-label">筛选笔数</span>
+              <span class="meta-val">{{ filteredRecords.length }} 笔</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">最高消费类型</span>
+              <span class="meta-val">{{ topCategoryName }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">主要消费者</span>
+              <span class="meta-val">{{ topMemberName }}</span>
+            </div>
+          </div>
         </div>
-        <div class="header-right-action">
+
+        <!-- 右侧大图点缀与记账按钮区 -->
+        <div class="overview-right-col">
           <img
             :src="huabanAddPic"
             alt="快捷记账"
-            class="header-deco-pic"
+            class="header-hero-pic"
             title="点击快捷记账"
             @click="openAddModal"
           />
@@ -19,26 +44,6 @@
             <el-icon><Plus /></el-icon>
             <span>记账</span>
           </button>
-        </div>
-      </div>
-
-      <div class="summary-amount-box">
-        <div class="currency-symbol">¥</div>
-        <div class="amount-num">{{ formattedTotalAmount }}</div>
-      </div>
-
-      <div class="summary-meta-row">
-        <div class="meta-item">
-          <span class="meta-label">筛选笔数</span>
-          <span class="meta-val">{{ filteredRecords.length }} 笔</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">最高消费类型</span>
-          <span class="meta-val">{{ topCategoryName }}</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">主要消费者</span>
-          <span class="meta-val">{{ topMemberName }}</span>
         </div>
       </div>
     </div>
@@ -786,17 +791,24 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.overview-top-row {
+.overview-flex-layout {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  gap: 24px;
+}
+
+.overview-left-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .summary-title-wrap {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-bottom: 10px;
 }
 
 .badge-tag {
@@ -816,28 +828,33 @@ onMounted(() => {
   margin: 0;
 }
 
-.header-right-action {
+.overview-right-col {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
+  justify-content: center;
+  gap: 12px;
+  flex-shrink: 0;
+  padding-left: 12px;
 }
 
-.header-deco-pic {
-  height: 52px;
+.header-hero-pic {
+  height: 125px;
   width: auto;
+  max-width: 180px;
   object-fit: contain;
   cursor: pointer;
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.45));
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
   user-select: none;
 }
 
-.header-deco-pic:hover {
-  transform: scale(1.15) rotate(4deg);
-  filter: drop-shadow(0 8px 20px rgba(232, 194, 104, 0.55));
+.header-hero-pic:hover {
+  transform: scale(1.12) rotate(3deg);
+  filter: drop-shadow(0 14px 28px rgba(232, 194, 104, 0.65));
 }
 
-.header-deco-pic:active {
+.header-hero-pic:active {
   transform: scale(0.95);
 }
 
