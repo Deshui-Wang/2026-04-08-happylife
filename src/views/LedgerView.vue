@@ -1,6 +1,6 @@
 <template>
   <div class="ledger-container animate-fade-in">
-    <!-- 1. 顶栏总览卡片 (Mobile Friendly Sticky Summary) -->
+    <!-- 1. 顶栏总览卡片 (#0D2B2E 深墨绿 & #E8C268 鎏金) -->
     <div class="overview-header-card">
       <div class="overview-top-row">
         <div class="summary-title-wrap">
@@ -9,7 +9,7 @@
         </div>
         <button class="btn-primary-add" @click="openAddModal">
           <el-icon><Plus /></el-icon>
-          <span>记一笔</span>
+          <span>记账</span>
         </button>
       </div>
 
@@ -171,7 +171,7 @@
       <div class="section-title-bar">
         <h3>账单明细 ({{ filteredRecords.length }})</h3>
         <div class="action-tools">
-          <el-button size="small" text type="primary" @click="exportJSON">导出数据</el-button>
+          <el-button size="small" text class="gold-text-btn" @click="exportJSON">导出数据</el-button>
           <el-button size="small" text type="danger" @click="confirmResetData">重置数据</el-button>
         </div>
       </div>
@@ -179,7 +179,7 @@
       <!-- 空状态 -->
       <div v-if="filteredRecords.length === 0" class="empty-state-card">
         <el-empty description="暂无符合条件的账单记录">
-          <el-button type="primary" @click="openAddModal">记一笔账</el-button>
+          <button class="btn-primary-add inline-empty-btn" @click="openAddModal">记账</button>
         </el-empty>
       </div>
 
@@ -225,14 +225,15 @@
       </div>
     </div>
 
-    <!-- 5. 移动端快捷记账弹窗 Modal (Add Record Dialog) -->
+    <!-- 5. 移动端快捷记账弹窗 Modal (Add Record Dialog - 滚动优化&完整显示) -->
     <el-dialog
       v-model="isAddModalOpen"
-      title="记一笔家庭账单"
-      width="90%"
-      max-width="520px"
-      custom-class="add-record-dialog"
+      title="记账"
+      width="92%"
+      max-width="500px"
+      class="custom-add-ledger-dialog"
       :align-center="true"
+      :append-to-body="true"
       destroy-on-close
     >
       <form class="add-form" @submit.prevent="saveRecord">
@@ -319,17 +320,19 @@
           />
         </div>
 
+        <!-- 底部提交操作区 -->
         <div class="dialog-footer-actions">
-          <el-button @click="isAddModalOpen = false">取消</el-button>
-          <el-button type="primary" native-type="submit" class="submit-btn">保存账单</el-button>
+          <button type="button" class="btn-cancel" @click="isAddModalOpen = false">取消</button>
+          <button type="submit" class="btn-submit-gold">保存账单</button>
         </div>
       </form>
     </el-dialog>
 
-    <!-- 6. 移动端底部悬浮记账按钮 (Mobile FAB) -->
+    <!-- 6. 移动端悬浮记账按钮 (Mobile FAB) -->
     <div class="mobile-fab-wrap" @click="openAddModal">
       <button class="fab-btn">
         <el-icon><Plus /></el-icon>
+        <span class="fab-text">记账</span>
       </button>
     </div>
   </div>
@@ -368,7 +371,7 @@ const CATEGORIES = [
 const STORAGE_KEY = 'happylife_family_ledger_records'
 
 // 筛选响应式状态
-const timeRange = ref('month') // 'week' | 'month' | 'year' | 'all' | 'custom'
+const timeRange = ref('month')
 const customDateRange = ref([])
 const selectedMember = ref('all')
 const selectedCategory = ref('all')
@@ -395,7 +398,7 @@ const form = reactive({
   timestamp: ''
 })
 
-// 初始化与样本 seed 数据
+// 初始化样本 seed 数据
 const initSeedData = () => {
   const now = dayjs()
   return [
@@ -476,16 +479,14 @@ const saveToStorage = () => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records.value))
 }
 
-// 辅助 lookup
 const getCatInfo = (catName) => {
-  return CATEGORIES.find(c => c.name === catName) || { name: catName, icon: '💰', color: '#6366f1', bg: '#e0e7ff' }
+  return CATEGORIES.find(c => c.name === catName) || { name: catName, icon: '💰', color: '#E8C268', bg: 'rgba(232,194,104,0.15)' }
 }
 
 const getMemberInfo = (memberName) => {
   return MEMBERS.find(m => m.name === memberName) || { name: memberName, color: '#64748b' }
 }
 
-// 格式化时间显示
 const formatTime = (ts) => {
   return dayjs(ts).format('HH:mm')
 }
@@ -496,7 +497,6 @@ const filteredRecords = computed(() => {
     const rDate = dayjs(r.timestamp)
     const now = dayjs()
 
-    // 1. 时间筛选
     if (timeRange.value === 'week') {
       if (!rDate.isSame(now, 'week')) return false
     } else if (timeRange.value === 'month') {
@@ -511,17 +511,14 @@ const filteredRecords = computed(() => {
       }
     }
 
-    // 2. 成员筛选
     if (selectedMember.value !== 'all' && r.user !== selectedMember.value) {
       return false
     }
 
-    // 3. 分类筛选
     if (selectedCategory.value !== 'all' && r.category !== selectedCategory.value) {
       return false
     }
 
-    // 4. 关键字搜索
     if (searchKeyword.value.trim()) {
       const kw = searchKeyword.value.trim().toLowerCase()
       const desc = (r.description || '').toLowerCase()
@@ -536,7 +533,6 @@ const filteredRecords = computed(() => {
   }).sort((a, b) => dayjs(b.timestamp).valueOf() - dayjs(a.timestamp).valueOf())
 })
 
-// 计算属性
 const totalAmount = computed(() => {
   return filteredRecords.value.reduce((sum, item) => sum + Number(item.amount || 0), 0)
 })
@@ -545,19 +541,16 @@ const formattedTotalAmount = computed(() => {
   return totalAmount.value.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 })
 
-// 最高消费分类
 const topCategoryName = computed(() => {
   if (categoryStats.value.length === 0) return '无记录'
   return categoryStats.value[0].name
 })
 
-// 主要支出成员
 const topMemberName = computed(() => {
   if (memberStats.value.length === 0) return '无记录'
   return memberStats.value[0].name
 })
 
-// 成员支出统计进度
 const memberStats = computed(() => {
   const total = totalAmount.value || 1
   const map = {}
@@ -578,7 +571,6 @@ const memberStats = computed(() => {
   }).sort((a, b) => b.amount - a.amount)
 })
 
-// 分类支出统计进度
 const categoryStats = computed(() => {
   const total = totalAmount.value || 1
   const map = {}
@@ -600,7 +592,6 @@ const categoryStats = computed(() => {
   }).sort((a, b) => b.amount - a.amount)
 })
 
-// 按日期分组记录
 const groupedRecords = computed(() => {
   const groups = {}
 
@@ -621,7 +612,6 @@ const groupedRecords = computed(() => {
   return Object.values(groups).sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
 })
 
-// 打开录入弹窗
 const openAddModal = () => {
   form.user = selectedMember.value !== 'all' ? selectedMember.value : '胖脆'
   form.category = selectedCategory.value !== 'all' ? selectedCategory.value : '饭菜'
@@ -631,13 +621,11 @@ const openAddModal = () => {
   isAddModalOpen.value = true
 }
 
-// 快捷累加金额
 const addQuickAmount = (val) => {
   const current = Number(form.amount || 0)
   form.amount = Number((current + val).toFixed(2))
 }
 
-// 保存录入账单
 const saveRecord = () => {
   if (!form.amount || Number(form.amount) <= 0) {
     ElMessage.warning('请输入有效的支出金额')
@@ -659,7 +647,6 @@ const saveRecord = () => {
   ElMessage.success('成功记入一笔账单')
 }
 
-// 删除记录
 const deleteRecord = (id) => {
   ElMessageBox.confirm('确定要删除这条账单记录吗？', '提示', {
     confirmButtonText: '删除',
@@ -672,7 +659,6 @@ const deleteRecord = (id) => {
   }).catch(() => {})
 }
 
-// 重置数据
 const confirmResetData = () => {
   ElMessageBox.confirm('确定要重置为默认样本数据吗？本地新增数据将被覆盖', '警告', {
     confirmButtonText: '重置',
@@ -685,7 +671,6 @@ const confirmResetData = () => {
   }).catch(() => {})
 }
 
-// 导出 JSON 数据
 const exportJSON = () => {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(records.value, null, 2))
   const downloadAnchor = document.createElement('a')
@@ -709,13 +694,14 @@ onMounted(() => {
   padding: 10px 10px 60px 10px;
 }
 
-/* 1. 顶栏总览卡片 */
+/* 1. 顶栏总览卡片 (#0D2B2E 深墨绿 & #E8C268 鎏金) */
 .overview-header-card {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);
+  background: linear-gradient(135deg, #0D2B2E 0%, #153e42 60%, #1c5257 100%);
   color: #fff;
   border-radius: 24px;
   padding: 24px 28px;
-  box-shadow: 0 16px 36px rgba(49, 46, 129, 0.25);
+  border: 1.5px solid rgba(232, 194, 104, 0.4);
+  box-shadow: 0 16px 36px rgba(13, 43, 46, 0.35);
   margin-bottom: 20px;
   position: relative;
   overflow: hidden;
@@ -735,18 +721,19 @@ onMounted(() => {
 }
 
 .badge-tag {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  padding: 3px 10px;
+  background: rgba(232, 194, 104, 0.2);
+  border: 1px solid rgba(232, 194, 104, 0.5);
+  padding: 3px 12px;
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 700;
-  color: #e0e7ff;
+  font-weight: 800;
+  color: #E8C268;
 }
 
 .summary-title-wrap h2 {
   font-size: 1.25rem;
   font-weight: 800;
+  color: #fff;
   margin: 0;
 }
 
@@ -754,48 +741,53 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #f43f5e 0%, #d946ef 100%);
-  color: #fff;
+  background: linear-gradient(135deg, #E8C268 0%, #d4a73b 100%);
+  color: #0D2B2E;
   border: none;
   border-radius: 20px;
-  padding: 10px 20px;
+  padding: 10px 22px;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(244, 63, 94, 0.4);
+  box-shadow: 0 8px 20px rgba(232, 194, 104, 0.35);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-primary-add:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(244, 63, 94, 0.5);
+  box-shadow: 0 12px 24px rgba(232, 194, 104, 0.5);
+}
+
+.inline-empty-btn {
+  margin-top: 10px;
 }
 
 .summary-amount-box {
   display: flex;
   align-items: baseline;
-  gap: 4px;
+  gap: 6px;
   margin-bottom: 18px;
 }
 
 .currency-symbol {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 900;
-  color: #c7d2fe;
+  color: #E8C268;
 }
 
 .amount-num {
-  font-size: 3.2rem;
+  font-size: 3.4rem;
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  color: #E8C268;
   letter-spacing: -1px;
   line-height: 1;
 }
 
 .summary-meta-row {
   display: flex;
-  gap: 24px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.2);
+  gap: 28px;
+  border-top: 1px dashed rgba(232, 194, 104, 0.25);
   padding-top: 14px;
 }
 
@@ -807,7 +799,7 @@ onMounted(() => {
 
 .meta-label {
   font-size: 11px;
-  color: #a5b4fc;
+  color: rgba(232, 194, 104, 0.75);
 }
 
 .meta-val {
@@ -818,12 +810,12 @@ onMounted(() => {
 
 /* 2. 多维度查询与筛选工具栏 */
 .query-toolbar-card {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1.5px solid rgba(13, 43, 46, 0.15);
   border-radius: 20px;
   padding: 18px 20px;
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05);
+  box-shadow: 0 10px 30px rgba(13, 43, 46, 0.05);
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -839,7 +831,7 @@ onMounted(() => {
 .section-label {
   font-size: 13px;
   font-weight: 800;
-  color: #475569;
+  color: #0D2B2E;
   white-space: nowrap;
   min-width: 60px;
 }
@@ -858,7 +850,7 @@ onMounted(() => {
 
 .pill-btn {
   background: #f1f5f9;
-  color: #64748b;
+  color: #475569;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 6px 14px;
@@ -874,14 +866,14 @@ onMounted(() => {
 
 .pill-btn:hover {
   background: #e2e8f0;
-  color: #1e293b;
+  color: #0D2B2E;
 }
 
 .pill-btn.active {
-  background: #6366f1;
-  border-color: #6366f1;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  background: #0D2B2E;
+  border-color: #E8C268;
+  color: #E8C268;
+  box-shadow: 0 4px 12px rgba(13, 43, 46, 0.3);
 }
 
 .member-dot {
@@ -916,9 +908,9 @@ onMounted(() => {
 }
 
 .breakdown-card {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
-  border: 1px solid #f1f5f9;
+  border: 1.5px solid rgba(13, 43, 46, 0.1);
   border-radius: 20px;
   padding: 16px 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
@@ -927,7 +919,7 @@ onMounted(() => {
 .breakdown-card h3 {
   font-size: 14px;
   font-weight: 800;
-  color: #334155;
+  color: #0D2B2E;
   margin-top: 0;
   margin-bottom: 12px;
 }
@@ -947,7 +939,7 @@ onMounted(() => {
 
 .progress-info .name {
   font-weight: 700;
-  color: #475569;
+  color: #1e293b;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -980,11 +972,11 @@ onMounted(() => {
 
 /* 4. 账单明细列表 */
 .records-list-section {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
   border-radius: 20px;
   padding: 20px;
-  border: 1px solid #f1f5f9;
+  border: 1.5px solid rgba(13, 43, 46, 0.1);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
 }
 
@@ -1000,8 +992,13 @@ onMounted(() => {
 .section-title-bar h3 {
   font-size: 15px;
   font-weight: 800;
-  color: #1e293b;
+  color: #0D2B2E;
   margin: 0;
+}
+
+.gold-text-btn {
+  color: #0D2B2E !important;
+  font-weight: 700;
 }
 
 .grouped-records-list {
@@ -1031,7 +1028,8 @@ onMounted(() => {
 
 .date-total {
   font-family: SFMono-Regular, Consolas, monospace;
-  color: #f43f5e;
+  color: #0D2B2E;
+  font-weight: 800;
 }
 
 .record-items-wrapper {
@@ -1053,7 +1051,7 @@ onMounted(() => {
 }
 
 .record-item:hover {
-  background: #fdf2f8;
+  background: #f0fdf4;
 }
 
 .cat-icon-badge {
@@ -1122,7 +1120,7 @@ onMounted(() => {
   font-size: 1.1rem;
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, monospace;
-  color: #1e293b;
+  color: #0D2B2E;
 }
 
 .btn-delete {
@@ -1139,7 +1137,44 @@ onMounted(() => {
   color: #ef4444;
 }
 
-/* 5. 弹窗与表单 */
+/* 5. 弹窗与表单 (滚动截断修复 & 深墨绿鎏金奢华黑金风) */
+:deep(.custom-add-ledger-dialog) {
+  top: 4vh !important;
+  margin: 0 auto !important;
+  max-height: 90vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 24px !important;
+  border: 1.5px solid #E8C268 !important;
+  background: #0D2B2E !important;
+  color: #fff !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden !important;
+}
+
+:deep(.custom-add-ledger-dialog .el-dialog__header) {
+  margin-right: 0 !important;
+  padding: 16px 20px !important;
+  background: #081e20 !important;
+  border-bottom: 1px dashed rgba(232, 194, 104, 0.3) !important;
+}
+
+:deep(.custom-add-ledger-dialog .el-dialog__title) {
+  color: #E8C268 !important;
+  font-weight: 900 !important;
+  font-size: 1.15rem !important;
+}
+
+:deep(.custom-add-ledger-dialog .el-dialog__headerbtn .el-dialog__close) {
+  color: #E8C268 !important;
+}
+
+:deep(.custom-add-ledger-dialog .el-dialog__body) {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 18px 20px !important;
+}
+
 .add-form {
   display: flex;
   flex-direction: column;
@@ -1155,7 +1190,7 @@ onMounted(() => {
 .form-label {
   font-size: 13px;
   font-weight: 800;
-  color: #334155;
+  color: #E8C268;
 }
 
 .member-selector-grid {
@@ -1165,11 +1200,11 @@ onMounted(() => {
 }
 
 .member-select-btn {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  color: #475569;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
   border-radius: 12px;
-  padding: 10px 0;
+  padding: 9px 0;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
@@ -1183,8 +1218,8 @@ onMounted(() => {
 }
 
 .cat-select-btn {
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   padding: 8px 4px;
   display: flex;
@@ -1196,9 +1231,9 @@ onMounted(() => {
 }
 
 .cat-select-btn.selected {
-  background: #fdf2f8;
-  border-color: #f43f5e;
-  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.15);
+  background: rgba(232, 194, 104, 0.15);
+  border-color: #E8C268;
+  box-shadow: 0 4px 12px rgba(232, 194, 104, 0.25);
 }
 
 .cat-btn-icon {
@@ -1208,28 +1243,28 @@ onMounted(() => {
 .cat-btn-name {
   font-size: 11px;
   font-weight: 700;
-  color: #334155;
+  color: #f1f5f9;
 }
 
 .amount-input-box {
   display: flex;
   align-items: center;
-  background: #f8fafc;
-  border: 2px solid #e2e8f0;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1.5px solid rgba(232, 194, 104, 0.4);
   border-radius: 14px;
   padding: 4px 14px;
   transition: border-color 0.2s;
 }
 
 .amount-input-box:focus-within {
-  border-color: #6366f1;
-  background: #fff;
+  border-color: #E8C268;
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .amount-input-box .symbol {
   font-size: 1.5rem;
   font-weight: 900;
-  color: #6366f1;
+  color: #E8C268;
   margin-right: 6px;
 }
 
@@ -1241,7 +1276,7 @@ onMounted(() => {
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, monospace;
   width: 100%;
-  color: #1e293b;
+  color: #E8C268;
 }
 
 .quick-amounts-row {
@@ -1252,29 +1287,55 @@ onMounted(() => {
 
 .quick-amt-btn {
   flex: 1;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(232, 194, 104, 0.3);
   border-radius: 8px;
   padding: 5px 0;
   font-size: 12px;
   font-weight: 700;
-  color: #475569;
+  color: #E8C268;
   cursor: pointer;
 }
 
 .quick-amt-btn:hover {
-  background: #e2e8f0;
+  background: rgba(232, 194, 104, 0.2);
 }
 
 .quick-amt-btn.reset {
-  color: #ef4444;
+  color: #f43f5e;
+  border-color: rgba(244, 63, 94, 0.3);
 }
 
 .dialog-footer-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(232, 194, 104, 0.25);
+}
+
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #cbd5e1;
+  border-radius: 12px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-submit-gold {
+  background: linear-gradient(135deg, #E8C268 0%, #d4a73b 100%);
+  color: #0D2B2E;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(232, 194, 104, 0.35);
 }
 
 /* 6. 移动端悬浮 FAB 按键 */
@@ -1287,17 +1348,18 @@ onMounted(() => {
 }
 
 .fab-btn {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f43f5e 0%, #d946ef 100%);
-  color: #fff;
-  border: none;
-  font-size: 24px;
-  box-shadow: 0 10px 25px rgba(244, 63, 94, 0.5);
+  height: 52px;
+  padding: 0 20px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #E8C268 0%, #d4a73b 100%);
+  color: #0D2B2E;
+  border: 1.5px solid #fff;
+  font-size: 15px;
+  font-weight: 900;
+  box-shadow: 0 10px 25px rgba(13, 43, 46, 0.5);
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
   cursor: pointer;
 }
 
