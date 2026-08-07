@@ -4,7 +4,7 @@
     <div class="family-hero-banner-inline">
       <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
       <div class="days-inline-text">
-        <span class="prefix">—— 已经</span>
+        <span class="prefix">已经</span>
         <span class="num">{{ timeDiff.totalDays.toLocaleString() }}</span>
         <span class="unit">天</span>
         <span class="heart-sparkle">💕</span>
@@ -20,31 +20,31 @@
       <div class="timer-cards-grid">
         <div class="timer-unit-card">
           <div class="number-glow">{{ timeDiff.years }}</div>
-          <div class="unit-label">年 (YEARS)</div>
+          <div class="unit-label">YEARS</div>
         </div>
         <div class="colon-separator">:</div>
         
         <div class="timer-unit-card">
           <div class="number-glow">{{ padZero(timeDiff.days) }}</div>
-          <div class="unit-label">天 (DAYS)</div>
+          <div class="unit-label">DAYS</div>
         </div>
         <div class="colon-separator">:</div>
 
         <div class="timer-unit-card">
           <div class="number-glow">{{ padZero(timeDiff.hours) }}</div>
-          <div class="unit-label">小时 (HOURS)</div>
+          <div class="unit-label">HOURS</div>
         </div>
         <div class="colon-separator">:</div>
 
         <div class="timer-unit-card">
           <div class="number-glow">{{ padZero(timeDiff.minutes) }}</div>
-          <div class="unit-label">分钟 (MINUTES)</div>
+          <div class="unit-label">MINUTES</div>
         </div>
         <div class="colon-separator">:</div>
 
         <div class="timer-unit-card highlight-card">
           <div class="number-glow sec-anim">{{ padZero(timeDiff.seconds) }}</div>
-          <div class="unit-label">秒 (SECONDS)</div>
+          <div class="unit-label">SECONDS</div>
         </div>
       </div>
     </div>
@@ -164,19 +164,19 @@ onUnmounted(() => {
 }
 
 .days-inline-text .prefix {
-  font-size: 1.7rem;
-  font-weight: 700;
+  font-size: 2.6rem;
+  font-weight: 400;
   color: #ec6b8b;
-  letter-spacing: 1px;
-  font-family: 'Comfortaa', 'PingFang SC', sans-serif;
-  opacity: 0.92;
+  letter-spacing: 2px;
+  font-family: 'Zhi Mang Xing', 'Ma Shan Zheng', 'Long Cang', 'STKaiti', 'KaiTi', cursive;
+  opacity: 0.95;
 }
 
 .days-inline-text .num {
-  font-size: 3.8rem;
+  font-size: 5rem;
   font-weight: 900;
-  font-family: 'Dancing Script', 'Caveat', 'Comfortaa', cursive, sans-serif;
-  background: linear-gradient(135deg, #ec6b8b 0%, #ff85a1 45%, #b87cf8 100%);
+  font-family: 'Pacifico', 'Quicksand', 'Outfit', 'Comfortaa', cursive, sans-serif;
+  background: linear-gradient(135deg, #ec6b8b 0%, #ff85a1 45%, #c084fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1;
@@ -185,11 +185,12 @@ onUnmounted(() => {
 }
 
 .days-inline-text .unit {
-  font-size: 1.7rem;
-  font-weight: 700;
+  font-size: 2.6rem;
+  font-weight: 400;
   color: #ec6b8b;
-  font-family: 'Comfortaa', 'PingFang SC', sans-serif;
-  opacity: 0.92;
+  letter-spacing: 2px;
+  font-family: 'Zhi Mang Xing', 'Ma Shan Zheng', 'Long Cang', 'STKaiti', 'KaiTi', cursive;
+  opacity: 0.95;
 }
 
 .days-inline-text .heart-sparkle {
