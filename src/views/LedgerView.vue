@@ -367,13 +367,13 @@ const MEMBERS = [
   { name: '🍓草莓', color: '#10b981' }
 ]
 
-// 2. 常量定义：七大账单分类
+// 2. 常量定义：七大账单分类 (默认只显示第一个emoji图标)
 const CATEGORIES = [
-  { name: '饭菜', icon: '🍚 🥩', color: '#ef4444', bg: '#fee2e2' },
-  { name: '水果零食', icon: '🍎 🍟 🍦', color: '#f59e0b', bg: '#fef3c7' },
-  { name: '水电日常', icon: '💡 🔌 🧹', color: '#06b6d4', bg: '#cffaff' },
-  { name: '交通', icon: '🚗 ⛽️ 🅿️', color: '#3b82f6', bg: '#dbeafe' },
-  { name: '旅行和演出', icon: '✈️ 🎤 🎬', color: '#8b5cf6', bg: '#ede9fe' },
+  { name: '饭菜', icon: '🍚', color: '#ef4444', bg: '#fee2e2' },
+  { name: '水果零食', icon: '🍎', color: '#f59e0b', bg: '#fef3c7' },
+  { name: '水电日常', icon: '💡', color: '#06b6d4', bg: '#cffaff' },
+  { name: '交通', icon: '🚗', color: '#3b82f6', bg: '#dbeafe' },
+  { name: '旅行和演出', icon: '✈️', color: '#8b5cf6', bg: '#ede9fe' },
   { name: '人情往来', icon: '🧧', color: '#ec4899', bg: '#fce7f3' },
   { name: '礼物基金', icon: '🎁', color: '#10b981', bg: '#d1fae5' }
 ]
@@ -521,8 +521,22 @@ const saveToStorage = () => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records.value))
 }
 
+// 获取安全的单图标 emoji (默认只显示第一个emoji)
+const getFirstEmoji = (iconStr) => {
+  if (!iconStr) return '💰'
+  const parts = iconStr.trim().split(/\s+/)
+  return parts[0] || '💰'
+}
+
 const getCatInfo = (catName) => {
-  return CATEGORIES.find(c => c.name === catName) || { name: catName, icon: '💰', color: '#E8C268', bg: 'rgba(232,194,104,0.15)' }
+  const found = CATEGORIES.find(c => c.name === catName)
+  if (found) {
+    return {
+      ...found,
+      icon: getFirstEmoji(found.icon)
+    }
+  }
+  return { name: catName, icon: '💰', color: '#E8C268', bg: 'rgba(232,194,104,0.15)' }
 }
 
 const getMemberInfo = (memberName) => {
