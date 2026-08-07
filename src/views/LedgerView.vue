@@ -7,10 +7,19 @@
           <span class="badge-tag">家庭账本</span>
           <h2>总支出概览</h2>
         </div>
-        <button class="btn-primary-add" @click="openAddModal">
-          <el-icon><Plus /></el-icon>
-          <span>记账</span>
-        </button>
+        <div class="header-right-action">
+          <img
+            :src="huabanAddPic"
+            alt="快捷记账"
+            class="header-deco-pic"
+            title="点击快捷记账"
+            @click="openAddModal"
+          />
+          <button class="btn-primary-add" @click="openAddModal">
+            <el-icon><Plus /></el-icon>
+            <span>记账</span>
+          </button>
+        </div>
       </div>
 
       <div class="summary-amount-box">
@@ -355,6 +364,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import huabanAddPic from '../pic/huaban-6928070080.webp'
 
 dayjs.extend(isSameOrAfter)
 dayjs.extend(isSameOrBefore)
@@ -804,6 +814,31 @@ onMounted(() => {
   font-weight: 800;
   color: #fff;
   margin: 0;
+}
+
+.header-right-action {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-deco-pic {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+  user-select: none;
+}
+
+.header-deco-pic:hover {
+  transform: scale(1.15) rotate(4deg);
+  filter: drop-shadow(0 8px 20px rgba(232, 194, 104, 0.55));
+}
+
+.header-deco-pic:active {
+  transform: scale(0.95);
 }
 
 .btn-primary-add {
