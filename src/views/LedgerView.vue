@@ -194,12 +194,11 @@
         </button>
       </div>
 
-      <!-- Tab 1: 消费者支出占比 (温情果冻胶囊条) -->
+      <!-- Tab 1: 消费者支出占比 (清爽单行横线分割) -->
       <div v-if="activeStatsTab === 'consumer'" class="sweet-stats-list animate-fade-in">
-        <div v-for="(st, idx) in memberStats" :key="st.name" class="sweet-item-card">
+        <div v-for="st in memberStats" :key="st.name" class="sweet-item-line">
           <div class="sweet-info-row">
             <div class="sweet-name-col">
-              <span class="sweet-rank-tag" :class="'rank-' + (idx + 1)">{{ idx === 0 ? '👑' : '❤️' }}</span>
               <span class="sweet-color-dot" :style="{ backgroundColor: st.color }"></span>
               <span class="sweet-item-name">{{ st.name }}</span>
             </div>
@@ -223,9 +222,9 @@
         </div>
       </div>
 
-      <!-- Tab 2: 消费类型构成 (温情果冻胶囊条) -->
+      <!-- Tab 2: 消费类型构成 (清爽单行横线分割) -->
       <div v-else-if="activeStatsTab === 'category'" class="sweet-stats-list animate-fade-in">
-        <div v-for="cs in categoryStats.slice(0, 6)" :key="cs.name" class="sweet-item-card">
+        <div v-for="cs in categoryStats.slice(0, 6)" :key="cs.name" class="sweet-item-line">
           <div class="sweet-info-row">
             <div class="sweet-name-col">
               <span class="sweet-cat-emoji">{{ cs.icon }}</span>
@@ -1287,22 +1286,17 @@ onMounted(() => {
 .sweet-stats-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
 }
 
-.sweet-item-card {
-  background: #ffffff;
-  border: 1.5px solid #f1f5f9;
-  border-radius: 18px;
-  padding: 12px 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-  transition: all 0.25s ease;
+.sweet-item-line {
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.2s;
 }
 
-.sweet-item-card:hover {
-  border-color: rgba(232, 194, 104, 0.6);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(13, 43, 46, 0.06);
+.sweet-item-line:last-child {
+  border-bottom: none;
 }
 
 .sweet-info-row {
