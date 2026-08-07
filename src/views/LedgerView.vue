@@ -175,8 +175,8 @@
       </template>
     </el-drawer>
 
-    <!-- 4. 统计分析与页签切换 (消费者 & 消费类型 页签切换查看) -->
-    <div v-if="filteredRecords.length > 0" class="stats-breakdown-card">
+    <!-- 4. 统计分析与页签切换 (3D 胶囊管发光波浪条 + 渐变毛玻璃卡片) -->
+    <div v-if="filteredRecords.length > 0" class="glass-stats-card">
       <div class="stats-tabs-header">
         <button 
           class="stats-tab-btn" 
@@ -194,52 +194,58 @@
         </button>
       </div>
 
-      <!-- Tab 1: 消费者支出占比 (高科技霓虹动感光轨) -->
-      <div v-if="activeStatsTab === 'consumer'" class="tech-progress-list animate-fade-in">
-        <div v-for="st in memberStats" :key="st.name" class="tech-progress-item">
-          <div class="tech-progress-info">
-            <div class="tech-name-wrap">
-              <span class="tech-color-dot" :style="{ backgroundColor: st.color, boxShadow: `0 0 8px ${st.color}` }"></span>
-              <span class="tech-item-name">{{ st.name }}</span>
+      <!-- Tab 1: 消费者支出占比 (3D 胶囊管发光波浪条) -->
+      <div v-if="activeStatsTab === 'consumer'" class="capsule-stats-list animate-fade-in">
+        <div v-for="(st, idx) in memberStats" :key="st.name" class="glass-capsule-item">
+          <div class="capsule-info-row">
+            <div class="capsule-name-col">
+              <span class="rank-badge" :class="'rank-' + (idx + 1)">TOP {{ idx + 1 }}</span>
+              <span class="capsule-color-dot" :style="{ backgroundColor: st.color, boxShadow: `0 0 10px ${st.color}` }"></span>
+              <span class="capsule-item-name">{{ st.name }}</span>
             </div>
-            <div class="tech-metrics-wrap">
-              <span class="tech-amount-text">¥{{ st.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
-              <span class="tech-percent-badge" :style="{ borderColor: st.color, color: st.color }">{{ st.percentage }}%</span>
+            <div class="capsule-metrics-col">
+              <span class="capsule-amount">¥{{ st.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+              <span class="capsule-percent-chip" :style="{ borderColor: st.color, color: st.color }">{{ st.percentage }}%</span>
             </div>
           </div>
-          <div class="tech-bar-track">
+
+          <!-- 3D 胶囊管道与液体发光充满度 -->
+          <div class="capsule-3d-tube">
             <div 
-              class="tech-bar-fill" 
+              class="capsule-fluid-fill" 
               :style="{ 
                 width: st.percentage + '%', 
                 background: getGradientColor(st.color),
-                boxShadow: `0 0 10px ${st.color}80`
+                boxShadow: `0 4px 14px ${st.color}80`
               }"
             ></div>
           </div>
         </div>
       </div>
 
-      <!-- Tab 2: 消费类型构成 (高科技霓虹动感光轨) -->
-      <div v-else-if="activeStatsTab === 'category'" class="tech-progress-list animate-fade-in">
-        <div v-for="cs in categoryStats.slice(0, 6)" :key="cs.name" class="tech-progress-item">
-          <div class="tech-progress-info">
-            <div class="tech-name-wrap">
-              <span class="tech-cat-emoji">{{ cs.icon }}</span>
-              <span class="tech-item-name">{{ cs.name }}</span>
+      <!-- Tab 2: 消费类型构成 (3D 胶囊管发光波浪条) -->
+      <div v-else-if="activeStatsTab === 'category'" class="capsule-stats-list animate-fade-in">
+        <div v-for="(cs, idx) in categoryStats.slice(0, 6)" :key="cs.name" class="glass-capsule-item">
+          <div class="capsule-info-row">
+            <div class="capsule-name-col">
+              <span class="rank-badge" :class="'rank-' + (idx + 1)">TOP {{ idx + 1 }}</span>
+              <span class="capsule-cat-emoji">{{ cs.icon }}</span>
+              <span class="capsule-item-name">{{ cs.name }}</span>
             </div>
-            <div class="tech-metrics-wrap">
-              <span class="tech-amount-text">¥{{ cs.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
-              <span class="tech-percent-badge" :style="{ borderColor: cs.color, color: cs.color }">{{ cs.percentage }}%</span>
+            <div class="capsule-metrics-col">
+              <span class="capsule-amount">¥{{ cs.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+              <span class="capsule-percent-chip" :style="{ borderColor: cs.color, color: cs.color }">{{ cs.percentage }}%</span>
             </div>
           </div>
-          <div class="tech-bar-track">
+
+          <!-- 3D 胶囊管道与液体发光充满度 -->
+          <div class="capsule-3d-tube">
             <div 
-              class="tech-bar-fill" 
+              class="capsule-fluid-fill" 
               :style="{ 
                 width: cs.percentage + '%', 
                 background: getGradientColor(cs.color),
-                boxShadow: `0 0 10px ${cs.color}80`
+                boxShadow: `0 4px 14px ${cs.color}80`
               }"
             ></div>
           </div>
@@ -1236,145 +1242,149 @@ onMounted(() => {
   box-shadow: 0 6px 16px rgba(13, 43, 46, 0.3);
 }
 
-/* 4. 统计分析与页签切换 */
-.stats-breakdown-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(13, 43, 46, 0.1);
-  border-radius: 20px;
-  padding: 16px 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
-  margin-bottom: 20px;
+/* 4. 统计分析与页签切换 (3D 胶囊管发光波浪条 + 渐变毛玻璃卡片) */
+.glass-stats-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1.5px solid rgba(232, 194, 104, 0.4);
+  border-radius: 24px;
+  padding: 20px 22px;
+  box-shadow: 0 16px 40px rgba(13, 43, 46, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  margin-bottom: 22px;
 }
 
-.stats-tabs-header {
-  display: flex;
-  gap: 10px;
-  border-bottom: 1.5px solid #f1f5f9;
-  padding-bottom: 10px;
-  margin-bottom: 14px;
-}
-
-.stats-tab-btn {
-  background: #f8fafc;
-  border: 1.5px solid #cbd5e1;
-  color: #334155;
-  border-radius: 12px;
-  padding: 6px 18px;
-  font-size: 13.5px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.stats-tab-btn:hover {
-  border-color: #0D2B2E;
-  color: #0D2B2E;
-}
-
-.stats-tab-btn.active {
-  background: #0D2B2E;
-  border-color: #E8C268;
-  color: #E8C268;
-  box-shadow: 0 4px 12px rgba(13, 43, 46, 0.25);
-}
-
-/* 高科技智能动感柱形图 */
-.tech-progress-list {
+.capsule-stats-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
-.tech-progress-item {
-  background: rgba(248, 250, 252, 0.85);
+.glass-capsule-item {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
   border: 1.5px solid rgba(226, 232, 240, 0.9);
-  border-radius: 14px;
-  padding: 10px 14px;
-  transition: all 0.25s ease;
+  border-radius: 18px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.tech-progress-item:hover {
+.glass-capsule-item:hover {
   background: #ffffff;
   border-color: #0D2B2E;
-  box-shadow: 0 6px 16px rgba(13, 43, 46, 0.08);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.008);
+  box-shadow: 0 10px 24px rgba(13, 43, 46, 0.12);
 }
 
-.tech-progress-info {
+.capsule-info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
-.tech-name-wrap {
+.capsule-name-col {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.tech-color-dot {
+.rank-badge {
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-family: SFMono-Regular, Consolas, monospace;
+}
+
+.rank-badge.rank-1 {
+  background: linear-gradient(135deg, #0D2B2E 0%, #1c5257 100%);
+  color: #E8C268;
+  border: 1px solid #E8C268;
+  box-shadow: 0 2px 8px rgba(232, 194, 104, 0.3);
+}
+
+.rank-badge.rank-2 {
+  background: #e2e8f0;
+  color: #0F172A;
+  border: 1px solid #94a3b8;
+}
+
+.rank-badge.rank-3 {
+  background: #ffedd5;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+}
+
+.capsule-color-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
 }
 
-.tech-cat-emoji {
-  font-size: 16px;
+.capsule-cat-emoji {
+  font-size: 17px;
   line-height: 1;
 }
 
-.tech-item-name {
-  font-size: 13px;
+.capsule-item-name {
+  font-size: 13.5px;
   font-weight: 800;
   color: #0D2B2E;
 }
 
-.tech-metrics-wrap {
+.capsule-metrics-col {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.tech-amount-text {
-  font-size: 13.5px;
+.capsule-amount {
+  font-size: 14px;
   font-weight: 900;
-  font-family: SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-family: SFMono-Regular, Consolas, monospace;
   color: #0D2B2E;
 }
 
-.tech-percent-badge {
-  font-size: 11px;
+.capsule-percent-chip {
+  font-size: 11.5px;
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, monospace;
-  padding: 1px 7px;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
+  padding: 2px 9px;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
   background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
-.tech-bar-track {
+/* 3D 立体胶囊管道 Track */
+.capsule-3d-tube {
   width: 100%;
-  height: 10px;
-  background: rgba(13, 43, 46, 0.06);
-  border: 1px solid rgba(13, 43, 46, 0.08);
-  border-radius: 10px;
-  padding: 1px;
+  height: 16px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.14) 0%, rgba(15, 23, 42, 0.04) 100%);
+  border: 1.5px solid rgba(13, 43, 46, 0.15);
+  border-radius: 12px;
+  padding: 2px;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
-.tech-bar-fill {
+/* 3D 液体充满度 & 顶部立体高光与波浪动效 */
+.capsule-fluid-fill {
   height: 100%;
   border-radius: 8px;
   position: relative;
-  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%);
 }
 
-/* 科技感动态流光扫光效果 */
-.tech-bar-fill::before {
+/* 液体顶部3D反射光条 */
+.capsule-fluid-fill::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1384,13 +1394,13 @@ onMounted(() => {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0.75) 50%,
     transparent 100%
   );
-  animation: techBarShimmer 2.5s infinite;
+  animation: liquidWaveSweeping 2.8s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes techBarShimmer {
+@keyframes liquidWaveSweeping {
   0% {
     left: -100%;
   }
@@ -1399,18 +1409,18 @@ onMounted(() => {
   }
 }
 
-/* 科技感脉冲高光点 */
-.tech-bar-fill::after {
+/* 3D 胶囊末端液体水滴圆帽 */
+.capsule-fluid-fill::after {
   content: '';
   position: absolute;
   right: 1px;
   top: 50%;
   transform: translateY(-50%);
-  width: 5px;
-  height: 5px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 0 6px #ffffff, 0 0 10px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 8px #ffffff, 0 0 14px rgba(255, 255, 255, 0.9);
 }
 
 /* 5. 账单明细列表 */
