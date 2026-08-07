@@ -47,84 +47,126 @@
       </div>
     </div>
 
-    <!-- 2. 多维度查询与筛选工具栏 (Query Toolbar) -->
-    <div class="query-toolbar-card">
-      <!-- 时间范围 Filter Pills -->
-      <div class="toolbar-section">
-        <div class="section-label">时间范围</div>
-        <div class="pills-scroll-group">
-          <button 
-            v-for="item in timeOptions" 
-            :key="item.value"
-            class="pill-btn"
-            :class="{ active: timeRange === item.value }"
-            @click="timeRange = item.value"
-          >
-            {{ item.label }}
-          </button>
+    <!-- 2. 快捷筛选触发条与“查询”按钮 (极佳适配PC与手机端) -->
+    <div class="filter-bar-card" @click="isFilterDrawerOpen = true">
+      <div class="filter-info-tags">
+        <span class="active-filter-badge">
+          <el-icon><Calendar /></el-icon>
+          {{ getTimeRangeLabel }}
+        </span>
+        <span class="active-filter-badge">
+          <el-icon><User /></el-icon>
+          {{ getMemberLabel }}
+        </span>
+        <span class="active-filter-badge">
+          <el-icon><Discount /></el-icon>
+          {{ getCategoryLabel }}
+        </span>
+        <span v-if="searchKeyword" class="active-filter-badge keyword">
+          "{{ searchKeyword }}"
+        </span>
+      </div>
+
+      <button class="btn-query-trigger" @click.stop="isFilterDrawerOpen = true">
+        <el-icon><Search /></el-icon>
+        <span>查询</span>
+      </button>
+    </div>
+
+    <!-- 3. 上滑条件查询抽屉 Modal (Slide-up Filter Drawer) -->
+    <el-drawer
+      v-model="isFilterDrawerOpen"
+      title="筛选条件查询"
+      direction="btt"
+      size="85%"
+      class="custom-filter-drawer"
+      destroy-on-close
+    >
+      <div class="drawer-filter-body">
+        <!-- 时间范围 -->
+        <div class="drawer-group">
+          <label class="drawer-group-label">时间范围</label>
+          <div class="drawer-pills-grid">
+            <button 
+              v-for="item in timeOptions" 
+              :key="item.value"
+              class="drawer-pill-btn"
+              :class="{ active: timeRange === item.value }"
+              @click="timeRange = item.value"
+            >
+              {{ item.label }}
+            </button>
+          </div>
+          <div v-if="timeRange === 'custom'" class="drawer-custom-date">
+            <el-date-picker
+              v-model="customDateRange"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              style="width: 100%;"
+            />
+          </div>
         </div>
-      </div>
 
-      <!-- 自定义时间选择器 (When timeRange === 'custom') -->
-      <div v-if="timeRange === 'custom'" class="custom-date-picker-wrap">
-        <el-date-picker
-          v-model="customDateRange"
-          type="daterange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          format="YYYY-MM-DD"
-          value-format="YYYY-MM-DD"
-          size="default"
-          style="width: 100%;"
-        />
-      </div>
-
-      <!-- 按消费者查询 Consumer Pills -->
-      <div class="toolbar-section">
-        <div class="section-label">消费者</div>
-        <div class="pills-scroll-group">
-          <button
-            class="pill-btn member-pill"
-            :class="{ active: selectedMember === 'all' }"
-            @click="selectedMember = 'all'"
-          >
-            全部成员
-          </button>
-          <button
-            v-for="m in MEMBERS"
-            :key="m.name"
-            class="pill-btn member-pill"
-            :class="{ active: selectedMember === m.name }"
-            :style="selectedMember === m.name ? { backgroundColor: m.color, borderColor: m.color, color: '#fff' } : {}"
-            @click="selectedMember = m.name"
-          >
-            <span class="member-dot" :style="{ backgroundColor: m.color }"></span>
-            {{ m.name }}
-          </button>
+        <!-- 消费者 -->
+        <div class="drawer-group">
+          <label class="drawer-group-label">消费者</label>
+          <div class="drawer-pills-grid">
+            <button
+              class="drawer-pill-btn"
+              :class="{ active: selectedMember === 'all' }"
+              @click="selectedMember = 'all'"
+            >
+              全部成员
+            </button>
+            <button
+              v-for="m in MEMBERS"
+              :key="m.name"
+              class="drawer-pill-btn"
+              :class="{ active: selectedMember === m.name }"
+              :style="selectedMember === m.name ? { backgroundColor: m.color, borderColor: m.color, color: '#fff' } : {}"
+              @click="selectedMember = m.name"
+            >
+              {{ m.name }}
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- 消费类型 Filter & 搜索框 -->
-      <div class="toolbar-bottom-row">
-        <div class="category-select-wrap">
-          <el-select v-model="selectedCategory" placeholder="选择消费类型" size="default" style="width: 100%;">
-            <el-option label="全部类型" value="all" />
-            <el-option
+        <!-- 消费类型 -->
+        <div class="drawer-group">
+          <label class="drawer-group-label">消费类型</label>
+          <div class="drawer-cat-grid">
+            <button
+              class="drawer-cat-btn"
+              :class="{ active: selectedCategory === 'all' }"
+              @click="selectedCategory = 'all'"
+            >
+              全部分类
+            </button>
+            <button
               v-for="c in CATEGORIES"
               :key="c.name"
-              :label="`${c.icon} ${c.name}`"
-              :value="c.name"
-            />
-          </el-select>
+              class="drawer-cat-btn"
+              :class="{ active: selectedCategory === c.name }"
+              @click="selectedCategory = c.name"
+            >
+              <span>{{ c.icon }}</span>
+              <span>{{ c.name }}</span>
+            </button>
+          </div>
         </div>
 
-        <div class="search-input-wrap">
+        <!-- 关键字搜索 -->
+        <div class="drawer-group">
+          <label class="drawer-group-label">关键字搜索</label>
           <el-input
             v-model="searchKeyword"
-            placeholder="搜索描述备注..."
+            placeholder="输入描述/备注关键字..."
             clearable
-            size="default"
+            size="large"
           >
             <template #prefix>
               <el-icon><Search /></el-icon>
@@ -132,9 +174,16 @@
           </el-input>
         </div>
       </div>
-    </div>
 
-    <!-- 3. 统计分析与进度条 (Member & Category Breakdown) -->
+      <template #footer>
+        <div class="drawer-footer-actions">
+          <button class="btn-drawer-reset" @click="resetFilters">重置条件</button>
+          <button class="btn-drawer-apply" @click="isFilterDrawerOpen = false">完成筛选</button>
+        </div>
+      </template>
+    </el-drawer>
+
+    <!-- 4. 统计分析与进度条 (Member & Category Breakdown) -->
     <div v-if="filteredRecords.length > 0" class="stats-breakdown-grid">
       <!-- 消费者支出占比 -->
       <div class="breakdown-card">
@@ -179,7 +228,7 @@
       </div>
     </div>
 
-    <!-- 4. 账单明细列表 (Grouped History List) -->
+    <!-- 5. 账单明细列表 (Grouped History List) -->
     <div class="records-list-section">
       <div class="section-title-bar">
         <h3>账单明细 ({{ filteredRecords.length }})</h3>
@@ -245,7 +294,7 @@
       </div>
     </div>
 
-    <!-- 5. 移动端快捷记账弹窗 Modal (支持消费者多选) -->
+    <!-- 6. 移动端快捷记账弹窗 Modal (支持消费者多选) -->
     <el-dialog
       v-model="isAddModalOpen"
       title="记账"
@@ -351,7 +400,7 @@
       </form>
     </el-dialog>
 
-    <!-- 6. 移动端悬浮记账按钮 (Mobile FAB) -->
+    <!-- 7. 移动端悬浮记账按钮 (Mobile FAB) -->
     <div class="mobile-fab-wrap" @click="openAddModal">
       <button class="fab-btn">
         <span class="fab-text">点我</span>
@@ -362,7 +411,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { Plus, Search, Delete } from '@element-plus/icons-vue'
+import { Plus, Search, Delete, Calendar, User, Discount } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
@@ -399,6 +448,7 @@ const customDateRange = ref([])
 const selectedMember = ref('all')
 const selectedCategory = ref('all')
 const searchKeyword = ref('')
+const isFilterDrawerOpen = ref(false)
 
 const timeOptions = [
   { label: '本周', value: 'week' },
@@ -407,6 +457,31 @@ const timeOptions = [
   { label: '全部记录', value: 'all' },
   { label: '自定义时间', value: 'custom' }
 ]
+
+// 筛选概要计算属性
+const getTimeRangeLabel = computed(() => {
+  const opt = timeOptions.find(o => o.value === timeRange.value)
+  return opt ? opt.label : '时间范围'
+})
+
+const getMemberLabel = computed(() => {
+  if (selectedMember.value === 'all') return '全部成员'
+  return selectedMember.value
+})
+
+const getCategoryLabel = computed(() => {
+  if (selectedCategory.value === 'all') return '全部分类'
+  return selectedCategory.value
+})
+
+const resetFilters = () => {
+  timeRange.value = 'month'
+  customDateRange.value = []
+  selectedMember.value = 'all'
+  selectedCategory.value = 'all'
+  searchKeyword.value = ''
+  ElMessage.success('已重置筛选条件')
+}
 
 // 账单记录列表数据
 const records = ref([])
@@ -534,7 +609,7 @@ const saveToStorage = () => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records.value))
 }
 
-// 获取安全的单图标 emoji (默认只显示第一个emoji)
+// 获取安全的单图标 emoji
 const getFirstEmoji = (iconStr) => {
   if (!iconStr) return '💰'
   const parts = iconStr.trim().split(/\s+/)
@@ -774,6 +849,7 @@ onMounted(() => {
   max-width: 1000px;
   margin: 0 auto;
   padding: 10px 10px 60px 10px;
+  overflow-x: hidden;
 }
 
 /* 1. 顶栏总览卡片 (#0D2B2E 深墨绿 & #E8C268 鎏金) */
@@ -781,10 +857,10 @@ onMounted(() => {
   background: linear-gradient(135deg, #0D2B2E 0%, #153e42 60%, #1c5257 100%);
   color: #fff;
   border-radius: 24px;
-  padding: 24px 28px;
+  padding: 22px 24px;
   border: 1.5px solid rgba(232, 194, 104, 0.4);
   box-shadow: 0 16px 36px rgba(13, 43, 46, 0.35);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   position: relative;
   overflow: hidden;
 }
@@ -793,20 +869,21 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
 .overview-left-col {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .summary-title-wrap {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .badge-tag {
@@ -831,25 +908,24 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
-  padding-left: 12px;
 }
 
 .header-hero-pic {
-  height: 125px;
+  height: 110px;
   width: auto;
-  max-width: 180px;
+  max-width: 160px;
   object-fit: contain;
   cursor: pointer;
-  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
   user-select: none;
 }
 
 .header-hero-pic:hover {
-  transform: scale(1.12) rotate(3deg);
-  filter: drop-shadow(0 14px 28px rgba(232, 194, 104, 0.65));
+  transform: scale(1.1) rotate(3deg);
+  filter: drop-shadow(0 12px 24px rgba(232, 194, 104, 0.6));
 }
 
 .header-hero-pic:active {
@@ -859,12 +935,12 @@ onMounted(() => {
 .btn-primary-add {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
   background: linear-gradient(135deg, #E8C268 0%, #d4a73b 100%);
   color: #0D2B2E;
   border: none;
   border-radius: 20px;
-  padding: 10px 22px;
+  padding: 9px 24px;
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
@@ -884,18 +960,18 @@ onMounted(() => {
 .summary-amount-box {
   display: flex;
   align-items: baseline;
-  gap: 6px;
-  margin-bottom: 18px;
+  gap: 4px;
+  margin-bottom: 14px;
 }
 
 .currency-symbol {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 900;
   color: #E8C268;
 }
 
 .amount-num {
-  font-size: 3.4rem;
+  font-size: 3rem;
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
   color: #E8C268;
@@ -905,9 +981,9 @@ onMounted(() => {
 
 .summary-meta-row {
   display: flex;
-  gap: 28px;
+  gap: 20px;
   border-top: 1px dashed rgba(232, 194, 104, 0.25);
-  padding-top: 14px;
+  padding-top: 12px;
 }
 
 .meta-item {
@@ -927,98 +1003,208 @@ onMounted(() => {
   color: #fff;
 }
 
-/* 2. 多维度查询与筛选工具栏 */
-.query-toolbar-card {
+/* 2. 快捷筛选触发条与“查询”按钮 */
+.filter-bar-card {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border: 1.5px solid rgba(13, 43, 46, 0.15);
   border-radius: 20px;
-  padding: 18px 20px;
-  box-shadow: 0 10px 30px rgba(13, 43, 46, 0.05);
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.toolbar-section {
+  padding: 12px 16px;
+  box-shadow: 0 8px 24px rgba(13, 43, 46, 0.05);
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-}
-
-.section-label {
-  font-size: 13px;
-  font-weight: 800;
-  color: #0D2B2E;
-  white-space: nowrap;
-  min-width: 60px;
-}
-
-.pills-scroll-group {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: none;
-}
-
-.pills-scroll-group::-webkit-scrollbar {
-  display: none;
-}
-
-.pill-btn {
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 700;
   cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-bar-card:hover {
+  border-color: #0D2B2E;
+  box-shadow: 0 10px 28px rgba(13, 43, 46, 0.1);
+}
+
+.filter-info-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.active-filter-badge {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #0D2B2E;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
   white-space: nowrap;
-  transition: all 0.2s;
+}
+
+.active-filter-badge.keyword {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #ef4444;
+}
+
+.btn-query-trigger {
   display: flex;
   align-items: center;
   gap: 6px;
+  background: #0D2B2E;
+  color: #E8C268;
+  border: 1.5px solid #E8C268;
+  border-radius: 16px;
+  padding: 8px 18px;
+  font-size: 13.5px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(13, 43, 46, 0.25);
+  flex-shrink: 0;
+  transition: transform 0.2s;
 }
 
-.pill-btn:hover {
-  background: #e2e8f0;
+.btn-query-trigger:hover {
+  transform: translateY(-1px);
+}
+
+/* 3. 筛选抽屉 Modal (custom-filter-drawer) */
+:deep(.custom-filter-drawer) {
+  border-top-left-radius: 24px !important;
+  border-top-right-radius: 24px !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+}
+
+:deep(.custom-filter-drawer .el-drawer__header) {
+  margin-bottom: 0 !important;
+  padding: 16px 20px !important;
+  border-bottom: 1.5px solid #e2e8f0 !important;
+  color: #0D2B2E !important;
+  font-weight: 900 !important;
+}
+
+:deep(.custom-filter-drawer .el-drawer__title) {
+  color: #0D2B2E !important;
+  font-weight: 900 !important;
+  font-size: 1.15rem !important;
+}
+
+:deep(.custom-filter-drawer .el-drawer__body) {
+  padding: 18px 20px !important;
+  overflow-y: auto !important;
+}
+
+.drawer-filter-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.drawer-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-group-label {
+  font-size: 13.5px;
+  font-weight: 900;
   color: #0D2B2E;
 }
 
-.pill-btn.active {
+.drawer-pills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.drawer-pill-btn {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  color: #1e293b;
+  border-radius: 14px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.drawer-pill-btn.active {
   background: #0D2B2E;
   border-color: #E8C268;
   color: #E8C268;
-  box-shadow: 0 4px 12px rgba(13, 43, 46, 0.3);
+  box-shadow: 0 4px 12px rgba(13, 43, 46, 0.25);
 }
 
-.member-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.drawer-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
 }
 
-.custom-date-picker-wrap {
-  padding-left: 72px;
+.drawer-cat-btn {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.toolbar-bottom-row {
+.drawer-cat-btn.active {
+  background: #0D2B2E;
+  border-color: #E8C268;
+  color: #E8C268;
+}
+
+.drawer-footer-actions {
   display: flex;
   gap: 12px;
+  justify-content: flex-end;
+  padding: 12px 20px;
+  border-top: 1px dashed #e2e8f0;
 }
 
-.category-select-wrap {
-  flex: 1;
+.btn-drawer-reset {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
 }
 
-.search-input-wrap {
-  flex: 1;
+.btn-drawer-apply {
+  background: linear-gradient(135deg, #0D2B2E 0%, #174e54 100%);
+  color: #E8C268;
+  border: 1.5px solid #E8C268;
+  border-radius: 12px;
+  padding: 10px 30px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(13, 43, 46, 0.3);
 }
 
-/* 3. 统计分析与进度条 */
+/* 4. 统计分析与进度条 */
 .stats-breakdown-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1089,7 +1275,7 @@ onMounted(() => {
   transition: width 0.4s ease;
 }
 
-/* 4. 账单明细列表 */
+/* 5. 账单明细列表 */
 .records-list-section {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
@@ -1189,6 +1375,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .title-row {
@@ -1226,7 +1413,7 @@ onMounted(() => {
 }
 
 .desc-text {
-  max-width: 320px;
+  max-width: 260px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1240,6 +1427,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .item-amount {
@@ -1263,7 +1451,7 @@ onMounted(() => {
   color: #ef4444;
 }
 
-/* 5. 弹窗与表单 (消费者多选支持) */
+/* 6. 弹窗与表单 (消费者多选支持) */
 :deep(.custom-add-ledger-dialog) {
   top: 4vh !important;
   margin: 0 auto !important;
@@ -1512,7 +1700,7 @@ onMounted(() => {
   transform: translateY(-1px);
 }
 
-/* 6. 移动端悬浮 FAB 按键 */
+/* 7. 移动端悬浮记账按钮 (Mobile FAB) */
 .mobile-fab-wrap {
   display: none;
   position: fixed;
@@ -1523,7 +1711,7 @@ onMounted(() => {
 
 .fab-btn {
   height: 52px;
-  padding: 0 20px;
+  padding: 0 22px;
   border-radius: 26px;
   background: linear-gradient(135deg, #E8C268 0%, #d4a73b 100%);
   color: #0D2B2E;
@@ -1537,37 +1725,47 @@ onMounted(() => {
   cursor: pointer;
 }
 
-/* 响应式适配 */
+/* 移动端与PC双端响应式兼容 */
 @media (max-width: 768px) {
   .ledger-container {
     padding: 6px 6px 80px 6px;
   }
   .overview-header-card {
-    padding: 18px 20px;
+    padding: 16px;
+  }
+  .overview-flex-layout {
+    gap: 12px;
   }
   .amount-num {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
   }
-  .toolbar-section {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+  .header-hero-pic {
+    height: 85px;
+    max-width: 120px;
   }
-  .custom-date-picker-wrap {
-    padding-left: 0;
+  .summary-meta-row {
+    gap: 12px;
   }
-  .toolbar-bottom-row {
-    flex-direction: column;
-    gap: 8px;
+  .meta-label {
+    font-size: 10px;
+  }
+  .meta-val {
+    font-size: 11.5px;
   }
   .stats-breakdown-grid {
     grid-template-columns: 1fr;
+  }
+  .drawer-cat-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
   .category-selector-grid {
     grid-template-columns: repeat(3, 1fr);
   }
   .mobile-fab-wrap {
     display: block;
+  }
+  .desc-text {
+    max-width: 150px;
   }
 }
 </style>
