@@ -1,5 +1,11 @@
 <template>
   <div class="family-dashboard animate-fade-in">
+    <!-- 两侧浪漫风趣 GIF 动态花卉点缀 -->
+    <div class="hero-deco-wrap">
+      <img :src="gifDeco1" class="deco-gif deco-left" alt="浪漫点缀1" />
+      <img :src="gifDeco2" class="deco-gif deco-right" alt="浪漫点缀2" />
+    </div>
+
     <!-- 1. 顶部全家福页眉 (甜蜜浪漫流字连贯诗意句) -->
     <div class="family-hero-banner-inline">
       <img :src="romanticImg" alt="宇宙中，恰好相遇的浪漫" class="hero-romantic-img" />
@@ -56,6 +62,8 @@ import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { Calendar, Clock } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import romanticImg from '@/pic/yuzhou_romantic_text_transparent.png'
+import gifDeco1 from '@/pic/huaban-6444827080.gif'
+import gifDeco2 from '@/pic/huaban-6444812456.gif'
 
 const startTime = dayjs('2020-01-14T00:00:00')
 
@@ -113,12 +121,59 @@ onUnmounted(() => {
 
 <style scoped>
 .family-dashboard {
+  position: relative;
   padding: 10px 0;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  overflow: visible;
+}
+
+/* GIF 浪漫花卉/动态点缀 */
+.hero-deco-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.deco-gif {
+  position: absolute;
+  width: 85px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(244, 114, 182, 0.3));
+}
+
+.deco-left {
+  top: 0px;
+  left: 5px;
+  transform: rotate(-10deg);
+}
+
+.deco-right {
+  top: 0px;
+  right: 5px;
+  transform: rotate(10deg);
+}
+
+@media (max-width: 900px) {
+  .deco-gif {
+    width: 55px;
+  }
+  .deco-left {
+    top: -10px;
+    left: -5px;
+  }
+  .deco-right {
+    top: -10px;
+    right: -5px;
+  }
 }
 
 /* 1. 顶部全家福页眉 */
