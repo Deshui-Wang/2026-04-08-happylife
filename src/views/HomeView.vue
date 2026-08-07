@@ -139,13 +139,13 @@ onUnmounted(() => {
 .family-hero-banner-inline {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 36px;
-  padding: 20px 40px;
+  gap: 0px;
+  padding: 10px 40px;
   margin-top: 5px;
   margin-bottom: 5px;
-  flex-wrap: wrap;
   width: 100%;
   max-width: 1000px;
   box-sizing: border-box;
@@ -196,12 +196,14 @@ onUnmounted(() => {
 }
 
 .hero-romantic-img {
-  max-width: 440px;
+  max-width: 420px;
   width: 100%;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 10px 22px rgba(244, 114, 182, 0.25));
   transition: transform 0.3s ease;
+  margin-top: -10px;
+  margin-bottom: -18px;
 }
 
 .hero-romantic-img:hover {
@@ -465,6 +467,8 @@ onUnmounted(() => {
   }
   .hero-romantic-img {
     max-width: 270px;
+    margin-top: -6px;
+    margin-bottom: -12px;
   }
   .days-inline-text {
     flex-wrap: nowrap;
