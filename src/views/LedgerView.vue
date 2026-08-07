@@ -24,11 +24,11 @@
           <span class="meta-val">{{ filteredRecords.length }} 笔</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">最高消费分类</span>
+          <span class="meta-label">最高消费类型</span>
           <span class="meta-val">{{ topCategoryName }}</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">主要支出成员</span>
+          <span class="meta-label">主要消费者</span>
           <span class="meta-val">{{ topMemberName }}</span>
         </div>
       </div>
@@ -67,9 +67,9 @@
         />
       </div>
 
-      <!-- 按成员查询 Member Pills -->
+      <!-- 按消费者查询 Consumer Pills -->
       <div class="toolbar-section">
-        <div class="section-label">记录成员</div>
+        <div class="section-label">消费者</div>
         <div class="pills-scroll-group">
           <button
             class="pill-btn member-pill"
@@ -92,11 +92,11 @@
         </div>
       </div>
 
-      <!-- 账单分类 Filter & 搜索框 -->
+      <!-- 消费类型 Filter & 搜索框 -->
       <div class="toolbar-bottom-row">
         <div class="category-select-wrap">
-          <el-select v-model="selectedCategory" placeholder="选择账单分类" size="default" style="width: 100%;">
-            <el-option label="全部分类" value="all" />
+          <el-select v-model="selectedCategory" placeholder="选择消费类型" size="default" style="width: 100%;">
+            <el-option label="全部类型" value="all" />
             <el-option
               v-for="c in CATEGORIES"
               :key="c.name"
@@ -123,10 +123,10 @@
 
     <!-- 3. 统计分析与进度条 (Member & Category Breakdown) -->
     <div v-if="filteredRecords.length > 0" class="stats-breakdown-grid">
-      <!-- 成员支出占比 -->
+      <!-- 消费者支出占比 -->
       <div class="breakdown-card">
         <div class="card-header">
-          <h3>成员支出对比</h3>
+          <h3>消费者支出占比</h3>
         </div>
         <div class="progress-list">
           <div v-for="st in memberStats" :key="st.name" class="progress-item">
@@ -144,10 +144,10 @@
         </div>
       </div>
 
-      <!-- 账单分类占比 -->
+      <!-- 消费类型构成 -->
       <div class="breakdown-card">
         <div class="card-header">
-          <h3>账单分类构成</h3>
+          <h3>消费类型构成</h3>
         </div>
         <div class="progress-list">
           <div v-for="cs in categoryStats.slice(0, 5)" :key="cs.name" class="progress-item">
@@ -202,9 +202,16 @@
               <div class="record-main-info">
                 <div class="title-row">
                   <span class="category-name">{{ item.category }}</span>
-                  <span class="member-chip" :style="{ backgroundColor: getMemberInfo(item.user).color }">
-                    {{ item.user }}
-                  </span>
+                  <div class="members-chips-wrap">
+                    <span
+                      v-for="uName in getRecordUsers(item)"
+                      :key="uName"
+                      class="member-chip"
+                      :style="{ backgroundColor: getMemberInfo(uName).color }"
+                    >
+                      {{ uName }}
+                    </span>
+                  </div>
                 </div>
                 <div class="desc-row">
                   <span class="desc-text">{{ item.description || '无详细描述' }}</span>
@@ -225,7 +232,7 @@
       </div>
     </div>
 
-    <!-- 5. 移动端快捷记账弹窗 Modal (Add Record Dialog - 滚动优化&完整显示) -->
+    <!-- 5. 移动端快捷记账弹窗 Modal (支持消费者多选) -->
     <el-dialog
       v-model="isAddModalOpen"
       title="记账"
@@ -237,27 +244,30 @@
       destroy-on-close
     >
       <form class="add-form" @submit.prevent="saveRecord">
-        <!-- 成员选择 -->
+        <!-- 消费者多选 -->
         <div class="form-group">
-          <label class="form-label">选择记账成员</label>
+          <div class="label-with-tip">
+            <label class="form-label">消费者</label>
+            <span class="sub-tip">(可多选)</span>
+          </div>
           <div class="member-selector-grid">
             <button
               v-for="m in MEMBERS"
               :key="m.name"
               type="button"
               class="member-select-btn"
-              :class="{ selected: form.user === m.name }"
-              :style="form.user === m.name ? { backgroundColor: m.color, borderColor: m.color, color: '#fff' } : {}"
-              @click="form.user = m.name"
+              :class="{ selected: form.users.includes(m.name) }"
+              :style="form.users.includes(m.name) ? { backgroundColor: m.color, borderColor: m.color, color: '#fff', fontWeight: '900', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' } : {}"
+              @click="toggleConsumer(m.name)"
             >
               {{ m.name }}
             </button>
           </div>
         </div>
 
-        <!-- 账单分类选择 -->
+        <!-- 消费类型选择 -->
         <div class="form-group">
-          <label class="form-label">选择账单分类</label>
+          <label class="form-label">消费类型</label>
           <div class="category-selector-grid">
             <button
               v-for="c in CATEGORIES"
@@ -351,19 +361,19 @@ dayjs.extend(isSameOrBefore)
 
 // 1. 常量定义：四位成员
 const MEMBERS = [
-  { name: '胖脆', color: '#f43f5e' },
-  { name: '阿旺', color: '#8b5cf6' },
-  { name: '宝仔', color: '#3b82f6' },
-  { name: '草莓', color: '#10b981' }
+  { name: '👩‍🎤胖脆', color: '#f43f5e' },
+  { name: '🧑🏻‍💻阿旺', color: '#8b5cf6' },
+  { name: '😽宝仔', color: '#3b82f6' },
+  { name: '🍓草莓', color: '#10b981' }
 ]
 
 // 2. 常量定义：七大账单分类
 const CATEGORIES = [
-  { name: '饭菜', icon: '🍚', color: '#ef4444', bg: '#fee2e2' },
-  { name: '水果零食', icon: '🍎', color: '#f59e0b', bg: '#fef3c7' },
-  { name: '水电日常', icon: '💡', color: '#06b6d4', bg: '#cffaff' },
-  { name: '交通', icon: '🚗', color: '#3b82f6', bg: '#dbeafe' },
-  { name: '旅行和演出', icon: '✈️', color: '#8b5cf6', bg: '#ede9fe' },
+  { name: '饭菜', icon: '🍚 🥩', color: '#ef4444', bg: '#fee2e2' },
+  { name: '水果零食', icon: '🍎 🍟 🍦', color: '#f59e0b', bg: '#fef3c7' },
+  { name: '水电日常', icon: '💡 🔌 🧹', color: '#06b6d4', bg: '#cffaff' },
+  { name: '交通', icon: '🚗 ⛽️ 🅿️', color: '#3b82f6', bg: '#dbeafe' },
+  { name: '旅行和演出', icon: '✈️ 🎤 🎬', color: '#8b5cf6', bg: '#ede9fe' },
   { name: '人情往来', icon: '🧧', color: '#ec4899', bg: '#fce7f3' },
   { name: '礼物基金', icon: '🎁', color: '#10b981', bg: '#d1fae5' }
 ]
@@ -388,15 +398,40 @@ const timeOptions = [
 // 账单记录列表数据
 const records = ref([])
 
-// 弹窗状态与表单
+// 弹窗状态与表单 (支持消费者多选)
 const isAddModalOpen = ref(false)
 const form = reactive({
-  user: '胖脆',
+  users: [MEMBERS[0].name],
   category: '饭菜',
   amount: '',
   description: '',
   timestamp: ''
 })
+
+// 辅助方法：获取记录的消费者列表
+const getRecordUsers = (r) => {
+  if (Array.isArray(r.users) && r.users.length > 0) {
+    return r.users
+  }
+  if (r.user) {
+    return [r.user]
+  }
+  return [MEMBERS[0].name]
+}
+
+// 消费者多选切换
+const toggleConsumer = (name) => {
+  const index = form.users.indexOf(name)
+  if (index > -1) {
+    if (form.users.length > 1) {
+      form.users.splice(index, 1)
+    } else {
+      ElMessage.warning('至少需要选择一位消费者')
+    }
+  } else {
+    form.users.push(name)
+  }
+}
 
 // 初始化样本 seed 数据
 const initSeedData = () => {
@@ -404,7 +439,8 @@ const initSeedData = () => {
   return [
     {
       id: 'seed-1',
-      user: '胖脆',
+      users: ['👩‍🎤胖脆', '🧑🏻‍💻阿旺'],
+      user: '👩‍🎤胖脆 & 🧑🏻‍💻阿旺',
       category: '饭菜',
       amount: 188.5,
       description: '周末家庭便当与超市食材',
@@ -412,7 +448,8 @@ const initSeedData = () => {
     },
     {
       id: 'seed-2',
-      user: '阿旺',
+      users: ['🧑🏻‍💻阿旺'],
+      user: '🧑🏻‍💻阿旺',
       category: '水果零食',
       amount: 68.0,
       description: '盒马买阳光玫瑰葡萄与切片西瓜',
@@ -420,7 +457,8 @@ const initSeedData = () => {
     },
     {
       id: 'seed-3',
-      user: '宝仔',
+      users: ['😽宝仔'],
+      user: '😽宝仔',
       category: '交通',
       amount: 45.0,
       description: '打车去公园散步',
@@ -428,7 +466,8 @@ const initSeedData = () => {
     },
     {
       id: 'seed-4',
-      user: '草莓',
+      users: ['🍓草莓'],
+      user: '🍓草莓',
       category: '礼物基金',
       amount: 320.0,
       description: '储备家庭生日纪念日礼物通存金',
@@ -436,7 +475,8 @@ const initSeedData = () => {
     },
     {
       id: 'seed-5',
-      user: '胖脆',
+      users: ['👩‍🎤胖脆', '🍓草莓'],
+      user: '👩‍🎤胖脆 & 🍓草莓',
       category: '水电日常',
       amount: 210.0,
       description: '缴纳夏季空调电费',
@@ -444,7 +484,8 @@ const initSeedData = () => {
     },
     {
       id: 'seed-6',
-      user: '阿旺',
+      users: ['🧑🏻‍💻阿旺', '😽宝仔'],
+      user: '🧑🏻‍💻阿旺 & 😽宝仔',
       category: '旅行和演出',
       amount: 680.0,
       description: '预订周末音乐会门票',
@@ -452,7 +493,8 @@ const initSeedData = () => {
     },
     {
       id: 'seed-7',
-      user: '宝仔',
+      users: ['😽宝仔'],
+      user: '😽宝仔',
       category: '人情往来',
       amount: 500.0,
       description: '好友婚礼红聚红包',
@@ -511,8 +553,11 @@ const filteredRecords = computed(() => {
       }
     }
 
-    if (selectedMember.value !== 'all' && r.user !== selectedMember.value) {
-      return false
+    if (selectedMember.value !== 'all') {
+      const uList = getRecordUsers(r)
+      if (!uList.includes(selectedMember.value)) {
+        return false
+      }
     }
 
     if (selectedCategory.value !== 'all' && r.category !== selectedCategory.value) {
@@ -522,9 +567,9 @@ const filteredRecords = computed(() => {
     if (searchKeyword.value.trim()) {
       const kw = searchKeyword.value.trim().toLowerCase()
       const desc = (r.description || '').toLowerCase()
-      const user = (r.user || '').toLowerCase()
+      const uList = getRecordUsers(r).join(' ').toLowerCase()
       const cat = (r.category || '').toLowerCase()
-      if (!desc.includes(kw) && !user.includes(kw) && !cat.includes(kw)) {
+      if (!desc.includes(kw) && !uList.includes(kw) && !cat.includes(kw)) {
         return false
       }
     }
@@ -557,7 +602,11 @@ const memberStats = computed(() => {
   MEMBERS.forEach(m => { map[m.name] = 0 })
 
   filteredRecords.value.forEach(r => {
-    map[r.user] = (map[r.user] || 0) + Number(r.amount || 0)
+    const uList = getRecordUsers(r)
+    const share = Number(r.amount || 0) / (uList.length || 1)
+    uList.forEach(u => {
+      map[u] = (map[u] || 0) + share
+    })
   })
 
   return MEMBERS.map(m => {
@@ -613,7 +662,7 @@ const groupedRecords = computed(() => {
 })
 
 const openAddModal = () => {
-  form.user = selectedMember.value !== 'all' ? selectedMember.value : '胖脆'
+  form.users = selectedMember.value !== 'all' ? [selectedMember.value] : [MEMBERS[0].name]
   form.category = selectedCategory.value !== 'all' ? selectedCategory.value : '饭菜'
   form.amount = ''
   form.description = ''
@@ -631,13 +680,19 @@ const saveRecord = () => {
     ElMessage.warning('请输入有效的支出金额')
     return
   }
+  if (!form.users || form.users.length === 0) {
+    ElMessage.warning('请选择至少一位消费者')
+    return
+  }
 
+  const userLabel = form.users.join(' & ')
   const newRecord = {
     id: 'rec-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-    user: form.user,
+    user: userLabel,
+    users: [...form.users],
     category: form.category,
     amount: Number(Number(form.amount).toFixed(2)),
-    description: form.description.trim() || `${form.user}记录的${form.category}支出`,
+    description: form.description.trim() || `${userLabel}记录的${form.category}支出`,
     timestamp: form.timestamp || dayjs().format('YYYY-MM-DD HH:mm:ss')
   }
 
@@ -1061,7 +1116,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 20px;
   flex-shrink: 0;
 }
 
@@ -1076,12 +1131,19 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .category-name {
   font-size: 14px;
   font-weight: 800;
   color: #1e293b;
+}
+
+.members-chips-wrap {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 .member-chip {
@@ -1137,7 +1199,7 @@ onMounted(() => {
   color: #ef4444;
 }
 
-/* 5. 弹窗与表单 (修复对比度与全盘高清视效 #0D2B2E 深墨绿 & #E8C268 鎏金) */
+/* 5. 弹窗与表单 (消费者多选支持) */
 :deep(.custom-add-ledger-dialog) {
   top: 4vh !important;
   margin: 0 auto !important;
@@ -1187,6 +1249,18 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.label-with-tip {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.sub-tip {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
 }
 
 .form-label {
@@ -1254,7 +1328,7 @@ onMounted(() => {
 }
 
 .cat-btn-icon {
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .cat-btn-name {
@@ -1267,15 +1341,15 @@ onMounted(() => {
   display: flex;
   align-items: center;
   background: #f8fafc;
-  border: 2px solid #0D2B2E;
+  border: 1.5px solid #475569;
   border-radius: 14px;
   padding: 4px 14px;
   transition: border-color 0.2s;
 }
 
 .amount-input-box:focus-within {
-  border-color: #E8C268;
-  box-shadow: 0 0 0 3px rgba(232, 194, 104, 0.25);
+  border-color: #0D2B2E;
+  box-shadow: 0 0 0 3px rgba(13, 43, 46, 0.15);
   background: #ffffff;
 }
 
