@@ -213,10 +213,12 @@ onUnmounted(() => {
 
 .days-inline-text {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 6px;
   user-select: none;
   filter: drop-shadow(0 4px 14px rgba(244, 63, 94, 0.25));
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .days-inline-text .prefix {
@@ -226,6 +228,10 @@ onUnmounted(() => {
   letter-spacing: 2px;
   font-family: 'Zhi Mang Xing', 'Ma Shan Zheng', 'Long Cang', 'STKaiti', 'KaiTi', cursive;
   opacity: 0.95;
+  white-space: nowrap;
+  word-break: keep-all;
+  flex-shrink: 0;
+  display: inline-block;
 }
 
 .days-inline-text .num {
@@ -238,6 +244,8 @@ onUnmounted(() => {
   line-height: 1;
   letter-spacing: 1px;
   padding: 0 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .days-inline-text .unit {
@@ -247,6 +255,10 @@ onUnmounted(() => {
   letter-spacing: 2px;
   font-family: 'Zhi Mang Xing', 'Ma Shan Zheng', 'Long Cang', 'STKaiti', 'KaiTi', cursive;
   opacity: 0.95;
+  white-space: nowrap;
+  word-break: keep-all;
+  flex-shrink: 0;
+  display: inline-block;
 }
 
 .inline-gif-suffix {
@@ -445,12 +457,16 @@ onUnmounted(() => {
   }
   .days-inline-text .prefix,
   .days-inline-text .unit {
-    font-size: 1.5rem;
-    white-space: nowrap;
-    display: inline-block;
+    font-size: 1.4rem !important;
+    white-space: nowrap !important;
+    word-break: keep-all !important;
+    flex-shrink: 0 !important;
+    display: inline-block !important;
   }
   .days-inline-text .num {
-    font-size: 2.8rem;
+    font-size: 2.6rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
   .inline-gif-suffix {
     height: 32px;
