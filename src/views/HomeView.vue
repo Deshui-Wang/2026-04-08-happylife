@@ -196,14 +196,13 @@ onUnmounted(() => {
 }
 
 .hero-romantic-img {
-  max-width: 420px;
+  max-width: 440px;
   width: 100%;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 10px 22px rgba(244, 114, 182, 0.25));
   transition: transform 0.3s ease;
-  margin-top: -10px;
-  margin-bottom: -18px;
+  margin: 0 auto 4px auto;
 }
 
 .hero-romantic-img:hover {
@@ -466,9 +465,8 @@ onUnmounted(() => {
     right: -2px;
   }
   .hero-romantic-img {
-    max-width: 270px;
-    margin-top: -6px;
-    margin-bottom: -12px;
+    max-width: 290px;
+    margin: 0 auto 2px auto;
   }
   .days-inline-text {
     flex-wrap: nowrap;
