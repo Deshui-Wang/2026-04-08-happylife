@@ -231,39 +231,14 @@
       </div>
     </div>
 
-    <!-- 5. 账单明细列表 (含账单明细快捷筛选与查询) -->
+    <!-- 5. 账单明细列表 (含账单明细筛选) -->
     <div class="records-list-section">
       <div class="section-title-bar">
         <h3>账单明细 ({{ filteredRecords.length }})</h3>
-        <div class="action-tools">
-          <el-button size="small" text class="gold-text-btn" @click="exportJSON">导出数据</el-button>
-          <el-button size="small" text type="danger" @click="confirmResetData">重置数据</el-button>
-        </div>
-      </div>
-
-      <!-- 账单明细专用快捷筛选触发条 -->
-      <div class="filter-bar-card" @click="isFilterDrawerOpen = true">
-        <div class="filter-info-tags">
-          <span class="active-filter-badge">
-            <el-icon><Calendar /></el-icon>
-            {{ getTimeRangeLabel }}
-          </span>
-          <span class="active-filter-badge">
-            <el-icon><User /></el-icon>
-            {{ getMemberLabel }}
-          </span>
-          <span class="active-filter-badge">
-            <el-icon><Discount /></el-icon>
-            {{ getCategoryLabel }}
-          </span>
-          <span v-if="searchKeyword" class="active-filter-badge keyword">
-            "{{ searchKeyword }}"
-          </span>
-        </div>
-        <div class="filter-edit-btn">
+        <button class="btn-title-filter" @click="isFilterDrawerOpen = true">
           <el-icon><Search /></el-icon>
           <span>筛选</span>
-        </div>
+        </button>
       </div>
 
       <!-- 空状态 -->
@@ -1044,70 +1019,7 @@ onMounted(() => {
   color: #fff;
 }
 
-/* 账单明细内快捷筛选触发条 */
-.filter-bar-card {
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 10px 14px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
 
-.filter-bar-card:hover {
-  background: #ffffff;
-  border-color: #0D2B2E;
-  box-shadow: 0 4px 14px rgba(13, 43, 46, 0.08);
-}
-
-.filter-edit-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: #0D2B2E;
-  color: #E8C268;
-  border: 1px solid #E8C268;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 800;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(13, 43, 46, 0.15);
-}
-
-.filter-info-tags {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  flex: 1;
-  min-width: 0;
-}
-
-.active-filter-badge {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  color: #0D2B2E;
-  font-size: 12px;
-  font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-}
-
-.active-filter-badge.keyword {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  color: #ef4444;
-}
 
 .btn-query-trigger {
   display: flex;
@@ -1433,9 +1345,25 @@ onMounted(() => {
   margin: 0;
 }
 
-.gold-text-btn {
-  color: #0D2B2E !important;
-  font-weight: 700;
+.btn-title-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #0D2B2E;
+  color: #E8C268;
+  border: 1.5px solid #E8C268;
+  border-radius: 16px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(13, 43, 46, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-title-filter:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(13, 43, 46, 0.35);
 }
 
 .grouped-records-list {
