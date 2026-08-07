@@ -31,7 +31,7 @@
           </div>
         </div>
 
-        <!-- 右侧大图点缀与记账按钮区 -->
+        <!-- 右侧大图点缀区 -->
         <div class="overview-right-col">
           <img
             :src="huabanAddPic"
@@ -40,9 +40,6 @@
             title="点击快捷记账"
             @click="openAddModal"
           />
-          <button class="btn-primary-add" @click="openAddModal">
-            <span>点我</span>
-          </button>
         </div>
       </div>
     </div>
@@ -264,7 +261,7 @@
                       v-for="uName in getRecordUsers(item)"
                       :key="uName"
                       class="member-chip"
-                      :style="{ backgroundColor: getMemberInfo(uName).color }"
+                      :style="{ backgroundColor: '#ffffff', borderColor: getMemberInfo(uName).color, color: getMemberInfo(uName).color }"
                     >
                       {{ uName }}
                     </span>
@@ -1393,11 +1390,14 @@ onMounted(() => {
 }
 
 .member-chip {
-  color: #fff;
+  background: #ffffff;
+  border: 1.5px solid #64748b;
   font-size: 11px;
   font-weight: 800;
   padding: 1px 8px;
   border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .desc-row {
