@@ -1,9 +1,11 @@
 <template>
   <div class="family-dashboard animate-fade-in">
-    <!-- 两侧浪漫风趣 GIF 动态花卉点缀 -->
+    <!-- 4角浪漫风趣花卉/点缀图框架 (四角关系) -->
     <div class="hero-deco-wrap">
-      <img :src="gifDeco1" class="deco-gif deco-left" alt="浪漫点缀1" />
-      <img :src="gifDeco2" class="deco-gif deco-right" alt="浪漫点缀2" />
+      <img :src="gifDeco1" class="deco-gif deco-top-left" alt="浪漫点缀-左上" />
+      <img :src="gifDeco2" class="deco-gif deco-top-right" alt="浪漫点缀-右上" />
+      <img :src="bottomDeco1" class="deco-gif deco-bottom-left" alt="浪漫点缀-左下" />
+      <img :src="bottomDeco2" class="deco-gif deco-bottom-right" alt="浪漫点缀-右下" />
     </div>
 
     <!-- 1. 顶部全家福页眉 (甜蜜浪漫流字连贯诗意句) -->
@@ -64,6 +66,8 @@ import dayjs from 'dayjs'
 import romanticImg from '@/pic/yuzhou_romantic_text_transparent.png'
 import gifDeco1 from '@/pic/huaban-6444827080.gif'
 import gifDeco2 from '@/pic/huaban-6444812456.gif'
+import bottomDeco1 from '@/pic/huaban-6786074053.webp'
+import bottomDeco2 from '@/pic/huaban-6862020249.png'
 import gifTextSuffix from '@/pic/huaban-6659614929.gif'
 
 const startTime = dayjs('2020-01-14T00:00:00')
@@ -132,13 +136,13 @@ onUnmounted(() => {
   overflow: visible;
 }
 
-/* GIF 浪漫花卉/动态点缀 */
+/* GIF 浪漫花卉/动态点缀 (四角框架关系) */
 .hero-deco-wrap {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 120px;
+  height: 100%;
   pointer-events: none;
   z-index: 5;
 }
@@ -151,29 +155,49 @@ onUnmounted(() => {
   filter: drop-shadow(0 4px 12px rgba(244, 114, 182, 0.3));
 }
 
-.deco-left {
+.deco-top-left {
   top: 0px;
-  left: 5px;
+  left: 10px;
   transform: rotate(-10deg);
 }
 
-.deco-right {
+.deco-top-right {
   top: 0px;
-  right: 5px;
+  right: 10px;
   transform: rotate(10deg);
+}
+
+.deco-bottom-left {
+  top: 155px;
+  left: 10px;
+  transform: rotate(-5deg);
+}
+
+.deco-bottom-right {
+  top: 155px;
+  right: 10px;
+  transform: rotate(5deg);
 }
 
 @media (max-width: 900px) {
   .deco-gif {
-    width: 55px;
+    width: 50px;
   }
-  .deco-left {
-    top: -10px;
-    left: -5px;
+  .deco-top-left {
+    top: -5px;
+    left: 0px;
   }
-  .deco-right {
-    top: -10px;
-    right: -5px;
+  .deco-top-right {
+    top: -5px;
+    right: 0px;
+  }
+  .deco-bottom-left {
+    top: 250px;
+    left: 0px;
+  }
+  .deco-bottom-right {
+    top: 250px;
+    right: 0px;
   }
 }
 
