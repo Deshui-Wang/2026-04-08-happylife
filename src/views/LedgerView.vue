@@ -194,34 +194,54 @@
         </button>
       </div>
 
-      <!-- Tab 1: 消费者支出占比 -->
-      <div v-if="activeStatsTab === 'consumer'" class="progress-list animate-fade-in">
-        <div v-for="st in memberStats" :key="st.name" class="progress-item">
-          <div class="progress-info">
-            <span class="name">
-              <span class="color-indicator" :style="{ backgroundColor: st.color }"></span>
-              {{ st.name }}
-            </span>
-            <span class="amount-percent">¥{{ st.amount.toLocaleString() }} ({{ st.percentage }}%)</span>
+      <!-- Tab 1: 消费者支出占比 (高科技霓虹动感光轨) -->
+      <div v-if="activeStatsTab === 'consumer'" class="tech-progress-list animate-fade-in">
+        <div v-for="st in memberStats" :key="st.name" class="tech-progress-item">
+          <div class="tech-progress-info">
+            <div class="tech-name-wrap">
+              <span class="tech-color-dot" :style="{ backgroundColor: st.color, boxShadow: `0 0 8px ${st.color}` }"></span>
+              <span class="tech-item-name">{{ st.name }}</span>
+            </div>
+            <div class="tech-metrics-wrap">
+              <span class="tech-amount-text">¥{{ st.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+              <span class="tech-percent-badge" :style="{ borderColor: st.color, color: st.color }">{{ st.percentage }}%</span>
+            </div>
           </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" :style="{ width: st.percentage + '%', backgroundColor: st.color }"></div>
+          <div class="tech-bar-track">
+            <div 
+              class="tech-bar-fill" 
+              :style="{ 
+                width: st.percentage + '%', 
+                background: getGradientColor(st.color),
+                boxShadow: `0 0 10px ${st.color}80`
+              }"
+            ></div>
           </div>
         </div>
       </div>
 
-      <!-- Tab 2: 消费类型构成 -->
-      <div v-else-if="activeStatsTab === 'category'" class="progress-list animate-fade-in">
-        <div v-for="cs in categoryStats.slice(0, 5)" :key="cs.name" class="progress-item">
-          <div class="progress-info">
-            <span class="name">
-              <span class="cat-icon">{{ cs.icon }}</span>
-              {{ cs.name }}
-            </span>
-            <span class="amount-percent">¥{{ cs.amount.toLocaleString() }} ({{ cs.percentage }}%)</span>
+      <!-- Tab 2: 消费类型构成 (高科技霓虹动感光轨) -->
+      <div v-else-if="activeStatsTab === 'category'" class="tech-progress-list animate-fade-in">
+        <div v-for="cs in categoryStats.slice(0, 6)" :key="cs.name" class="tech-progress-item">
+          <div class="tech-progress-info">
+            <div class="tech-name-wrap">
+              <span class="tech-cat-emoji">{{ cs.icon }}</span>
+              <span class="tech-item-name">{{ cs.name }}</span>
+            </div>
+            <div class="tech-metrics-wrap">
+              <span class="tech-amount-text">¥{{ cs.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+              <span class="tech-percent-badge" :style="{ borderColor: cs.color, color: cs.color }">{{ cs.percentage }}%</span>
+            </div>
           </div>
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" :style="{ width: cs.percentage + '%', backgroundColor: cs.color }"></div>
+          <div class="tech-bar-track">
+            <div 
+              class="tech-bar-fill" 
+              :style="{ 
+                width: cs.percentage + '%', 
+                background: getGradientColor(cs.color),
+                boxShadow: `0 0 10px ${cs.color}80`
+              }"
+            ></div>
           </div>
         </div>
       </div>
@@ -457,6 +477,18 @@ const timeOptions = [
   { label: '全部记录', value: 'all' },
   { label: '自定义时间', value: 'custom' }
 ]
+
+const getGradientColor = (baseColor) => {
+  if (baseColor === '#f43f5e') return 'linear-gradient(90deg, #f43f5e 0%, #fb7185 100%)'
+  if (baseColor === '#8b5cf6') return 'linear-gradient(90deg, #8b5cf6 0%, #c084fc 100%)'
+  if (baseColor === '#3b82f6') return 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)'
+  if (baseColor === '#10b981') return 'linear-gradient(90deg, #10b981 0%, #34d399 100%)'
+  if (baseColor === '#ef4444') return 'linear-gradient(90deg, #ef4444 0%, #fca5a5 100%)'
+  if (baseColor === '#f59e0b') return 'linear-gradient(90deg, #f59e0b 0%, #fcd34d 100%)'
+  if (baseColor === '#06b6d4') return 'linear-gradient(90deg, #06b6d4 0%, #67e8f9 100%)'
+  if (baseColor === '#ec4899') return 'linear-gradient(90deg, #ec4899 0%, #f472b6 100%)'
+  return `linear-gradient(90deg, ${baseColor} 0%, #E8C268 100%)`
+}
 
 // 筛选概要计算属性
 const getTimeRangeLabel = computed(() => {
@@ -1247,50 +1279,138 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(13, 43, 46, 0.25);
 }
 
-.progress-list {
+/* 高科技智能动感柱形图 */
+.tech-progress-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.progress-info {
+.tech-progress-item {
+  background: rgba(248, 250, 252, 0.85);
+  border: 1.5px solid rgba(226, 232, 240, 0.9);
+  border-radius: 14px;
+  padding: 10px 14px;
+  transition: all 0.25s ease;
+}
+
+.tech-progress-item:hover {
+  background: #ffffff;
+  border-color: #0D2B2E;
+  box-shadow: 0 6px 16px rgba(13, 43, 46, 0.08);
+  transform: translateY(-1px);
+}
+
+.tech-progress-info {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  margin-bottom: 4px;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
-.progress-info .name {
-  font-weight: 700;
-  color: #1e293b;
+.tech-name-wrap {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.color-indicator {
-  width: 8px;
-  height: 8px;
+.tech-color-dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
 }
 
-.amount-percent {
-  color: #64748b;
-  font-family: SFMono-Regular, Consolas, monospace;
+.tech-cat-emoji {
+  font-size: 16px;
+  line-height: 1;
 }
 
-.progress-bar-bg {
+.tech-item-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0D2B2E;
+}
+
+.tech-metrics-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tech-amount-text {
+  font-size: 13.5px;
+  font-weight: 900;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  color: #0D2B2E;
+}
+
+.tech-percent-badge {
+  font-size: 11px;
+  font-weight: 900;
+  font-family: SFMono-Regular, Consolas, monospace;
+  padding: 1px 7px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+}
+
+.tech-bar-track {
   width: 100%;
-  height: 6px;
-  background: #f1f5f9;
-  border-radius: 6px;
+  height: 10px;
+  background: rgba(13, 43, 46, 0.06);
+  border: 1px solid rgba(13, 43, 46, 0.08);
+  border-radius: 10px;
+  padding: 1px;
+  box-sizing: border-box;
+  position: relative;
   overflow: hidden;
 }
 
-.progress-bar-fill {
+.tech-bar-fill {
   height: 100%;
-  border-radius: 6px;
-  transition: width 0.4s ease;
+  border-radius: 8px;
+  position: relative;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 科技感动态流光扫光效果 */
+.tech-bar-fill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  animation: techBarShimmer 2.5s infinite;
+}
+
+@keyframes techBarShimmer {
+  0% {
+    left: -100%;
+  }
+  60%, 100% {
+    left: 100%;
+  }
+}
+
+/* 科技感脉冲高光点 */
+.tech-bar-fill::after {
+  content: '';
+  position: absolute;
+  right: 1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 6px #ffffff, 0 0 10px rgba(255, 255, 255, 0.9);
 }
 
 /* 5. 账单明细列表 */
