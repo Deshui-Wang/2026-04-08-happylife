@@ -258,38 +258,38 @@
 
           <div class="record-items-wrapper">
             <div v-for="item in group.items" :key="item.id" class="record-item">
-              <!-- 分类图标 -->
-              <div class="cat-icon-badge" :style="{ backgroundColor: getCatInfo(item.category).bg }">
-                <span>{{ getCatInfo(item.category).icon }}</span>
-              </div>
-
-              <!-- 描述与成员信息 -->
-              <div class="record-main-info">
-                <div class="title-row">
-                  <span class="category-name">{{ item.category }}</span>
-                  <div class="members-chips-wrap">
-                    <span
-                      v-for="uName in getRecordUsers(item)"
-                      :key="uName"
-                      class="member-chip"
-                      :style="{ backgroundColor: '#ffffff', borderColor: getMemberInfo(uName).color, color: getMemberInfo(uName).color }"
-                    >
-                      {{ uName }}
-                    </span>
+              <!-- 行 1: Icon 与 分类 (右侧删除按钮) -->
+              <div class="record-row row-1">
+                <div class="cat-title-inline">
+                  <div class="cat-icon-badge" :style="{ backgroundColor: getCatInfo(item.category).bg }">
+                    <span>{{ getCatInfo(item.category).icon }}</span>
                   </div>
+                  <span class="category-name">{{ item.category }}</span>
                 </div>
-                <div class="desc-row">
-                  <span class="desc-text">{{ item.description || '无详细描述' }}</span>
-                  <span class="time-text">{{ formatTime(item.timestamp) }}</span>
-                </div>
-              </div>
-
-              <!-- 金额与操作 -->
-              <div class="record-action-box">
-                <div class="item-amount">-¥{{ Number(item.amount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</div>
                 <button class="btn-delete" title="删除记录" @click="deleteRecord(item.id)">
                   <el-icon><Delete /></el-icon>
                 </button>
+              </div>
+
+              <!-- 行 2: 消费者 与 消费金额 -->
+              <div class="record-row row-2">
+                <div class="members-chips-wrap">
+                  <span
+                    v-for="uName in getRecordUsers(item)"
+                    :key="uName"
+                    class="member-chip"
+                    :style="{ backgroundColor: '#ffffff', borderColor: getMemberInfo(uName).color, color: getMemberInfo(uName).color }"
+                  >
+                    {{ uName }}
+                  </span>
+                </div>
+                <div class="item-amount">-¥{{ Number(item.amount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</div>
+              </div>
+
+              <!-- 行 3: 描述 与 时间 -->
+              <div class="record-row row-3">
+                <span class="desc-text">{{ item.description || '无详细描述' }}</span>
+                <span class="time-text">{{ formatTime(item.timestamp) }}</span>
               </div>
             </div>
           </div>
@@ -1404,8 +1404,8 @@ onMounted(() => {
 
 .record-item {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  flex-direction: column;
+  gap: 8px;
   padding: 12px 16px;
   border-bottom: 1px solid #f8fafc;
   transition: background 0.2s;
@@ -1419,85 +1419,85 @@ onMounted(() => {
   background: #f0fdf4;
 }
 
-.cat-icon-badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+.record-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
+  gap: 12px;
+  width: 100%;
 }
 
-.record-main-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.title-row {
+.cat-title-inline {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+}
+
+.cat-icon-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
 }
 
 .category-name {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 800;
-  color: #1e293b;
+  color: #0D2B2E;
+}
+
+.row-2 {
+  min-height: 26px;
 }
 
 .members-chips-wrap {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .member-chip {
   background: #ffffff;
   border: 1.5px solid #64748b;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 800;
-  padding: 1px 8px;
+  padding: 2px 9px;
   border-radius: 10px;
   display: inline-flex;
   align-items: center;
 }
 
-.desc-row {
-  display: flex;
-  gap: 10px;
-  font-size: 12px;
-  color: #64748b;
-}
-
-.desc-text {
-  max-width: 260px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.time-text {
-  color: #94a3b8;
-}
-
-.record-action-box {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
 .item-amount {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, monospace;
   color: #0D2B2E;
+}
+
+.row-3 {
+  margin-top: 2px;
+}
+
+.desc-text {
+  font-size: 12px;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.time-text {
+  font-size: 12px;
+  color: #94a3b8;
+  flex-shrink: 0;
+  font-family: SFMono-Regular, Consolas, monospace;
 }
 
 .btn-delete {
