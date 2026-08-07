@@ -44,26 +44,6 @@
       </div>
     </div>
 
-    <!-- 2. 快捷筛选触发条 (极佳适配PC与手机端) -->
-    <div class="filter-bar-card" @click="isFilterDrawerOpen = true">
-      <div class="filter-info-tags">
-        <span class="active-filter-badge">
-          <el-icon><Calendar /></el-icon>
-          {{ getTimeRangeLabel }}
-        </span>
-        <span class="active-filter-badge">
-          <el-icon><User /></el-icon>
-          {{ getMemberLabel }}
-        </span>
-        <span class="active-filter-badge">
-          <el-icon><Discount /></el-icon>
-          {{ getCategoryLabel }}
-        </span>
-        <span v-if="searchKeyword" class="active-filter-badge keyword">
-          "{{ searchKeyword }}"
-        </span>
-      </div>
-    </div>
 
     <!-- 3. 上滑条件查询抽屉 Modal (Slide-up Filter Drawer) -->
     <el-drawer
@@ -251,13 +231,38 @@
       </div>
     </div>
 
-    <!-- 5. 账单明细列表 (Grouped History List) -->
+    <!-- 5. 账单明细列表 (含账单明细快捷筛选与查询) -->
     <div class="records-list-section">
       <div class="section-title-bar">
         <h3>账单明细 ({{ filteredRecords.length }})</h3>
         <div class="action-tools">
           <el-button size="small" text class="gold-text-btn" @click="exportJSON">导出数据</el-button>
           <el-button size="small" text type="danger" @click="confirmResetData">重置数据</el-button>
+        </div>
+      </div>
+
+      <!-- 账单明细专用快捷筛选触发条 -->
+      <div class="filter-bar-card" @click="isFilterDrawerOpen = true">
+        <div class="filter-info-tags">
+          <span class="active-filter-badge">
+            <el-icon><Calendar /></el-icon>
+            {{ getTimeRangeLabel }}
+          </span>
+          <span class="active-filter-badge">
+            <el-icon><User /></el-icon>
+            {{ getMemberLabel }}
+          </span>
+          <span class="active-filter-badge">
+            <el-icon><Discount /></el-icon>
+            {{ getCategoryLabel }}
+          </span>
+          <span v-if="searchKeyword" class="active-filter-badge keyword">
+            "{{ searchKeyword }}"
+          </span>
+        </div>
+        <div class="filter-edit-btn">
+          <el-icon><Search /></el-icon>
+          <span>筛选</span>
         </div>
       </div>
 
@@ -1039,26 +1044,40 @@ onMounted(() => {
   color: #fff;
 }
 
-/* 2. 快捷筛选触发条与“查询”按钮 */
+/* 账单明细内快捷筛选触发条 */
 .filter-bar-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(13, 43, 46, 0.15);
-  border-radius: 20px;
-  padding: 12px 16px;
-  box-shadow: 0 8px 24px rgba(13, 43, 46, 0.05);
-  margin-bottom: 18px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .filter-bar-card:hover {
+  background: #ffffff;
   border-color: #0D2B2E;
-  box-shadow: 0 10px 28px rgba(13, 43, 46, 0.1);
+  box-shadow: 0 4px 14px rgba(13, 43, 46, 0.08);
+}
+
+.filter-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #0D2B2E;
+  color: #E8C268;
+  border: 1px solid #E8C268;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(13, 43, 46, 0.15);
 }
 
 .filter-info-tags {
@@ -1291,7 +1310,6 @@ onMounted(() => {
 
 .sweet-item-line {
   padding: 12px 0;
-  border-bottom: 1px solid #f1f5f9;
   transition: background 0.2s;
 }
 
@@ -1362,9 +1380,7 @@ onMounted(() => {
   width: 100%;
   height: 12px;
   background: #f8fafc;
-  border: 1.5px solid #f1f5f9;
   border-radius: 20px;
-  padding: 2px;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
