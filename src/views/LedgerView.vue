@@ -175,8 +175,8 @@
       </template>
     </el-drawer>
 
-    <!-- 4. 统计分析与页签切换 (3D 胶囊管发光波浪条 + 渐变毛玻璃卡片) -->
-    <div v-if="filteredRecords.length > 0" class="glass-stats-card">
+    <!-- 4. 统计分析与页签切换 (温馨甜蜜家庭风) -->
+    <div v-if="filteredRecords.length > 0" class="sweet-stats-card">
       <div class="stats-tabs-header">
         <button 
           class="stats-tab-btn" 
@@ -194,58 +194,57 @@
         </button>
       </div>
 
-      <!-- Tab 1: 消费者支出占比 (3D 胶囊管发光波浪条) -->
-      <div v-if="activeStatsTab === 'consumer'" class="capsule-stats-list animate-fade-in">
-        <div v-for="(st, idx) in memberStats" :key="st.name" class="glass-capsule-item">
-          <div class="capsule-info-row">
-            <div class="capsule-name-col">
-              <span class="rank-badge" :class="'rank-' + (idx + 1)">TOP {{ idx + 1 }}</span>
-              <span class="capsule-color-dot" :style="{ backgroundColor: st.color, boxShadow: `0 0 10px ${st.color}` }"></span>
-              <span class="capsule-item-name">{{ st.name }}</span>
+      <!-- Tab 1: 消费者支出占比 (温情果冻胶囊条) -->
+      <div v-if="activeStatsTab === 'consumer'" class="sweet-stats-list animate-fade-in">
+        <div v-for="(st, idx) in memberStats" :key="st.name" class="sweet-item-card">
+          <div class="sweet-info-row">
+            <div class="sweet-name-col">
+              <span class="sweet-rank-tag" :class="'rank-' + (idx + 1)">{{ idx === 0 ? '👑' : '❤️' }}</span>
+              <span class="sweet-color-dot" :style="{ backgroundColor: st.color }"></span>
+              <span class="sweet-item-name">{{ st.name }}</span>
             </div>
-            <div class="capsule-metrics-col">
-              <span class="capsule-amount">¥{{ st.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
-              <span class="capsule-percent-chip" :style="{ borderColor: st.color, color: st.color }">{{ st.percentage }}%</span>
+            <div class="sweet-metrics-col">
+              <span class="sweet-amount">¥{{ st.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+              <span class="sweet-percent-chip" :style="{ borderColor: st.color, color: st.color }">{{ st.percentage }}%</span>
             </div>
           </div>
 
-          <!-- 3D 胶囊管道与液体发光充满度 -->
-          <div class="capsule-3d-tube">
+          <!-- 温润果冻胶囊条 Track -->
+          <div class="sweet-pill-track">
             <div 
-              class="capsule-fluid-fill" 
+              class="sweet-pill-fill" 
               :style="{ 
                 width: st.percentage + '%', 
                 background: getGradientColor(st.color),
-                boxShadow: `0 4px 14px ${st.color}80`
+                boxShadow: `0 3px 10px ${st.color}50`
               }"
             ></div>
           </div>
         </div>
       </div>
 
-      <!-- Tab 2: 消费类型构成 (3D 胶囊管发光波浪条) -->
-      <div v-else-if="activeStatsTab === 'category'" class="capsule-stats-list animate-fade-in">
-        <div v-for="(cs, idx) in categoryStats.slice(0, 6)" :key="cs.name" class="glass-capsule-item">
-          <div class="capsule-info-row">
-            <div class="capsule-name-col">
-              <span class="rank-badge" :class="'rank-' + (idx + 1)">TOP {{ idx + 1 }}</span>
-              <span class="capsule-cat-emoji">{{ cs.icon }}</span>
-              <span class="capsule-item-name">{{ cs.name }}</span>
+      <!-- Tab 2: 消费类型构成 (温情果冻胶囊条) -->
+      <div v-else-if="activeStatsTab === 'category'" class="sweet-stats-list animate-fade-in">
+        <div v-for="cs in categoryStats.slice(0, 6)" :key="cs.name" class="sweet-item-card">
+          <div class="sweet-info-row">
+            <div class="sweet-name-col">
+              <span class="sweet-cat-emoji">{{ cs.icon }}</span>
+              <span class="sweet-item-name">{{ cs.name }}</span>
             </div>
-            <div class="capsule-metrics-col">
-              <span class="capsule-amount">¥{{ cs.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
-              <span class="capsule-percent-chip" :style="{ borderColor: cs.color, color: cs.color }">{{ cs.percentage }}%</span>
+            <div class="sweet-metrics-col">
+              <span class="sweet-amount">¥{{ cs.amount.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+              <span class="sweet-percent-chip" :style="{ borderColor: cs.color, color: cs.color }">{{ cs.percentage }}%</span>
             </div>
           </div>
 
-          <!-- 3D 胶囊管道与液体发光充满度 -->
-          <div class="capsule-3d-tube">
+          <!-- 温润果冻胶囊条 Track -->
+          <div class="sweet-pill-track">
             <div 
-              class="capsule-fluid-fill" 
+              class="sweet-pill-fill" 
               :style="{ 
                 width: cs.percentage + '%', 
                 background: getGradientColor(cs.color),
-                boxShadow: `0 4px 14px ${cs.color}80`
+                boxShadow: `0 3px 10px ${cs.color}50`
               }"
             ></div>
           </div>
@@ -485,14 +484,14 @@ const timeOptions = [
 ]
 
 const getGradientColor = (baseColor) => {
-  if (baseColor === '#f43f5e') return 'linear-gradient(90deg, #f43f5e 0%, #fb7185 100%)'
-  if (baseColor === '#8b5cf6') return 'linear-gradient(90deg, #8b5cf6 0%, #c084fc 100%)'
-  if (baseColor === '#3b82f6') return 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)'
-  if (baseColor === '#10b981') return 'linear-gradient(90deg, #10b981 0%, #34d399 100%)'
-  if (baseColor === '#ef4444') return 'linear-gradient(90deg, #ef4444 0%, #fca5a5 100%)'
-  if (baseColor === '#f59e0b') return 'linear-gradient(90deg, #f59e0b 0%, #fcd34d 100%)'
-  if (baseColor === '#06b6d4') return 'linear-gradient(90deg, #06b6d4 0%, #67e8f9 100%)'
-  if (baseColor === '#ec4899') return 'linear-gradient(90deg, #ec4899 0%, #f472b6 100%)'
+  if (baseColor === '#f43f5e') return 'linear-gradient(90deg, #fb7185 0%, #fda4af 100%)' // 蜜桃玫瑰粉
+  if (baseColor === '#8b5cf6') return 'linear-gradient(90deg, #a78bfa 0%, #c4b5fd 100%)' // 梦幻薰衣草紫
+  if (baseColor === '#3b82f6') return 'linear-gradient(90deg, #60a5fa 0%, #93c5fd 100%)' // 晴空暖水蓝
+  if (baseColor === '#10b981') return 'linear-gradient(90deg, #34d399 0%, #6ee7b7 100%)' // 鲜采薄荷草莓绿
+  if (baseColor === '#ef4444') return 'linear-gradient(90deg, #f87171 0%, #fca5a5 100%)'
+  if (baseColor === '#f59e0b') return 'linear-gradient(90deg, #fbbf24 0%, #fde68a 100%)'
+  if (baseColor === '#06b6d4') return 'linear-gradient(90deg, #22d3ee 0%, #a5f3fc 100%)'
+  if (baseColor === '#ec4899') return 'linear-gradient(90deg, #f472b6 0%, #fbcfe8 100%)'
   return `linear-gradient(90deg, ${baseColor} 0%, #E8C268 100%)`
 }
 
@@ -1242,114 +1241,118 @@ onMounted(() => {
   box-shadow: 0 6px 16px rgba(13, 43, 46, 0.3);
 }
 
-/* 4. 统计分析与页签切换 (3D 胶囊管发光波浪条 + 渐变毛玻璃卡片) */
-.glass-stats-card {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1.5px solid rgba(232, 194, 104, 0.4);
+/* 4. 统计分析与页签切换 (温馨甜蜜家庭风) */
+.sweet-stats-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(232, 194, 104, 0.35);
   border-radius: 24px;
   padding: 20px 22px;
-  box-shadow: 0 16px 40px rgba(13, 43, 46, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 30px rgba(13, 43, 46, 0.05);
   margin-bottom: 22px;
 }
 
-.capsule-stats-list {
+.stats-tabs-header {
+  display: inline-flex;
+  background: #f1f5f9;
+  border-radius: 16px;
+  padding: 4px;
+  gap: 4px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 18px;
+}
+
+.stats-tab-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  border-radius: 12px;
+  padding: 7px 22px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stats-tab-btn:hover {
+  color: #0D2B2E;
+}
+
+.stats-tab-btn.active {
+  background: #0D2B2E;
+  color: #E8C268;
+  box-shadow: 0 4px 12px rgba(13, 43, 46, 0.2);
+}
+
+.sweet-stats-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
-.glass-capsule-item {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(226, 232, 240, 0.9);
+.sweet-item-card {
+  background: #ffffff;
+  border: 1.5px solid #f1f5f9;
   border-radius: 18px;
   padding: 12px 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
-  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: all 0.25s ease;
 }
 
-.glass-capsule-item:hover {
-  background: #ffffff;
-  border-color: #0D2B2E;
-  transform: translateY(-2px) scale(1.008);
-  box-shadow: 0 10px 24px rgba(13, 43, 46, 0.12);
+.sweet-item-card:hover {
+  border-color: rgba(232, 194, 104, 0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(13, 43, 46, 0.06);
 }
 
-.capsule-info-row {
+.sweet-info-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.capsule-name-col {
+.sweet-name-col {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.rank-badge {
-  font-size: 10px;
-  font-weight: 900;
-  padding: 2px 7px;
-  border-radius: 10px;
-  background: #f1f5f9;
-  color: #64748b;
-  font-family: SFMono-Regular, Consolas, monospace;
+.sweet-rank-tag {
+  font-size: 14px;
 }
 
-.rank-badge.rank-1 {
-  background: linear-gradient(135deg, #0D2B2E 0%, #1c5257 100%);
-  color: #E8C268;
-  border: 1px solid #E8C268;
-  box-shadow: 0 2px 8px rgba(232, 194, 104, 0.3);
-}
-
-.rank-badge.rank-2 {
-  background: #e2e8f0;
-  color: #0F172A;
-  border: 1px solid #94a3b8;
-}
-
-.rank-badge.rank-3 {
-  background: #ffedd5;
-  color: #c2410c;
-  border: 1px solid #fdba74;
-}
-
-.capsule-color-dot {
-  width: 10px;
-  height: 10px;
+.sweet-color-dot {
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
 }
 
-.capsule-cat-emoji {
+.sweet-cat-emoji {
   font-size: 17px;
   line-height: 1;
 }
 
-.capsule-item-name {
+.sweet-item-name {
   font-size: 13.5px;
   font-weight: 800;
   color: #0D2B2E;
 }
 
-.capsule-metrics-col {
+.sweet-metrics-col {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.capsule-amount {
+.sweet-amount {
   font-size: 14px;
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, monospace;
   color: #0D2B2E;
 }
 
-.capsule-percent-chip {
+.sweet-percent-chip {
   font-size: 11.5px;
   font-weight: 900;
   font-family: SFMono-Regular, Consolas, monospace;
@@ -1357,70 +1360,41 @@ onMounted(() => {
   border-radius: 12px;
   border: 1.5px solid #cbd5e1;
   background: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
-/* 3D 立体胶囊管道 Track */
-.capsule-3d-tube {
+/* 温润果冻胶囊条 Track */
+.sweet-pill-track {
   width: 100%;
-  height: 16px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.14) 0%, rgba(15, 23, 42, 0.04) 100%);
-  border: 1.5px solid rgba(13, 43, 46, 0.15);
-  border-radius: 12px;
+  height: 12px;
+  background: #f8fafc;
+  border: 1.5px solid #f1f5f9;
+  border-radius: 20px;
   padding: 2px;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(255, 255, 255, 0.9);
 }
 
-/* 3D 液体充满度 & 顶部立体高光与波浪动效 */
-.capsule-fluid-fill {
+.sweet-pill-fill {
   height: 100%;
-  border-radius: 8px;
+  border-radius: 20px;
   position: relative;
-  transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 50%);
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 液体顶部3D反射光条 */
-.capsule-fluid-fill::before {
+/* 蜜桃糖果感软揉顶斑 */
+.sweet-pill-fill::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.75) 50%,
-    transparent 100%
-  );
-  animation: liquidWaveSweeping 2.8s infinite cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes liquidWaveSweeping {
-  0% {
-    left: -100%;
-  }
-  60%, 100% {
-    left: 100%;
-  }
-}
-
-/* 3D 胶囊末端液体水滴圆帽 */
-.capsule-fluid-fill::after {
-  content: '';
-  position: absolute;
-  right: 1px;
+  right: 2px;
   top: 50%;
   transform: translateY(-50%);
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #ffffff;
-  box-shadow: 0 0 8px #ffffff, 0 0 14px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
 }
 
 /* 5. 账单明细列表 */
