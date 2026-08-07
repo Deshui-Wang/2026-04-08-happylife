@@ -290,23 +290,42 @@ onUnmounted(() => {
 
 @media (max-width: 768px) {
   .app-container {
-    padding: 12px;
+    padding: 8px 4px;
   }
   .header-content {
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    padding: 0;
   }
   .logo {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
-  .custom-tabs :deep(.el-tabs__item) {
-    padding: 0 12px;
-    font-size: 0.875rem;
+  .custom-tabs {
+    width: 100%;
+  }
+  .custom-tabs :deep(.el-tabs__header) {
+    margin-bottom: 0;
+    width: 100%;
+  }
+  .custom-tabs :deep(.el-tabs__nav-wrap) {
+    padding: 0 2px;
   }
   .custom-tabs :deep(.el-tabs__nav-scroll) {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .custom-tabs :deep(.el-tabs__nav) {
+    display: flex !important;
+    justify-content: space-around !important;
+    width: 100% !important;
+    float: none !important;
+  }
+  .custom-tabs :deep(.el-tabs__item) {
+    padding: 0 4px !important;
+    font-size: 0.85rem !important;
+    min-width: auto !important;
   }
 }
 </style>

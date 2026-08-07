@@ -429,30 +429,53 @@ onUnmounted(() => {
     font-size: 0.95rem;
   }
   .main-timer-section {
-    padding: 20px;
-    border-radius: 20px;
+    padding: 10px 4px;
   }
-  .number-glow {
-    font-size: 2.2rem;
+  .family-hero-banner-inline {
+    gap: 10px;
+    padding: 5px 0;
   }
-  .colon-separator {
-    display: none;
+  .hero-romantic-img {
+    max-width: 270px;
+  }
+  .days-inline-text {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    align-items: center;
+  }
+  .days-inline-text .prefix,
+  .days-inline-text .unit {
+    font-size: 1.5rem;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .days-inline-text .num {
+    font-size: 2.8rem;
+  }
+  .inline-gif-suffix {
+    height: 32px;
   }
   .timer-cards-grid {
-    gap: 8px;
+    gap: 4px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    width: 100%;
   }
   .timer-unit-card {
-    min-width: 45%;
-    padding: 16px 10px;
+    min-width: unset;
+    flex: 1;
+    padding: 4px 2px;
   }
-  .totals-banner {
-    flex-direction: column;
-    gap: 16px;
-    padding: 20px;
+  .number-glow {
+    font-size: 1.5rem;
   }
-  .divider-line {
-    width: 80%;
-    height: 1px;
+  .unit-label {
+    font-size: 9px;
+  }
+  .colon-separator {
+    display: inline-block;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
   }
 }
 </style>
