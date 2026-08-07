@@ -8,6 +8,7 @@
         </div>
         <el-tabs v-model="activeTab" class="custom-tabs header-tabs">
           <el-tab-pane label="全家福" name="home"></el-tab-pane>
+          <el-tab-pane label="家庭账本" name="ledger"></el-tab-pane>
           <el-tab-pane label="财富测算" name="also-home"></el-tab-pane>
           <el-tab-pane label="显化确认" name="confirmation"></el-tab-pane>
           <el-tab-pane label="幸福足迹" name="footprint"></el-tab-pane>
@@ -20,6 +21,9 @@
     <main class="main-content">
       <div v-if="activeTab === 'home'" class="animate-fade-in">
         <HomeView />
+      </div>
+      <div v-else-if="activeTab === 'ledger'" class="animate-fade-in">
+        <LedgerView />
       </div>
       <div v-else-if="activeTab === 'also-home'" class="animate-fade-in">
         <AlsoHomeView />
@@ -46,6 +50,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { MagicStick } from '@element-plus/icons-vue'
 import HomeView from './views/HomeView.vue'
+import LedgerView from './views/LedgerView.vue'
 import AlsoHomeView from './views/AlsoHomeView.vue'
 import ConfirmationView from './views/ConfirmationView.vue'
 import FootprintView from './views/FootprintView.vue'
