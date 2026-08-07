@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <!-- 2. 快捷筛选触发条与“查询”按钮 (极佳适配PC与手机端) -->
+    <!-- 2. 快捷筛选触发条 (极佳适配PC与手机端) -->
     <div class="filter-bar-card" @click="isFilterDrawerOpen = true">
       <div class="filter-info-tags">
         <span class="active-filter-badge">
@@ -66,11 +66,6 @@
           "{{ searchKeyword }}"
         </span>
       </div>
-
-      <button class="btn-query-trigger" @click.stop="isFilterDrawerOpen = true">
-        <el-icon><Search /></el-icon>
-        <span>查询</span>
-      </button>
     </div>
 
     <!-- 3. 上滑条件查询抽屉 Modal (Slide-up Filter Drawer) -->
