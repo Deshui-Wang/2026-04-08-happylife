@@ -6,7 +6,7 @@
         <!-- 左侧数据与统计区 -->
         <div class="overview-left-col">
           <div class="summary-title-wrap">
-            <span class="badge-tag">家庭账本</span>
+            <span class="badge-tag">账本</span>
             <h2>总支出概览</h2>
           </div>
 
