@@ -165,26 +165,30 @@ onUnmounted(() => {
 }
 
 .deco-top-left {
-  top: -10px;
+  top: -15px;
   left: 0px;
+  width: 110px;
   transform: rotate(-10deg);
 }
 
 .deco-top-right {
-  top: -10px;
+  top: -15px;
   right: 0px;
+  width: 110px;
   transform: rotate(10deg);
 }
 
 .deco-bottom-left {
   bottom: -10px;
   left: 0px;
+  width: 75px;
   transform: rotate(-5deg);
 }
 
 .deco-bottom-right {
   bottom: -10px;
   right: 0px;
+  width: 75px;
   transform: rotate(5deg);
 }
 
@@ -459,18 +463,22 @@ onUnmounted(() => {
   .deco-top-left {
     top: -8px;
     left: -2px;
+    width: 62px;
   }
   .deco-top-right {
     top: -8px;
     right: -2px;
+    width: 62px;
   }
   .deco-bottom-left {
     bottom: -8px;
     left: -2px;
+    width: 42px;
   }
   .deco-bottom-right {
     bottom: -8px;
     right: -2px;
+    width: 42px;
   }
   .hero-romantic-img {
     max-width: 290px;

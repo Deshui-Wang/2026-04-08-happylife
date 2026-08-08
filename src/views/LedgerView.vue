@@ -1,38 +1,21 @@
 <template>
   <div class="ledger-container animate-fade-in">
-    <!-- 1. 顶栏总览卡片 (左右结构 #0D2B2E 深墨绿 & #E8C268 鎏金) -->
+    <!-- 1. 顶栏总览卡片 (#0D2B2E 深墨绿 & #E8C268 鎏金) -->
     <div class="overview-header-card">
-      <div class="overview-flex-layout">
-        <!-- 左侧数据与统计区 -->
-        <div class="overview-left-col">
+      <!-- 虚线上方：左侧标题与金额 + 右侧存钱罐图片 (左右对齐) -->
+      <div class="overview-top-row">
+        <div class="overview-left-info">
           <div class="summary-title-wrap">
-            <span class="badge-tag">账本</span>
-            <h2>总支出概览</h2>
+            <span class="badge-tag">好好记账 · 稳稳发财</span>
           </div>
 
           <div class="summary-amount-box">
             <div class="currency-symbol">¥</div>
             <div class="amount-num">{{ formattedTotalAmount }}</div>
           </div>
-
-          <div class="summary-meta-row">
-            <div class="meta-item">
-              <span class="meta-label">筛选笔数</span>
-              <span class="meta-val">{{ filteredRecords.length }} 笔</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">最高消费类型</span>
-              <span class="meta-val">{{ topCategoryName }}</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">主要消费者</span>
-              <span class="meta-val">{{ topMemberName }}</span>
-            </div>
-          </div>
         </div>
 
-        <!-- 右侧大图点缀区 -->
-        <div class="overview-right-col">
+        <div class="overview-right-hero">
           <img
             :src="huabanAddPic"
             alt="快捷记账"
@@ -42,8 +25,23 @@
           />
         </div>
       </div>
-    </div>
 
+      <!-- 虚线下方：三项统计数据横向均分占位 -->
+      <div class="summary-meta-row">
+        <div class="meta-item">
+          <span class="meta-label">筛选笔数</span>
+          <span class="meta-val">{{ filteredRecords.length }} 笔</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">最高消费类型</span>
+          <span class="meta-val">{{ topCategoryName }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">主要消费者</span>
+          <span class="meta-val">{{ topMemberName }}</span>
+        </div>
+      </div>
+    </div>
 
     <!-- 3. 上滑条件查询抽屉 Modal (Slide-up Filter Drawer) -->
     <el-drawer
@@ -243,8 +241,10 @@
 
       <!-- 空状态 -->
       <div v-if="filteredRecords.length === 0" class="empty-state-card">
-        <el-empty description="暂无符合条件的账单记录">
-          <button class="btn-primary-add inline-empty-btn" @click="openAddModal">点我</button>
+        <el-empty :description="records.length === 0 ? '欢迎开启家庭正式记账！目前暂无账单记录' : '暂无符合条件的账单记录'">
+          <button class="btn-primary-add inline-empty-btn" @click="openAddModal">
+            <el-icon style="margin-right: 4px;"><Plus /></el-icon> 记第一笔账
+          </button>
         </el-empty>
       </div>
 
@@ -253,12 +253,12 @@
         <div v-for="group in groupedRecords" :key="group.date" class="date-group-card">
           <div class="date-group-header">
             <span class="date-str">{{ group.formattedDate }}</span>
-            <span class="date-total">当日小计: ¥{{ group.total.toLocaleString() }}</span>
+            <span class="date-total">当日小计: ¥{{ group.total.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
           </div>
 
           <div class="record-items-wrapper">
             <div v-for="item in group.items" :key="item.id" class="record-item">
-              <!-- 行 1: Icon 与 分类 (右侧删除按钮) -->
+              <!-- 行 1: Icon 与 分类 (右侧编辑与删除按钮) -->
               <div class="record-row row-1">
                 <div class="cat-title-inline">
                   <div class="cat-icon-badge" :style="{ backgroundColor: getCatInfo(item.category).bg }">
@@ -266,9 +266,14 @@
                   </div>
                   <span class="category-name">{{ item.category }}</span>
                 </div>
-                <button class="btn-delete" title="删除记录" @click="deleteRecord(item.id)">
-                  <el-icon><Delete /></el-icon>
-                </button>
+                <div class="item-actions-group">
+                  <button class="btn-action-icon btn-edit" title="编辑记录" @click="openEditModal(item)">
+                    <el-icon><Edit /></el-icon>
+                  </button>
+                  <button class="btn-action-icon btn-delete" title="删除记录" @click="deleteRecord(item.id)">
+                    <el-icon><Delete /></el-icon>
+                  </button>
+                </div>
               </div>
 
               <!-- 行 2: 消费者 与 消费金额 -->
@@ -297,10 +302,10 @@
       </div>
     </div>
 
-    <!-- 6. 移动端快捷记账弹窗 Modal (支持消费者多选) -->
+    <!-- 6. 移动端快捷记账弹窗 Modal (支持消费者多选与编辑) -->
     <el-dialog
       v-model="isAddModalOpen"
-      title="记账"
+      :title="isEditMode ? '编辑账单记录' : '记账'"
       width="92%"
       max-width="500px"
       class="custom-add-ledger-dialog"
@@ -402,19 +407,12 @@
         </div>
       </form>
     </el-dialog>
-
-    <!-- 7. 移动端悬浮记账按钮 (Mobile FAB) -->
-    <div class="mobile-fab-wrap" @click="openAddModal">
-      <button class="fab-btn">
-        <span class="fab-text">点我</span>
-      </button>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { Plus, Search, Delete, Calendar, User, Discount } from '@element-plus/icons-vue'
+import { Plus, Search, Delete, Calendar, User, Discount, Edit, Download, Upload } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
@@ -499,8 +497,11 @@ const resetFilters = () => {
   ElMessage.success('已重置筛选条件')
 }
 
-// 账单记录列表数据
+// 账单记录列表数据 (初始化为空，由用户真实录入)
 const records = ref([])
+const isEditMode = ref(false)
+const editingRecordId = ref(null)
+const fileInputRef = ref(null)
 
 // 弹窗状态与表单 (支持消费者多选)
 const isAddModalOpen = ref(false)
@@ -537,92 +538,38 @@ const toggleConsumer = (name) => {
   }
 }
 
-// 初始化样本 seed 数据
-const initSeedData = () => {
-  const now = dayjs()
-  return [
-    {
-      id: 'seed-1',
-      users: ['👩‍🎤胖脆', '🧑🏻‍💻阿旺'],
-      user: '👩‍🎤胖脆 & 🧑🏻‍💻阿旺',
-      category: '饭菜',
-      amount: 188.5,
-      description: '周末家庭便当与超市食材',
-      timestamp: now.subtract(1, 'hour').format('YYYY-MM-DD HH:mm:ss')
-    },
-    {
-      id: 'seed-2',
-      users: ['🧑🏻‍💻阿旺'],
-      user: '🧑🏻‍💻阿旺',
-      category: '水果零食',
-      amount: 68.0,
-      description: '盒马买阳光玫瑰葡萄与切片西瓜',
-      timestamp: now.subtract(5, 'hour').format('YYYY-MM-DD HH:mm:ss')
-    },
-    {
-      id: 'seed-3',
-      users: ['😽宝仔'],
-      user: '😽宝仔',
-      category: '交通',
-      amount: 45.0,
-      description: '打车去公园散步',
-      timestamp: now.subtract(1, 'day').format('YYYY-MM-DD HH:mm:ss')
-    },
-    {
-      id: 'seed-4',
-      users: ['🍓草莓'],
-      user: '🍓草莓',
-      category: '礼物基金',
-      amount: 320.0,
-      description: '储备家庭生日纪念日礼物通存金',
-      timestamp: now.subtract(2, 'day').format('YYYY-MM-DD HH:mm:ss')
-    },
-    {
-      id: 'seed-5',
-      users: ['👩‍🎤胖脆', '🍓草莓'],
-      user: '👩‍🎤胖脆 & 🍓草莓',
-      category: '水电日常',
-      amount: 210.0,
-      description: '缴纳夏季空调电费',
-      timestamp: now.subtract(4, 'day').format('YYYY-MM-DD HH:mm:ss')
-    },
-    {
-      id: 'seed-6',
-      users: ['🧑🏻‍💻阿旺', '😽宝仔'],
-      user: '🧑🏻‍💻阿旺 & 😽宝仔',
-      category: '旅行和演出',
-      amount: 680.0,
-      description: '预订周末音乐会门票',
-      timestamp: now.subtract(6, 'day').format('YYYY-MM-DD HH:mm:ss')
-    },
-    {
-      id: 'seed-7',
-      users: ['😽宝仔'],
-      user: '😽宝仔',
-      category: '人情往来',
-      amount: 500.0,
-      description: '好友婚礼红聚红包',
-      timestamp: now.subtract(10, 'day').format('YYYY-MM-DD HH:mm:ss')
-    }
-  ]
-}
-
+// 本地数据存储与加载 (彻底过滤历史 seed mock 数据，确保真实录入精准无误)
 const loadRecords = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
-      records.value = JSON.parse(raw)
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed)) {
+        // 清除任何历史残留的 mock seed 实例 (id 以 seed- 开头)
+        const cleanRecords = parsed.filter(r => !r.id || !String(r.id).startsWith('seed-'))
+        records.value = cleanRecords
+        if (cleanRecords.length !== parsed.length) {
+          saveToStorage()
+        }
+      } else {
+        records.value = []
+        saveToStorage()
+      }
     } else {
-      records.value = initSeedData()
+      records.value = []
       saveToStorage()
     }
   } catch (e) {
-    records.value = initSeedData()
+    records.value = []
   }
 }
 
 const saveToStorage = () => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records.value))
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records.value))
+  } catch (e) {
+    ElMessage.error('数据本地存储失败，可能超出浏览器存储限制')
+  }
 }
 
 // 获取安全的单图标 emoji
@@ -780,11 +727,24 @@ const groupedRecords = computed(() => {
 })
 
 const openAddModal = () => {
+  isEditMode.value = false
+  editingRecordId.value = null
   form.users = selectedMember.value !== 'all' ? [selectedMember.value] : [MEMBERS[0].name]
   form.category = selectedCategory.value !== 'all' ? selectedCategory.value : '饭菜'
   form.amount = ''
   form.description = ''
   form.timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss')
+  isAddModalOpen.value = true
+}
+
+const openEditModal = (item) => {
+  isEditMode.value = true
+  editingRecordId.value = item.id
+  form.users = [...getRecordUsers(item)]
+  form.category = item.category
+  form.amount = item.amount
+  form.description = item.description || ''
+  form.timestamp = item.timestamp
   isAddModalOpen.value = true
 }
 
@@ -804,20 +764,41 @@ const saveRecord = () => {
   }
 
   const userLabel = form.users.join(' & ')
-  const newRecord = {
-    id: 'rec-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-    user: userLabel,
-    users: [...form.users],
-    category: form.category,
-    amount: Number(Number(form.amount).toFixed(2)),
-    description: form.description.trim() || `${userLabel}记录的${form.category}支出`,
-    timestamp: form.timestamp || dayjs().format('YYYY-MM-DD HH:mm:ss')
+  const formattedAmt = Number(Number(form.amount).toFixed(2))
+  const formattedDesc = form.description.trim() || `${userLabel}记录的${form.category}支出`
+  const formattedTime = form.timestamp || dayjs().format('YYYY-MM-DD HH:mm:ss')
+
+  if (isEditMode.value && editingRecordId.value) {
+    const idx = records.value.findIndex(r => r.id === editingRecordId.value)
+    if (idx !== -1) {
+      records.value[idx] = {
+        ...records.value[idx],
+        user: userLabel,
+        users: [...form.users],
+        category: form.category,
+        amount: formattedAmt,
+        description: formattedDesc,
+        timestamp: formattedTime
+      }
+      saveToStorage()
+      ElMessage.success('账单记录已成功更新')
+    }
+  } else {
+    const newRecord = {
+      id: 'rec-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      user: userLabel,
+      users: [...form.users],
+      category: form.category,
+      amount: formattedAmt,
+      description: formattedDesc,
+      timestamp: formattedTime
+    }
+    records.value.unshift(newRecord)
+    saveToStorage()
+    ElMessage.success('成功记入一笔账单')
   }
 
-  records.value.unshift(newRecord)
-  saveToStorage()
   isAddModalOpen.value = false
-  ElMessage.success('成功记入一笔账单')
 }
 
 const deleteRecord = (id) => {
@@ -832,19 +813,27 @@ const deleteRecord = (id) => {
   }).catch(() => {})
 }
 
-const confirmResetData = () => {
-  ElMessageBox.confirm('确定要重置为默认样本数据吗？本地新增数据将被覆盖', '警告', {
-    confirmButtonText: '重置',
+const clearAllRecords = () => {
+  if (records.value.length === 0) {
+    ElMessage.info('当前账本已是空状态')
+    return
+  }
+  ElMessageBox.confirm('确定要清空所有账单数据吗？此操作无法撤销，建议操作前先点击【导出备份】保存数据。', '提示', {
+    confirmButtonText: '确定清空',
     cancelButtonText: '取消',
-    type: 'error'
+    type: 'warning'
   }).then(() => {
-    records.value = initSeedData()
+    records.value = []
     saveToStorage()
-    ElMessage.success('重置数据成功')
+    ElMessage.success('已清空所有账单，随时开始记录正式数据')
   }).catch(() => {})
 }
 
 const exportJSON = () => {
+  if (records.value.length === 0) {
+    ElMessage.info('当前暂无账单数据可导出')
+    return
+  }
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(records.value, null, 2))
   const downloadAnchor = document.createElement('a')
   downloadAnchor.setAttribute("href", dataStr)
@@ -852,7 +841,63 @@ const exportJSON = () => {
   document.body.appendChild(downloadAnchor)
   downloadAnchor.click()
   downloadAnchor.remove()
-  ElMessage.success('账单数据已导出文件')
+  ElMessage.success('账单备份已成功导出')
+}
+
+const triggerFileInput = () => {
+  if (fileInputRef.value) {
+    fileInputRef.value.value = ''
+    fileInputRef.value.click()
+  }
+}
+
+const handleImportFile = (event) => {
+  const file = event.target.files && event.target.files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result)
+      if (!Array.isArray(imported)) {
+        ElMessage.error('导入失败：数据格式不正确，需为 JSON 账单数组')
+        return
+      }
+      const validRecords = imported.filter(r => r && r.amount && r.category)
+      if (validRecords.length === 0) {
+        ElMessage.warning('文件内未找到有效的账单记录')
+        return
+      }
+
+      ElMessageBox.confirm(`读取到 ${validRecords.length} 笔有效账单，请选择导入模式：`, '导入账本备份', {
+        distinguishCancelAndClose: true,
+        confirmButtonText: '覆盖现有账本',
+        cancelButtonText: '合并至现有账本',
+        type: 'info'
+      }).then(() => {
+        records.value = validRecords
+        saveToStorage()
+        ElMessage.success(`已成功覆盖导入 ${validRecords.length} 笔账单`)
+      }).catch((action) => {
+        if (action === 'cancel') {
+          const existingIds = new Set(records.value.map(r => r.id))
+          let addedCount = 0
+          validRecords.forEach(r => {
+            if (!r.id) r.id = 'rec-' + Date.now() + '-' + Math.floor(Math.random() * 1000)
+            if (!existingIds.has(r.id)) {
+              records.value.unshift(r)
+              existingIds.add(r.id)
+              addedCount++
+            }
+          })
+          saveToStorage()
+          ElMessage.success(`成功合并 ${addedCount} 笔新账单`)
+        }
+      })
+    } catch (err) {
+      ElMessage.error('解析 JSON 文件失败，请检查文件格式')
+    }
+  }
+  reader.readAsText(file)
 }
 
 onMounted(() => {
@@ -881,14 +926,14 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.overview-flex-layout {
+.overview-top-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
 }
 
-.overview-left-col {
+.overview-left-info {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -899,7 +944,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .badge-tag {
@@ -907,7 +952,7 @@ onMounted(() => {
   border: 1px solid rgba(232, 194, 104, 0.5);
   padding: 3px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   color: #E8C268;
 }
@@ -919,19 +964,17 @@ onMounted(() => {
   margin: 0;
 }
 
-.overview-right-col {
+.overview-right-hero {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
   flex-shrink: 0;
 }
 
 .header-hero-pic {
-  height: 110px;
+  height: 95px;
   width: auto;
-  max-width: 160px;
+  max-width: 140px;
   object-fit: contain;
   cursor: pointer;
   filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
@@ -973,11 +1016,127 @@ onMounted(() => {
   margin-top: 10px;
 }
 
+/* 2. 操作快捷工具栏 */
+.action-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.action-btn.btn-add {
+  background: linear-gradient(135deg, #E8C268 0%, #d4a73b 100%);
+  color: #0D2B2E;
+  box-shadow: 0 4px 12px rgba(232, 194, 104, 0.3);
+}
+
+.action-btn.btn-add:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(232, 194, 104, 0.45);
+}
+
+.action-btn.btn-filter {
+  background: #ffffff;
+  color: #0D2B2E;
+  border-color: #cbd5e1;
+}
+
+.action-btn.btn-filter:hover {
+  background: #f8fafc;
+  border-color: #0D2B2E;
+}
+
+.action-btn.btn-export {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.action-btn.btn-export:hover {
+  background: #dcfce7;
+}
+
+.action-btn.btn-import {
+  background: #eff6ff;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.action-btn.btn-import:hover {
+  background: #dbeafe;
+}
+
+.action-btn.btn-clear {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+  margin-left: auto;
+}
+
+.action-btn.btn-clear:hover {
+  background: #fee2e2;
+}
+
+/* 记录操作按钮组 */
+.item-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-action-icon {
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-action-icon.btn-edit {
+  color: #64748b;
+}
+
+.btn-action-icon.btn-edit:hover {
+  background-color: #f1f5f9;
+  color: #3b82f6;
+}
+
+.btn-action-icon.btn-delete {
+  color: #94a3b8;
+}
+
+.btn-action-icon.btn-delete:hover {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
+
 .summary-amount-box {
   display: flex;
   align-items: baseline;
   gap: 4px;
   margin-bottom: 14px;
+  margin-top: 8px;
+  margin-left: 8px;
 }
 
 .currency-symbol {
@@ -997,15 +1156,19 @@ onMounted(() => {
 
 .summary-meta-row {
   display: flex;
-  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
   border-top: 1px dashed rgba(232, 194, 104, 0.25);
-  padding-top: 12px;
+  padding-top: 14px;
+  margin-top: 12px;
+  width: 100%;
 }
 
 .meta-item {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .meta-label {
@@ -1763,30 +1926,6 @@ onMounted(() => {
   transform: translateY(-1px);
 }
 
-/* 7. 移动端悬浮记账按钮 (Mobile FAB) */
-.mobile-fab-wrap {
-  display: none;
-  position: fixed;
-  right: 20px;
-  bottom: 30px;
-  z-index: 99;
-}
-
-.fab-btn {
-  height: 52px;
-  padding: 0 22px;
-  border-radius: 26px;
-  background: linear-gradient(135deg, #E8C268 0%, #d4a73b 100%);
-  color: #0D2B2E;
-  border: 1.5px solid #fff;
-  font-size: 15px;
-  font-weight: 900;
-  box-shadow: 0 10px 25px rgba(13, 43, 46, 0.5);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
 
 /* 移动端与PC双端响应式兼容 */
 @media (max-width: 768px) {
@@ -1796,7 +1935,7 @@ onMounted(() => {
   .overview-header-card {
     padding: 16px;
   }
-  .overview-flex-layout {
+  .overview-top-row {
     gap: 12px;
   }
   .amount-num {
@@ -1823,9 +1962,6 @@ onMounted(() => {
   }
   .category-selector-grid {
     grid-template-columns: repeat(3, 1fr);
-  }
-  .mobile-fab-wrap {
-    display: block;
   }
   .desc-text {
     max-width: 150px;
