@@ -53,7 +53,6 @@
               <div class="summary-label">
                 <el-icon><InfoFilled /></el-icon>
                 <span>静态资产总额</span>
-                <span class="formula-text">（存款 + 欠薪与赔偿）</span>
               </div>
               <div class="summary-value">
                 <span class="currency">¥</span>
@@ -63,12 +62,12 @@
 
             <el-divider content-position="left">工作/未来流入</el-divider>
             <el-row :gutter="10">
-              <el-col :xs="24" :sm="8">
+              <el-col :xs="12" :sm="8">
                 <el-form-item label="月预计工作收入 (元)">
                   <el-input-number v-model="assets.workingIncome" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :sm="8">
+              <el-col :xs="12" :sm="8">
                 <el-form-item label="预计工作年限 (年)">
                   <el-input-number v-model="assets.workingYears" :precision="0" :step="1" :min="0" style="width: 100%" controls-position="right" />
                 </el-form-item>

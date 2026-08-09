@@ -71,7 +71,6 @@
               <div class="summary-label">
                 <el-icon><InfoFilled /></el-icon>
                 <span>静态资产总额</span>
-                <span class="formula-text">（存款 + 欠薪与赔偿{{ assets.supplementary ? ' + 补充资产' : '' }}）</span>
               </div>
               <div class="summary-value">
                 <span class="currency">¥</span>
@@ -81,12 +80,12 @@
 
             <el-divider content-position="left">工作收入</el-divider>
             <el-row :gutter="10">
-              <el-col :xs="24" :sm="12">
+              <el-col :xs="12" :sm="12">
                 <el-form-item label="月预计工作收入 (元)">
                   <el-input-number v-model="assets.workingIncome" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :sm="12">
+              <el-col :xs="12" :sm="12">
                 <el-form-item label="预计工作年限 (年)">
                   <el-input-number v-model="assets.workingYears" :precision="0" :step="1" :min="0" style="width: 100%" controls-position="right" />
                 </el-form-item>
@@ -95,12 +94,12 @@
 
             <el-divider content-position="left">退休收入</el-divider>
             <el-row :gutter="10">
-              <el-col :xs="24" :sm="12">
+              <el-col :xs="12" :sm="12">
                 <el-form-item label="退休金预计金额 (元/月)">
                   <el-input-number v-model="assets.estimatedPension" :precision="0" :step="500" :min="0" style="width: 100%" controls-position="right" />
                 </el-form-item>
               </el-col>
-              <el-col :xs="24" :sm="12">
+              <el-col :xs="12" :sm="12">
                 <el-form-item>
                   <template #label>
                     <div style="display: flex; align-items: center; gap: 4px;">
@@ -2220,17 +2219,50 @@ const handleCalcInput = (val) => {
     padding: 10px 0px;
   }
   .core-assets-inputs {
-    flex-direction: column;
-    align-items: stretch !important;
-    gap: 4px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    gap: 4px !important;
+    width: 100% !important;
+  }
+  .core-assets-inputs .asset-input-col {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
   }
   .calc-symbol {
-    text-align: center;
+    flex: 0 0 auto !important;
+    text-align: center !important;
+    padding: 0 1px 8px 1px !important;
+    margin: 0 !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
+    color: #6366f1 !important;
+  }
+  .core-assets-inputs :deep(.el-form-item) {
+    margin-bottom: 0 !important;
+  }
+  :deep(.el-form-item__label) {
+    font-size: 11.5px !important;
+    padding-bottom: 2px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.2 !important;
+  }
+  :deep(.el-input-number .el-input-number__decrease),
+  :deep(.el-input-number .el-input-number__increase) {
+    width: 18px !important;
+  }
+  :deep(.el-input-number.is-controls-right .el-input__wrapper) {
+    padding-left: 4px !important;
+    padding-right: 20px !important;
+  }
+  :deep(.el-input-number .el-input__inner) {
+    text-align: center !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
     padding: 0 !important;
-    margin: -4px 0;
-    font-size: 18px;
-    font-weight: bold;
-    color: #6366f1;
   }
   /* 逐年推演表格横向滚动与样式优化 */
   .bridge-table-wrap {
