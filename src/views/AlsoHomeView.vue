@@ -189,7 +189,7 @@
                 <el-icon><Location /></el-icon>
                 <span>居住城市与生活开支 (时间段设置)</span>
               </div>
-              <span class="city-stats-pill">已启用 {{ cityCostsList.filter(c => c.enabled).length }} 个城市阶段</span>
+              <span class="city-stats-pill"> {{ cityCostsList.filter(c => c.enabled).length }} 个城市</span>
             </div>
           </template>
 
@@ -204,7 +204,7 @@
                 <!-- 卡片头部：开关与城市信息 -->
                 <div class="city-stage-header">
                   <div class="header-left">
-                    <el-switch v-model="city.enabled" size="default" active-color="#6366f1" />
+                    <el-switch v-model="city.enabled" size="default" active-color="#6366f1" @change="onCityEnabledChange" />
                     <span class="city-badge-name">{{ city.label }}</span>
                     <el-tag v-if="city.enabled" size="small" type="primary" effect="light" class="city-cost-tag">
                       ¥{{ (city.monthly * 12 / 10000).toFixed(1) }}w/年
@@ -251,6 +251,7 @@
                       :max="100" 
                       :marks="ageMarks"
                       class="city-age-slider"
+                      @input="onCityAgeRangeChange(city, $event)"
                     />
                   </div>
                 </div>
@@ -646,12 +647,123 @@ const cityCostsList = ref([
   { id: 'heze', label: '菏泽', monthly: 2500, living: 2500, rent: 0, ageRange: [55, 100], enabled: false }
 ])
 
-const ageMarks = {
-  44: '44岁',
-  54: '53岁10个月退休',
+const ageMarks = computed(() => ({
+  [currentAge.value]: `${currentAge.value}岁`,
   70: '70岁',
   100: '100岁'
+}))
+
+// 记录各城市调整前的 ageRange 镜像，便于判断拖动的是开始还是结束年龄
+const prevCityAgeRanges = reactive({})
+
+const initCityAgeRanges = () => {
+  cityCostsList.value.forEach(c => {
+    prevCityAgeRanges[c.id] = [...c.ageRange]
+  })
 }
+
+// 居住年龄段变动与多城市顺序联动逻辑
+const onCityAgeRangeChange = (changedCity, newRange) => {
+  const enabledCities = cityCostsList.value.filter(c => c.enabled)
+  if (enabledCities.length <= 1) {
+    if (enabledCities.length === 1) {
+      enabledCities[0].ageRange[0] = currentAge.value
+      enabledCities[0].ageRange[1] = 100
+    }
+    prevCityAgeRanges[changedCity.id] = [...changedCity.ageRange]
+    return
+  }
+
+  const idx = enabledCities.findIndex(c => c.id === changedCity.id)
+  if (idx === -1) return
+
+  const oldRange = prevCityAgeRanges[changedCity.id] || [...newRange]
+  const oldStart = oldRange[0]
+  const oldEnd = oldRange[1]
+  const newStart = newRange[0]
+  const newEnd = newRange[1]
+
+  // 1. 如果是第一个城市，锁定开始年龄为 currentAge
+  if (idx === 0) {
+    changedCity.ageRange[0] = currentAge.value
+  }
+  // 2. 如果是最后一个城市，锁定结束年龄为 100岁
+  if (idx === enabledCities.length - 1) {
+    changedCity.ageRange[1] = 100
+  }
+
+  // 3. 当调整当前城市的结束年龄 (newEnd 发生变化)
+  if (newEnd !== oldEnd) {
+    for (let i = idx; i < enabledCities.length - 1; i++) {
+      const curr = enabledCities[i]
+      const next = enabledCities[i + 1]
+      
+      const targetNextStart = curr.ageRange[1] + 1
+      if (targetNextStart <= 100) {
+        next.ageRange[0] = targetNextStart
+        if (next.ageRange[1] <= next.ageRange[0]) {
+          if (i + 1 === enabledCities.length - 1) {
+            next.ageRange[1] = 100
+          } else {
+            next.ageRange[1] = Math.min(99, next.ageRange[0])
+          }
+        }
+      }
+    }
+  } 
+  // 4. 当调整当前城市的开始年龄 (newStart 发生变化)
+  else if (newStart !== oldStart && idx > 0) {
+    for (let i = idx; i > 0; i--) {
+      const curr = enabledCities[i]
+      const prev = enabledCities[i - 1]
+      
+      const targetPrevEnd = curr.ageRange[0] - 1
+      const minPrevEnd = i - 1 === 0 ? currentAge.value : prev.ageRange[0]
+      
+      if (targetPrevEnd >= minPrevEnd) {
+        prev.ageRange[1] = targetPrevEnd
+        if (prev.ageRange[0] >= prev.ageRange[1] && i - 1 > 0) {
+          prev.ageRange[0] = Math.max(currentAge.value, prev.ageRange[1] - 1)
+        }
+      }
+    }
+  }
+
+  // 更新所有已启用城市的镜像状态
+  enabledCities.forEach(c => {
+    prevCityAgeRanges[c.id] = [...c.ageRange]
+  })
+}
+
+// 城市启用状态切换时的重新对齐
+const onCityEnabledChange = () => {
+  const enabledCities = cityCostsList.value.filter(c => c.enabled)
+  if (enabledCities.length === 0) return
+
+  if (enabledCities.length === 1) {
+    enabledCities[0].ageRange = [currentAge.value, 100]
+  } else if (enabledCities.length === 2) {
+    const end0 = Math.min(99, Math.max(currentAge.value, enabledCities[0].ageRange[1]))
+    enabledCities[0].ageRange = [currentAge.value, end0]
+    enabledCities[1].ageRange = [end0 + 1, 100]
+  } else if (enabledCities.length === 3) {
+    const end0 = Math.min(98, Math.max(currentAge.value, enabledCities[0].ageRange[1]))
+    enabledCities[0].ageRange = [currentAge.value, end0]
+    
+    let end1 = enabledCities[1].ageRange[1]
+    if (end1 <= end0 + 1) end1 = end0 + 2
+    if (end1 >= 100) end1 = 99
+    
+    enabledCities[1].ageRange = [end0 + 1, end1]
+    enabledCities[2].ageRange = [end1 + 1, 100]
+  }
+
+  enabledCities.forEach(c => {
+    prevCityAgeRanges[c.id] = [...c.ageRange]
+  })
+}
+
+initCityAgeRanges()
 
 // 自动监听生活费与房租输入，同步更新月总开支
 watch(cityCostsList, (newVal) => {
