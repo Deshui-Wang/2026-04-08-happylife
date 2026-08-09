@@ -202,7 +202,7 @@
 
       <!-- Tab 2: 消费类型构成 (清爽单行横线分割) -->
       <div v-else-if="activeStatsTab === 'category'" class="sweet-stats-list animate-fade-in">
-        <div v-for="cs in categoryStats.slice(0, 6)" :key="cs.name" class="sweet-item-line">
+        <div v-for="cs in categoryStats" :key="cs.name" class="sweet-item-line">
           <div class="sweet-info-row">
             <div class="sweet-name-col">
               <span class="sweet-cat-emoji">{{ cs.icon }}</span>
@@ -430,15 +430,16 @@ const MEMBERS = [
   { name: '🍓草莓', color: '#10b981' }
 ]
 
-// 2. 常量定义：七大账单分类 (默认只显示第一个emoji图标)
+// 2. 常量定义：八大账单分类 (默认只显示第一个emoji图标)
 const CATEGORIES = [
   { name: '饭菜', icon: '🍚', color: '#ef4444', bg: '#fee2e2' },
   { name: '水果零食', icon: '🍎', color: '#f59e0b', bg: '#fef3c7' },
-  { name: '水电日常', icon: '💡', color: '#06b6d4', bg: '#cffaff' },
-  { name: '交通', icon: '🚗', color: '#3b82f6', bg: '#dbeafe' },
+  { name: '日常购物', icon: '🛒', color: '#10b981', bg: '#d1fae5' },
+  { name: '水电煤气', icon: '💡', color: '#06b6d4', bg: '#cffaff' },
+  { name: '交通/停车/保养', icon: '🚗', color: '#3b82f6', bg: '#dbeafe' },
   { name: '旅行和演出', icon: '✈️', color: '#8b5cf6', bg: '#ede9fe' },
   { name: '人情往来', icon: '🧧', color: '#ec4899', bg: '#fce7f3' },
-  { name: '礼物基金', icon: '🎁', color: '#10b981', bg: '#d1fae5' }
+  { name: '礼物基金', icon: '🎁', color: '#6366f1', bg: '#e0e7ff' }
 ]
 
 const STORAGE_KEY = 'happylife_family_ledger_records'
@@ -469,6 +470,7 @@ const getGradientColor = (baseColor) => {
   if (baseColor === '#f59e0b') return 'linear-gradient(90deg, #fbbf24 0%, #fde68a 100%)'
   if (baseColor === '#06b6d4') return 'linear-gradient(90deg, #22d3ee 0%, #a5f3fc 100%)'
   if (baseColor === '#ec4899') return 'linear-gradient(90deg, #f472b6 0%, #fbcfe8 100%)'
+  if (baseColor === '#6366f1') return 'linear-gradient(90deg, #818cf8 0%, #c7d2fe 100%)'
   return `linear-gradient(90deg, ${baseColor} 0%, #E8C268 100%)`
 }
 
@@ -545,10 +547,23 @@ const loadRecords = () => {
     if (raw) {
       const parsed = JSON.parse(raw)
       if (Array.isArray(parsed)) {
-        // 清除任何历史残留的 mock seed 实例 (id 以 seed- 开头)
-        const cleanRecords = parsed.filter(r => !r.id || !String(r.id).startsWith('seed-'))
+        // 清除任何历史残留的 mock seed 实例 (id 以 seed- 开头) 并自动迁移历史消费类型
+        let needsSave = false
+        const cleanRecords = parsed
+          .filter(r => !r.id || !String(r.id).startsWith('seed-'))
+          .map(r => {
+            if (r.category === '水电日常') {
+              needsSave = true
+              return { ...r, category: '水电煤气' }
+            }
+            if (r.category === '交通') {
+              needsSave = true
+              return { ...r, category: '交通/停车/保养' }
+            }
+            return r
+          })
         records.value = cleanRecords
-        if (cleanRecords.length !== parsed.length) {
+        if (cleanRecords.length !== parsed.length || needsSave) {
           saveToStorage()
         }
       } else {
@@ -580,7 +595,11 @@ const getFirstEmoji = (iconStr) => {
 }
 
 const getCatInfo = (catName) => {
-  const found = CATEGORIES.find(c => c.name === catName)
+  let targetName = catName
+  if (targetName === '水电日常') targetName = '水电煤气'
+  if (targetName === '交通') targetName = '交通/停车/保养'
+  
+  const found = CATEGORIES.find(c => c.name === targetName)
   if (found) {
     return {
       ...found,
@@ -1810,9 +1829,12 @@ onMounted(() => {
 }
 
 .cat-btn-name {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 800;
   color: #1e293b;
+  text-align: center;
+  word-break: break-all;
+  line-height: 1.25;
 }
 
 .amount-input-box {
