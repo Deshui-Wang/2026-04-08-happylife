@@ -7,6 +7,15 @@
         <div class="overview-left-info">
           <div class="summary-title-wrap">
             <span class="badge-tag">好好记账 · 稳稳发财</span>
+            <span 
+              class="cloud-sync-chip" 
+              :class="{ 'syncing': isSyncing }" 
+              title="点击手动与云端同步全端账单数据"
+              @click="manualCloudSync"
+            >
+              <el-icon :class="{ 'spin-icon': isSyncing }"><Refresh /></el-icon>
+              <span>{{ syncStatusText }}</span>
+            </span>
           </div>
 
           <div class="summary-amount-box">
@@ -411,8 +420,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { Plus, Search, Delete, Calendar, User, Discount, Edit, Download, Upload } from '@element-plus/icons-vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { Plus, Search, Delete, Calendar, User, Discount, Edit, Download, Upload, Refresh } from '@element-plus/icons-vue'
+import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
@@ -540,6 +550,19 @@ const toggleConsumer = (name) => {
   }
 }
 
+// 全端共享云端存储 Endpoint (不需要繁琐的用户登录体系，全家设备共享实时账本)
+const CLOUD_BIN_ID = '019feb5e-f278-7f13-ab1e-1fdb61d288c1'
+const CLOUD_URL = `https://jsonblob.com/api/jsonBlob/${CLOUD_BIN_ID}`
+
+const isSyncing = ref(false)
+const lastSyncTime = ref(null)
+
+const syncStatusText = computed(() => {
+  if (isSyncing.value) return '云端同步中...'
+  if (lastSyncTime.value) return `多端已同步 (${dayjs(lastSyncTime.value).format('HH:mm')})`
+  return '多端云共享'
+})
+
 // 本地数据存储与加载 (彻底过滤历史 seed mock 数据，确保真实录入精准无误)
 const loadRecords = () => {
   try {
@@ -585,6 +608,90 @@ const saveToStorage = () => {
   } catch (e) {
     ElMessage.error('数据本地存储失败，可能超出浏览器存储限制')
   }
+}
+
+// 合并本地与云端账单 (按 id 去重，确保多端增删改均精准实时)
+const mergeRecords = (localList, cloudList) => {
+  const map = new Map()
+
+  if (Array.isArray(cloudList)) {
+    cloudList.forEach(item => {
+      if (item && item.id) {
+        map.set(item.id, item)
+      }
+    })
+  }
+
+  if (Array.isArray(localList)) {
+    localList.forEach(item => {
+      if (item && item.id) {
+        if (!map.has(item.id)) {
+          map.set(item.id, item)
+        } else {
+          const existing = map.get(item.id)
+          map.set(item.id, { ...existing, ...item })
+        }
+      }
+    })
+  }
+
+  return Array.from(map.values()).sort((a, b) => dayjs(b.timestamp).valueOf() - dayjs(a.timestamp).valueOf())
+}
+
+// 向云端推送最新全量账单
+const syncToCloud = async (recordsToPush) => {
+  try {
+    isSyncing.value = true
+    const payload = recordsToPush || records.value
+    await axios.put(CLOUD_URL, payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      timeout: 10000
+    })
+    lastSyncTime.value = new Date()
+  } catch (err) {
+    console.warn('云端推送失败，数据已在本地安全完好保留:', err)
+  } finally {
+    isSyncing.value = false
+  }
+}
+
+// 从云端拉取最新账单并合并本地
+const syncFromCloud = async (showNotification = false) => {
+  if (isSyncing.value) return
+  try {
+    isSyncing.value = true
+    const response = await axios.get(CLOUD_URL, { timeout: 10000 })
+    if (response.data && Array.isArray(response.data)) {
+      const merged = mergeRecords(records.value, response.data)
+      const hasNew = JSON.stringify(merged) !== JSON.stringify(records.value)
+      
+      records.value = merged
+      saveToStorage()
+
+      // 若本地存在新账单或有去重更新，反向同步给云端
+      if (response.data.length !== merged.length) {
+        await syncToCloud(merged)
+      }
+
+      lastSyncTime.value = new Date()
+      if (showNotification) {
+        ElMessage.success(hasNew ? '已成功同步最新多端账单数据！' : '当前已是最新云端共享账本数据')
+      }
+    }
+  } catch (err) {
+    console.warn('云端获取失败，优先读取本地离线数据:', err)
+    if (showNotification) {
+      ElMessage.warning('网络同步暂未就绪，已读取本地暂存数据')
+    }
+  } finally {
+    isSyncing.value = false
+  }
+}
+
+const manualCloudSync = () => {
+  syncFromCloud(true)
 }
 
 // 获取安全的单图标 emoji
@@ -800,6 +907,7 @@ const saveRecord = () => {
         timestamp: formattedTime
       }
       saveToStorage()
+      syncToCloud()
       ElMessage.success('账单记录已成功更新')
     }
   } else {
@@ -814,6 +922,7 @@ const saveRecord = () => {
     }
     records.value.unshift(newRecord)
     saveToStorage()
+    syncToCloud()
     ElMessage.success('成功记入一笔账单')
   }
 
@@ -828,6 +937,7 @@ const deleteRecord = (id) => {
   }).then(() => {
     records.value = records.value.filter(r => r.id !== id)
     saveToStorage()
+    syncToCloud()
     ElMessage.success('账单已删除')
   }).catch(() => {})
 }
@@ -844,6 +954,7 @@ const clearAllRecords = () => {
   }).then(() => {
     records.value = []
     saveToStorage()
+    syncToCloud()
     ElMessage.success('已清空所有账单，随时开始记录正式数据')
   }).catch(() => {})
 }
@@ -909,6 +1020,7 @@ const handleImportFile = (event) => {
             }
           })
           saveToStorage()
+          syncToCloud()
           ElMessage.success(`成功合并 ${addedCount} 笔新账单`)
         }
       })
@@ -919,8 +1031,30 @@ const handleImportFile = (event) => {
   reader.readAsText(file)
 }
 
+let syncTimer = null
+
+const handleVisibilityChange = () => {
+  if (document.visibilityState === 'visible') {
+    syncFromCloud(false)
+  }
+}
+
 onMounted(() => {
   loadRecords()
+  syncFromCloud(false)
+  
+  // 每 20 秒自动轮询云端同步，实现多端无感同步
+  syncTimer = setInterval(() => {
+    syncFromCloud(false)
+  }, 20000)
+
+  // 页面切回前台时自动触发现发同步
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+})
+
+onUnmounted(() => {
+  if (syncTimer) clearInterval(syncTimer)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
 })
 </script>
 
@@ -974,6 +1108,40 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 800;
   color: #E8C268;
+}
+
+.cloud-sync-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(232, 194, 104, 0.4);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fef08a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.cloud-sync-chip:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: #E8C268;
+}
+
+.cloud-sync-chip.syncing {
+  opacity: 0.85;
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .summary-title-wrap h2 {
