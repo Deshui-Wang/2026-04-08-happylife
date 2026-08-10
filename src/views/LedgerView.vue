@@ -563,6 +563,15 @@ const syncStatusText = computed(() => {
   return '多端云共享'
 })
 
+// 过滤掉所有历史测试数据 (如 rec-1 88元饭菜、seed- 等)
+const isTestData = (r) => {
+  if (!r) return true
+  if (r.id === 'rec-1') return true
+  if (r.id && String(r.id).startsWith('seed-')) return true
+  if (r.amount === 88 && (r.description === '买菜' || (r.user && r.user.includes('阿旺')))) return true
+  return false
+}
+
 // 本地数据存储与加载 (彻底过滤历史 seed mock 数据，确保真实录入精准无误)
 const loadRecords = () => {
   try {
@@ -570,10 +579,10 @@ const loadRecords = () => {
     if (raw) {
       const parsed = JSON.parse(raw)
       if (Array.isArray(parsed)) {
-        // 清除任何历史残留的 mock seed 实例 (id 以 seed- 开头) 并自动迁移历史消费类型
+        // 清除任何历史残留的 mock seed 实例与测试数据并自动迁移历史消费类型
         let needsSave = false
         const cleanRecords = parsed
-          .filter(r => !r.id || !String(r.id).startsWith('seed-'))
+          .filter(r => !isTestData(r))
           .map(r => {
             if (r.category === '水电日常') {
               needsSave = true
@@ -610,13 +619,13 @@ const saveToStorage = () => {
   }
 }
 
-// 合并本地与云端账单 (按 id 去重，确保多端增删改均精准实时)
+// 合并本地与云端账单 (按 id 去重，自动过滤测试数据，确保多端增删改均精准实时)
 const mergeRecords = (localList, cloudList) => {
   const map = new Map()
 
   if (Array.isArray(cloudList)) {
     cloudList.forEach(item => {
-      if (item && item.id) {
+      if (item && item.id && !isTestData(item)) {
         map.set(item.id, item)
       }
     })
@@ -624,7 +633,7 @@ const mergeRecords = (localList, cloudList) => {
 
   if (Array.isArray(localList)) {
     localList.forEach(item => {
-      if (item && item.id) {
+      if (item && item.id && !isTestData(item)) {
         if (!map.has(item.id)) {
           map.set(item.id, item)
         } else {
