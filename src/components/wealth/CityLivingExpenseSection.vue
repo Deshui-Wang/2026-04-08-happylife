@@ -3,10 +3,9 @@
     <template #header>
       <div class="card-header justify-between">
         <div style="display:flex; align-items:center; gap:8px;">
-          <el-icon><Location /></el-icon>
-          <span>居住城市与生活开支 (时间段设置)</span>
+          <el-icon><Location /></el-icon><span>居住城市与生活开支 (时间段设置)</span>
         </div>
-        <span class="city-stats-pill"> {{ cityCostsList.filter(c => c.enabled).length }} 个城市</span>
+        <span class="city-stats-pill"> {{ cityCostsList.length }} 个城市</span>
       </div>
     </template>
 
@@ -15,20 +14,18 @@
         <div 
           v-for="city in cityCostsList" 
           :key="city.id" 
-          class="city-stage-card" 
-          :class="{ 'is-disabled': !city.enabled }"
+          class="city-stage-card"
         >
-          <!-- 卡片头部：开关与城市信息 -->
+          <!-- 卡片头部：城市标识与费用输入 -->
           <div class="city-stage-header">
             <div class="header-left">
-              <el-switch v-model="city.enabled" size="default" active-color="#6366f1" @change="$emit('city-enabled-change', city)" />
               <span class="city-badge-name">{{ city.label }}</span>
-              <el-tag v-if="city.enabled" size="small" type="primary" effect="light" class="city-cost-tag">
+              <el-tag size="small" type="primary" effect="light" class="city-cost-tag">
                 ¥{{ (city.monthly * 12 / 10000).toFixed(1) }}w/年
               </el-tag>
             </div>
             
-            <div class="header-right-inputs" v-if="city.enabled">
+            <div class="header-right-inputs">
               <div class="input-mini-box">
                 <span class="mini-label">生活费/月</span>
                 <el-input-number 
@@ -55,7 +52,7 @@
           </div>
 
           <!-- 卡片身体：居住年龄段拖拽滑块 -->
-          <div class="city-stage-body" v-if="city.enabled">
+          <div class="city-stage-body">
             <div class="slider-row">
               <div class="slider-label-text">
                 居住年龄段：<strong>{{ city.ageRange[0] }} 岁</strong> 至 <strong>{{ city.ageRange[1] }} 岁</strong>
@@ -145,13 +142,6 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   padding: 12px;
   transition: all 0.3s ease;
   background: #ffffff;
-}
-.city-stage-card.is-disabled {
-  background: #f8fafc;
-  border-color: #f1f5f9;
-  opacity: 0.6;
-}
-.city-stage-card:not(.is-disabled) {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 .city-stage-header {
@@ -214,8 +204,14 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   color: #94a3b8;
   margin-left: 6px;
 }
+
+/* 滑块及底部刻度文字样式 - 留出足够下边距防重叠 */
 .city-age-slider {
-  padding: 0 8px 14px 8px;
+  padding: 0 8px 18px 8px;
+}
+:deep(.city-age-slider .el-slider__runway) {
+  background-color: #e2e8f0;
+  margin-bottom: 22px !important;
 }
 :deep(.city-age-slider .el-slider__bar) {
   background-color: #6366f1;
@@ -223,11 +219,10 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 :deep(.city-age-slider .el-slider__button) {
   border-color: #6366f1;
 }
-/* 缩小年龄进度条下方的年龄刻度数字 */
 :deep(.el-slider__marks-text) {
   font-size: 11px !important;
   color: #94a3b8 !important;
-  margin-top: 2px !important;
+  top: 14px !important;
 }
 
 /* 合计支出横幅 */
