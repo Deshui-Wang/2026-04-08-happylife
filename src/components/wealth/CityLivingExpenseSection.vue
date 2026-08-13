@@ -1,5 +1,5 @@
 <template>
-  <el-card class="glass-card animate-fade-in">
+  <el-card class="glass-card animate-fade-in mb-20">
     <template #header>
       <div class="card-header justify-between">
         <div style="display:flex; align-items:center; gap:8px;">
@@ -117,6 +117,7 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 }
 .card-header { display: flex; align-items: center; gap: 8px; font-weight: 800; color: #1e293b; font-size: 15px; }
 .justify-between { justify-content: space-between; }
+.mb-20 { margin-bottom: 16px !important; }
 
 .city-stats-pill {
   font-size: 11px;
