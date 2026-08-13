@@ -4,388 +4,62 @@
       <!-- 左侧：资产与基础画像 + 消费与支出 (md=10) -->
       <el-col :xs="24" :md="10">
         <!-- 1. 资产模块 -->
-        <el-card class="glass-card config-section animate-fade-in mb-20">
-          <template #header>
-            <div class="card-header justify-between">
-              <div style="display:flex;align-items:center;gap:8px">
-                <el-icon><Postcard /></el-icon><span>资产与基础画像</span>
-              </div>
-              <el-popover placement="bottom" :width="240" trigger="click" effect="light" popper-style="padding: 12px; border-radius: 12px;">
-                <template #reference>
-                  <el-button class="header-action-btn" size="small">
-                    <el-icon><Operation /></el-icon><span>辅助计算</span>
-                  </el-button>
-                </template>
-                <div class="mini-calculator">
-                  <div class="calc-screen">
-                    <div class="expr">{{ calcExpr || '0' }}</div>
-                    <div class="res" v-if="calcResult !== ''">= {{ calcResult }}</div>
-                  </div>
-                  <div class="calc-btns">
-                    <el-button v-for="b in ['7','8','9','/','4','5','6','*','1','2','3','-','0','.','C','+']" 
-                      :key="b" size="small" @click="handleCalcInput(b)"
-                      :type="['/','*','-','+'].includes(b) ? 'warning' : b === 'C' ? 'danger' : ''" plain>
-                      {{ b }}
-                    </el-button>
-                    <el-button type="success" size="small" style="grid-column: span 4; margin-top: 5px;" @click="handleCalcInput('=')">计算 (ENTER)</el-button>
-                  </div>
-                </div>
-              </el-popover>
-            </div>
-          </template>
-          
-          <el-form label-position="top">
-            <el-divider content-position="left" style="margin-top: 0;">核心资产</el-divider>
-            
-            <div class="core-assets-inputs">
-              <div class="asset-input-col">
-                <el-form-item label="当前存款 (元)">
-                  <el-input-number v-model="assets.savings" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
-                </el-form-item>
-              </div>
-
-              <div class="calc-symbol">+</div>
-
-              <div class="asset-input-col">
-                <el-form-item label="欠薪+赔偿 (元)">
-                  <el-input-number v-model="assets.compensation" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
-                </el-form-item>
-              </div>
-
-              <div class="calc-symbol">+</div>
-
-              <div class="asset-input-col">
-                <el-form-item label="补充资产 (元)">
-                  <el-input-number 
-                    v-model="assets.supplementary" 
-                    :precision="0" 
-                    :step="1000" 
-                    style="width: 100%" 
-                    controls-position="right" 
-                  />
-                </el-form-item>
-              </div>
-            </div>
-
-            <div class="asset-summary-banner mt-10">
-              <div class="summary-label">
-                <el-icon><InfoFilled /></el-icon>
-                <span>静态资产总额</span>
-              </div>
-              <div class="summary-value">
-                <span class="currency">¥</span>
-                <span class="number">{{ totalAssets.toLocaleString() }}</span>
-              </div>
-            </div>
-
-            <el-divider content-position="left">工作收入</el-divider>
-            <el-row :gutter="10">
-              <el-col :xs="12" :sm="12">
-                <el-form-item label="月预计工作收入 (元)">
-                  <el-input-number v-model="assets.workingIncome" :precision="0" :step="1000" style="width: 100%" controls-position="right" />
-                </el-form-item>
-              </el-col>
-              <el-col :xs="12" :sm="12">
-                <el-form-item label="预计工作年限 (年)">
-                  <el-input-number v-model="assets.workingYears" :precision="0" :step="1" :min="0" style="width: 100%" controls-position="right" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-
-            <el-divider content-position="left">退休收入</el-divider>
-            <el-row :gutter="10">
-              <el-col :xs="12" :sm="12">
-                <el-form-item label="退休金预计金额 (元/月)">
-                  <el-input-number v-model="assets.estimatedPension" :precision="0" :step="500" :min="0" style="width: 100%" controls-position="right" />
-                </el-form-item>
-              </el-col>
-              <el-col :xs="12" :sm="12">
-                <el-form-item>
-                  <template #label>
-                    <div style="display: flex; align-items: center; gap: 4px;">
-                      <span>预计退休年龄 (岁)</span>
-                      <el-tooltip placement="top">
-                        <template #content>
-                          {{ retirementInfo.age }}退休 | 距离退休 {{ retirementInfo.yearsLeft }} 年
-                        </template>
-                        <el-icon style="cursor: help; color: #94a3b8;"><QuestionFilled /></el-icon>
-                      </el-tooltip>
-                    </div>
-                  </template>
-                  <el-input-number v-model="assets.retirementAge" :precision="0" :step="1" :min="30" :max="100" style="width: 100%" controls-position="right" />
-                </el-form-item>
-              </el-col>
-            </el-row>
-
-            <el-divider content-position="left">保险收益/返还</el-divider>
-            <div class="insurance-return-panel">
-              <el-row :gutter="12">
-                <el-col :xs="24" :sm="12">
-                  <div class="return-item" :class="{'is-disabled': !assets.returns[0].enabled}">
-                    <div class="item-header">
-                      <span class="name">优享年年 (年领)</span>
-                      <el-switch v-model="assets.returns[0].enabled" size="small" />
-                    </div>
-                    <div class="item-body">
-                      <span class="amount">¥ 19,206/年</span>
-                      <span class="period">60岁 - 79岁</span>
-                    </div>
-                  </div>
-                </el-col>
-                <el-col :xs="24" :sm="12">
-                  <div class="return-item" :class="{'is-disabled': !assets.returns[1].enabled}">
-                    <div class="item-header">
-                      <span class="name">传世金生 (满期)</span>
-                      <el-switch v-model="assets.returns[1].enabled" size="small" />
-                    </div>
-                    <div class="item-body">
-                      <span class="amount">¥ 900,000</span>
-                      <span class="period">60岁 一次性领取</span>
-                    </div>
-                  </div>
-                </el-col>
-              </el-row>
-            </div>
-          </el-form>
-        </el-card>
+        <AssetProfileSection
+          :assets="assets"
+          :total-assets="totalAssets"
+          :retirement-info="retirementInfo"
+        />
 
         <!-- 2. 保险支出模块 -->
-        <el-card class="glass-card expense-section animate-fade-in mb-20">
-          <template #header>
-            <div class="card-header justify-between">
-              <div style="display:flex;align-items:center;gap:8px">
-                <el-icon><MagicStick /></el-icon><span>保险支出管理</span>
-              </div>
-              <el-button class="header-action-btn" size="small" @click="drawerVisible = true">
-                <el-icon><InfoFilled /></el-icon><span>保单说明</span>
-              </el-button>
-            </div>
-          </template>
-
-          <el-form label-position="top">
-            <el-table :data="insuranceList" style="width: 100%" size="small" class="mini-table" :row-class-name="({row}) => !row.enabled ? 'disabled-row' : ''">
-              <el-table-column width="45"><template #default="scope"><el-switch v-model="scope.row.enabled" size="small" /></template></el-table-column>
-              <el-table-column prop="name" label="保单名称" min-width="120" />
-              <el-table-column label="剩余年限" width="80" align="center">
-                <template #default="scope">
-                  <span style="color: #64748b;">{{ scope.row.yearsLeft }} 年</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="年交金额" min-width="90" align="right">
-                <template #default="scope">
-                  <span style="font-weight: 600; color: #475569;">¥{{ Math.round(scope.row.premium).toLocaleString() }}</span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-form>
-        </el-card>
+        <InsuranceExpenseSection
+          :insurance-list="insuranceList"
+          @open-drawer="drawerVisible = true"
+        />
 
         <!-- 3. 居住城市模块 -->
-        <el-card class="glass-card animate-fade-in">
-          <template #header>
-            <div class="card-header justify-between">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <el-icon><Location /></el-icon>
-                <span>居住城市与生活开支 (时间段设置)</span>
-              </div>
-              <span class="city-stats-pill"> {{ cityCostsList.filter(c => c.enabled).length }} 个城市</span>
-            </div>
-          </template>
-
-          <el-form label-position="top">
-            <div class="city-stages-wrapper">
-              <div 
-                v-for="city in cityCostsList" 
-                :key="city.id" 
-                class="city-stage-card" 
-                :class="{ 'is-disabled': !city.enabled }"
-              >
-                <!-- 卡片头部：开关与城市信息 -->
-                <div class="city-stage-header">
-                  <div class="header-left">
-                    <el-switch v-model="city.enabled" size="default" active-color="#6366f1" @change="onCityEnabledChange" />
-                    <span class="city-badge-name">{{ city.label }}</span>
-                    <el-tag v-if="city.enabled" size="small" type="primary" effect="light" class="city-cost-tag">
-                      ¥{{ (city.monthly * 12 / 10000).toFixed(1) }}w/年
-                    </el-tag>
-                  </div>
-                  
-                  <div class="header-right-inputs" v-if="city.enabled">
-                    <div class="input-mini-box">
-                      <span class="mini-label">生活费/月</span>
-                      <el-input-number 
-                        v-model="city.living" 
-                        :min="0" 
-                        :step="500"
-                        size="small" 
-                        controls-position="right" 
-                        class="mini-num-input" 
-                      />
-                    </div>
-                    <div class="input-mini-box">
-                      <span class="mini-label">房租/月</span>
-                      <el-input-number 
-                        v-model="city.rent" 
-                        :min="0" 
-                        :step="500"
-                        size="small" 
-                        controls-position="right" 
-                        class="mini-num-input" 
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 卡片身体：居住年龄段拖拽滑块 -->
-                <div class="city-stage-body" v-if="city.enabled">
-                  <div class="slider-row">
-                    <div class="slider-label-text">
-                      居住年龄段：<strong>{{ city.ageRange[0] }} 岁</strong> 至 <strong>{{ city.ageRange[1] }} 岁</strong>
-                      <span class="duration-badge">(共 {{ city.ageRange[1] - city.ageRange[0] + 1 }} 年)</span>
-                    </div>
-                    <el-slider 
-                      v-model="city.ageRange" 
-                      range 
-                      :min="currentAge" 
-                      :max="100" 
-                      :marks="ageMarks"
-                      class="city-age-slider"
-                      @input="onCityAgeRangeChange(city, $event)"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 合计支出横幅 -->
-            <div class="total-expense-banner" style="margin-top: 24px;">
-              <div class="label">合计首年年支出 ({{ currentAge }}岁阶段时刻)</div>
-              <div class="value" style="display:flex; align-items:center; gap:8px; flex-wrap: wrap;">
-                <span style="font-size:13px; opacity:0.9; font-weight:normal;">
-                  生活 ¥{{ ((totalAnnualExpense - activeAnnualPremium) || 0).toLocaleString() }} + 保费 ¥{{ activeAnnualPremium.toLocaleString() }} =
-                </span>
-                <span>¥ {{ totalAnnualExpense.toLocaleString() }}</span>
-              </div>
-            </div>
-          </el-form>
-        </el-card>
+        <CityLivingExpenseSection
+          :city-costs-list="cityCostsList"
+          :current-age="currentAge"
+          :age-marks="ageMarks"
+          :total-annual-expense="totalAnnualExpense"
+          :active-annual-premium="activeAnnualPremium"
+          @city-enabled-change="onCityEnabledChange"
+          @city-age-range-change="({ city, val }) => onCityAgeRangeChange(city, val)"
+        />
       </el-col>
 
       <!-- 右侧：资金断层分析 (md=14) -->
       <el-col :xs="24" :md="14">
-        <el-card class="glass-card bridge-card animate-fade-in">
-          <template #header>
-            <div class="card-header justify-between">
-              <div style="display:flex;align-items:center;gap:8px">
-                <el-icon><Warning /></el-icon>
-                <span>资金分析 · 百岁推演</span>
-              </div>
-              <span class="formula-pill">期初现金 {{ (totalAssets/10000).toFixed(1) }}w = 存款 {{ (assets.savings/10000).toFixed(1) }}w + 额外 {{ (assets.compensation/10000).toFixed(1) }}w{{ assets.supplementary ? ' + 补充 ' + (assets.supplementary/10000).toFixed(1) + 'w' : '' }}</span>
-            </div>
-          </template>
-
-          <!-- 汇总预警 (置顶) -->
-          <div class="bridge-summary">
-            <div class="summary-item" :class="gapAnalysis.hasGap ? 'is-danger' : 'is-safe'">
-              <div class="summary-label">{{ gapAnalysis.hasGap ? '⚠ 资金断层预警' : '✅ 资金安全' }}</div>
-              <div class="summary-value">{{ gapAnalysis.message }}</div>
-            </div>
-            <div class="summary-item is-info">
-              <div class="summary-label">关键里程碑</div>
-              <div class="summary-value">53岁10个月领退休金({{ retirementInfo.estimatedPension }}/月) · 60岁传世金生到账(90w)</div>
-            </div>
-          </div>
-
-          <!-- 逐年推演表格 -->
-          <div class="bridge-table-wrap">
-            <table class="bridge-table">
-              <thead>
-                <tr>
-                  <th>年龄</th>
-                  <th>年份</th>
-                  <th>期初余额</th>
-                  <th>工作收入</th>
-                  <th>退休金</th>
-                  <th>保险收益</th>
-                  <th class="col-out">保费支出</th>
-                  <th class="col-out">生活开支</th>
-                  <th>年结余</th>
-                  <th>期末余额</th>
-                  <th style="min-width:80px">资金水位</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, idx) in bridgeData" :key="idx"
-                    :class="{
-                      milestone36: row.year === (1982 + Number(assets.retirementAge || 54)),
-                      milestone60: row.age === 60,
-                      danger: row.balance <= 0,
-                      warning: row.balance > 0 && row.balance < 50000
-                    }">
-                  <td class="age-cell">
-                    <strong>{{ row.age }}</strong>
-                    <span v-if="row.year === (1982 + Number(assets.retirementAge || 54))" class="milestone-tag pension-tag">退休</span>
-                    <span v-if="row.age === 60" class="milestone-tag ins-tag">保险到期</span>
-                  </td>
-                  <td class="num-cell" style="color: #64748b; font-weight: 500;">
-                    {{ row.year }}年
-                  </td>
-                  <td class="num-cell safe-bal"><strong>{{ (row.openBal/10000).toFixed(1) }}w</strong></td>
-                  <td class="num-cell income">{{ row.jobIncome > 0 ? '+' + (row.jobIncome/10000).toFixed(1) + 'w' : '-' }}</td>
-                  <td class="num-cell income">{{ row.pensionIncome > 0 ? '+' + (row.pensionIncome/10000).toFixed(1) + 'w' : '-' }}</td>
-                  <td class="num-cell income">
-                    {{ row.insIncome > 0 ? '+' + (row.insIncome/10000).toFixed(1) + 'w' : '-' }}
-                    <span v-if="row.hasSurrender" style="display:block;font-size:10px;line-height:1;margin-top:2px;color:#f59e0b">(含13.6w退保)</span>
-                  </td>
-                  <td class="num-cell expense">
-                    {{ row.insPremium > 0 ? '-' + (row.insPremium < 10000 ? (row.insPremium/10000).toFixed(2) : (row.insPremium/10000).toFixed(1)) + 'w' : '-' }}
-                    <span v-if="row.isCurrentYearPartial" style="display:block;font-size:10px;line-height:1;margin-top:2px;color:#6366f1">(当年剩余保费)</span>
-                  </td>
-                  <td class="num-cell expense">-{{ (row.livingCost/10000).toFixed(1) }}w</td>
-                  <td class="num-cell" :class="row.yearNet >= 0 ? 'income' : 'expense'">
-                    {{ row.yearNet >= 0 ? '+' : '' }}{{ (row.yearNet/10000).toFixed(1) }}w
-                  </td>
-                  <td class="num-cell" :class="row.balance > 0 ? 'safe-bal' : 'danger-bal'">
-                    <strong>{{ (row.balance/10000).toFixed(1) }}w</strong>
-                  </td>
-                  <td>
-                    <div class="water-bar-bg">
-                      <div class="water-bar-fill"
-                           :style="{ width: row.barPct + '%' }"
-                           :class="{ green: row.barPct > 50, yellow: row.barPct > 15 && row.barPct <= 50, red: row.barPct <= 15 }">
-                      </div>
-                      <span class="water-bar-label" v-if="row.balance <= 0">⚠ 断层</span>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </el-card>
+        <FundBridgeDeductionSection
+          :bridge-data="bridgeData"
+          :gap-analysis="gapAnalysis"
+          :total-assets="totalAssets"
+          :assets="assets"
+          :retirement-info="retirementInfo"
+        />
       </el-col>
     </el-row>
 
     <!-- 保单说明侧滑抽屉 -->
-    <el-drawer
+    <PolicyReportDrawer
       v-model="drawerVisible"
-      title="友邦保险13份合同全面梳理分析报告"
-      size="60%"
-      direction="rtl"
-      destroy-on-close
-      append-to-body
-      class="policy-drawer"
-    >
-      <div class="markdown-body" v-html="renderedMarkdown"></div>
-    </el-drawer>
+      :rendered-markdown="renderedMarkdown"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from 'vue'
-import { User, Postcard, MagicStick, Warning, InfoFilled, QuestionFilled, Operation, Delete, Finished, Location, Plus } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import { marked } from 'marked'
 import reportMd from '@/PRD/友邦保险13份合同全面梳理分析报告.md?raw'
+
+// 拆分后的“财富”模块子组件
+import AssetProfileSection from '@/components/wealth/AssetProfileSection.vue'
+import InsuranceExpenseSection from '@/components/wealth/InsuranceExpenseSection.vue'
+import CityLivingExpenseSection from '@/components/wealth/CityLivingExpenseSection.vue'
+import FundBridgeDeductionSection from '@/components/wealth/FundBridgeDeductionSection.vue'
+import PolicyReportDrawer from '@/components/wealth/PolicyReportDrawer.vue'
 
 const userProfile = reactive({ gender: 'female', birthday: dayjs('1982-07-01').toDate() })
 const severanceType = ref('2N') // 2N 或 N
