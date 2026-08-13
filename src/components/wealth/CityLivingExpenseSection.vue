@@ -16,67 +16,65 @@
           :key="city.id" 
           class="city-stage-card"
         >
-          <!-- 卡片头部：左上角专属特色实景大图与费用输入 -->
-          <div class="city-stage-header">
-            <div class="header-left">
-              <!-- 城市左上角特色插图 (长城 / 龙首山 / 牡丹花) -->
-              <img 
-                :src="city.id === 'beijing' ? '/changcheng.webp' : city.id === 'tieling' ? '/longshan.webp' : '/mudanhua.webp'" 
-                class="city-header-img" 
-                :alt="city.label" 
-              />
-              <div class="city-title-group">
-                <div class="city-title-row">
-                  <span class="city-badge-name">{{ city.label }}</span>
-                  <el-tag size="small" type="primary" effect="light" class="city-cost-tag">
-                    ¥{{ (city.monthly * 12 / 10000).toFixed(1) }}w/年
-                  </el-tag>
+          <!-- 与卡片外框左上角完美融为一体的风光图案背景 -->
+          <div 
+            class="city-corner-blend-bg" 
+            :style="{ backgroundImage: `url(${city.id === 'beijing' ? '/changcheng.webp' : city.id === 'tieling' ? '/longshan.webp' : '/mudanhua.webp'})` }"
+          ></div>
+
+          <div class="city-card-content">
+            <!-- 卡片头部：城市标识与费用输入 -->
+            <div class="city-stage-header">
+              <div class="header-left">
+                <span class="city-badge-name">{{ city.label }}</span>
+                <el-tag size="small" type="primary" effect="light" class="city-cost-tag">
+                  ¥{{ (city.monthly * 12 / 10000).toFixed(1) }}w/年
+                </el-tag>
+              </div>
+              
+              <div class="header-right-inputs">
+                <div class="input-mini-box">
+                  <span class="mini-label">生活费/月</span>
+                  <el-input-number 
+                    v-model="city.living" 
+                    :min="0" 
+                    :step="500"
+                    size="small" 
+                    controls-position="right" 
+                    class="mini-num-input" 
+                  />
+                </div>
+                <div class="input-mini-box">
+                  <span class="mini-label">房租/月</span>
+                  <el-input-number 
+                    v-model="city.rent" 
+                    :min="0" 
+                    :step="500"
+                    size="small" 
+                    controls-position="right" 
+                    class="mini-num-input" 
+                  />
                 </div>
               </div>
             </div>
-            
-            <div class="header-right-inputs">
-              <div class="input-mini-box">
-                <span class="mini-label">生活费/月</span>
-                <el-input-number 
-                  v-model="city.living" 
-                  :min="0" 
-                  :step="500"
-                  size="small" 
-                  controls-position="right" 
-                  class="mini-num-input" 
-                />
-              </div>
-              <div class="input-mini-box">
-                <span class="mini-label">房租/月</span>
-                <el-input-number 
-                  v-model="city.rent" 
-                  :min="0" 
-                  :step="500"
-                  size="small" 
-                  controls-position="right" 
-                  class="mini-num-input" 
-                />
-              </div>
-            </div>
-          </div>
 
-          <!-- 卡片身体：居住年龄段拖拽滑块 -->
-          <div class="city-stage-body">
-            <div class="slider-row">
-              <div class="slider-label-text">
-                居住年龄段：<strong>{{ city.ageRange[0] }} 岁</strong> 至 <strong>{{ city.ageRange[1] }} 岁</strong>
-                <span class="duration-badge">(共 {{ city.ageRange[1] - city.ageRange[0] + 1 }} 年)</span>
+            <!-- 卡片身体：居住年龄段拖拽滑块 -->
+            <div class="city-stage-body">
+              <div class="slider-row">
+                <div class="slider-label-text">
+                  居住年龄段：<strong>{{ city.ageRange[0] }} 岁</strong> 至 <strong>{{ city.ageRange[1] }} 岁</strong>
+                  <span class="duration-badge">(共 {{ city.ageRange[1] - city.ageRange[0] + 1 }} 年)</span>
+                </div>
+                <el-slider 
+                  v-model="city.ageRange" 
+                  range 
+                  :min="currentAge" 
+                  :max="100" 
+                  :marks="ageMarks"
+                  class="city-age-slider"
+                  @input="$emit('city-age-range-change', { city, val: $event })"
+                />
               </div>
-              <el-slider 
-                v-model="city.ageRange" 
-                range 
-                :min="currentAge" 
-                :max="100" 
-                :marks="ageMarks"
-                class="city-age-slider"
-                @input="$emit('city-age-range-change', { city, val: $event })"
-              />
             </div>
           </div>
         </div>
@@ -146,15 +144,40 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   gap: 12px;
   width: 100%;
 }
+
 .city-stage-card {
+  position: relative;
+  overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 12px;
   transition: all 0.3s ease;
   background: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-  position: relative;
 }
+
+/* 与卡片外框左上角完美融合的特色图案印记 */
+.city-corner-blend-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 180px;
+  height: 100%;
+  background-size: cover;
+  background-position: top left;
+  opacity: 0.25;
+  mix-blend-mode: multiply;
+  mask-image: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
+  -webkit-mask-image: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.city-card-content {
+  position: relative;
+  z-index: 2;
+}
+
 .city-stage-header {
   display: flex;
   justify-content: space-between;
@@ -163,28 +186,6 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   gap: 8px;
 }
 .header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* 城市左上角专属特色实景图片 */
-.city-header-img {
-  width: 44px;
-  height: 44px;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  flex-shrink: 0;
-}
-
-.city-title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.city-title-row {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -222,7 +223,7 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   padding-top: 12px;
 }
 
-/* 增大“居住年龄段：”与进度条中间的间隙，缩小进度条与下方刻度数字的间隙 */
+/* 增大“居住年龄段：”与进度条中间的间隙 */
 .slider-row {
   display: flex;
   flex-direction: column;
