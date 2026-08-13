@@ -156,19 +156,18 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-/* 与卡片外框左上角完美融合的特色图案印记 */
+/* 与卡片外框左上角融合的特色图案印记（尺寸缩小一半，颜色清晰显现） */
 .city-corner-blend-bg {
   position: absolute;
   top: 0;
   left: 0;
-  width: 180px;
-  height: 100%;
+  width: 90px;
+  height: 65px;
   background-size: cover;
   background-position: top left;
-  opacity: 0.25;
-  mix-blend-mode: multiply;
-  mask-image: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
-  -webkit-mask-image: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 80%);
+  opacity: 0.75;
+  mask-image: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 75%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image: linear-gradient(135deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 75%, rgba(0,0,0,0) 100%);
   pointer-events: none;
   z-index: 1;
 }
