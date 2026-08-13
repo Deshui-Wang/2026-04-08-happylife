@@ -16,32 +16,23 @@
           :key="city.id" 
           class="city-stage-card"
         >
-          <!-- 卡片头部：城市标识、浅色特色图案与费用输入 -->
+          <!-- 卡片头部：左上角专属特色实景大图与费用输入 -->
           <div class="city-stage-header">
             <div class="header-left">
-              <span class="city-badge-name">{{ city.label }}</span>
-              
-              <!-- 浅色城市专属图案徽章 (长城 / 龙首山 / 牡丹花) -->
-              <span class="city-pattern-tag" :class="city.id" :title="city.label + '特色'">
-                <!-- 北京: 长城 -->
-                <svg v-if="city.id === 'beijing'" viewBox="0 0 24 24" class="city-svg-icon">
-                  <path fill="currentColor" d="M19 4h-2V2h-2v2h-2V2h-2v2H9V2H7v2H5V2H3v6h18V4h-2zM4 10v9h16v-9H4zm2 2h3v5H6v-5zm5 0h3v5h-3v-5zm5 0h3v5h-3v-5z"/>
-                </svg>
-                <!-- 铁岭: 龙首山 -->
-                <svg v-else-if="city.id === 'tieling'" viewBox="0 0 24 24" class="city-svg-icon">
-                  <path fill="currentColor" d="M14 6l-3.8 5.7-1.7-2.5L3 17h18L14 6zm-3.8 7.3L14 8.2l4.8 7.8H5.2l5-6.7z"/>
-                </svg>
-                <!-- 菏泽: 牡丹花 -->
-                <svg v-else-if="city.id === 'heze'" viewBox="0 0 24 24" class="city-svg-icon">
-                  <path fill="currentColor" d="M12 2C9.5 4.5 7 7.5 7 11c0 2.8 2.2 5 5 5s5-2.2 5-5c0-3.5-2.5-6.5-5-9zm0 12c-1.7 0-3-1.3-3-3 0-2.1 2-4.2 3-5.5 1 1.3 3 3.4 3 5.5 0 1.7-1.3 3-3 3z"/>
-                  <path fill="currentColor" d="M6 8c-2 1-3.5 3-3.5 5.5A5.5 5.5 0 0 0 8 19c2.5 0 4.5-1.5 5.5-3.5M18 8c2 1 3.5 3 3.5 5.5A5.5 5.5 0 0 1 16 19c-2.5 0-4.5-1.5-5.5-3.5"/>
-                </svg>
-                <span class="pattern-text">{{ city.id === 'beijing' ? '长城' : city.id === 'tieling' ? '龙首山' : '牡丹花' }}</span>
-              </span>
-
-              <el-tag size="small" type="primary" effect="light" class="city-cost-tag">
-                ¥{{ (city.monthly * 12 / 10000).toFixed(1) }}w/年
-              </el-tag>
+              <!-- 城市左上角特色插图 (长城 / 龙首山 / 牡丹花) -->
+              <img 
+                :src="city.id === 'beijing' ? '/changcheng.webp' : city.id === 'tieling' ? '/longshan.webp' : '/mudanhua.webp'" 
+                class="city-header-img" 
+                :alt="city.label" 
+              />
+              <div class="city-title-group">
+                <div class="city-title-row">
+                  <span class="city-badge-name">{{ city.label }}</span>
+                  <el-tag size="small" type="primary" effect="light" class="city-cost-tag">
+                    ¥{{ (city.monthly * 12 / 10000).toFixed(1) }}w/年
+                  </el-tag>
+                </div>
+              </div>
             </div>
             
             <div class="header-right-inputs">
@@ -162,6 +153,7 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   transition: all 0.3s ease;
   background: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  position: relative;
 }
 .city-stage-header {
   display: flex;
@@ -173,43 +165,34 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 .header-left {
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+/* 城市左上角专属特色实景图片 */
+.city-header-img {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.city-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.city-title-row {
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 .city-badge-name {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: #1e293b;
-}
-
-/* 浅色城市专属特色图案徽章 */
-.city-pattern-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 2px 7px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1;
-}
-.city-pattern-tag.beijing {
-  background: rgba(99, 102, 241, 0.08);
-  color: #6366f1;
-  border: 1px solid rgba(99, 102, 241, 0.18);
-}
-.city-pattern-tag.tieling {
-  background: rgba(16, 185, 129, 0.08);
-  color: #059669;
-  border: 1px solid rgba(16, 185, 129, 0.18);
-}
-.city-pattern-tag.heze {
-  background: rgba(244, 63, 94, 0.08);
-  color: #e11d48;
-  border: 1px solid rgba(244, 63, 94, 0.18);
-}
-.city-svg-icon {
-  width: 13px;
-  height: 13px;
 }
 
 .city-cost-tag {
@@ -239,7 +222,7 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   padding-top: 12px;
 }
 
-/* 增大“居住年龄段：”与进度条中间的间隙 */
+/* 增大“居住年龄段：”与进度条中间的间隙，缩小进度条与下方刻度数字的间隙 */
 .slider-row {
   display: flex;
   flex-direction: column;
