@@ -225,4 +225,27 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 }
 .total-expense-banner .label { font-size: 13px; opacity: 0.9; }
 .total-expense-banner .value { font-size: 20px; font-weight: bold; }
+
+:deep(.el-input-number .el-input__wrapper) {
+  background-color: #f8fafc;
+  box-shadow: 0 0 0 1px #e2e8f0 inset !important;
+  border-radius: 8px;
+}
+:deep(.el-input-number .el-input-number__decrease),
+:deep(.el-input-number .el-input-number__increase),
+:deep(.el-input-number.is-controls-right .el-input-number__decrease),
+:deep(.el-input-number.is-controls-right .el-input-number__increase) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-left: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  color: #94a3b8 !important;
+}
+:deep(.el-input__inner) {
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  font-size: 14px !important;
+}
 </style>
