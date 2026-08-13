@@ -750,40 +750,40 @@ const isTestData = (r) => {
   return false
 }
 
-// 本地数据存储与加载 (彻底过滤历史 seed mock 数据，确保真实录入精准无误)
+const POSSIBLE_STORAGE_KEYS = [
+  'happylife_family_ledger_records',
+  'family_ledger_records',
+  'ledger_records',
+  'happylife_ledger_records',
+  'records'
+]
+
+// 本地数据存储与加载 (扫描全部历史 Key 自动全量合并，彻底过滤 mock 测试数据)
 const loadRecords = () => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      if (Array.isArray(parsed)) {
-        // 清除任何历史残留的 mock seed 实例与测试数据并自动迁移历史消费类型
-        let needsSave = false
-        const cleanRecords = parsed
-          .filter(r => !isTestData(r))
-          .map(r => {
-            if (r.category === '水电日常') {
-              needsSave = true
-              return { ...r, category: '水电煤气' }
-            }
-            if (r.category === '交通') {
-              needsSave = true
-              return { ...r, category: '交通/停车/保养' }
-            }
-            return r
-          })
-        records.value = cleanRecords
-        if (cleanRecords.length !== parsed.length || needsSave) {
-          saveToStorage()
+    let allMerged = []
+    POSSIBLE_STORAGE_KEYS.forEach(key => {
+      try {
+        const raw = localStorage.getItem(key)
+        if (raw) {
+          const parsed = JSON.parse(raw)
+          if (Array.isArray(parsed)) {
+            allMerged = mergeRecords(allMerged, parsed)
+          }
         }
-      } else {
-        records.value = []
-        saveToStorage()
-      }
-    } else {
-      records.value = []
-      saveToStorage()
-    }
+      } catch (e) {}
+    })
+
+    const cleanRecords = allMerged
+      .filter(r => !isTestData(r))
+      .map(r => {
+        if (r.category === '水电日常') return { ...r, category: '水电煤气' }
+        if (r.category === '交通') return { ...r, category: '交通/停车/保养' }
+        return r
+      })
+
+    records.value = cleanRecords
+    saveToStorage()
   } catch (e) {
     records.value = []
   }
