@@ -311,10 +311,9 @@
               }"
               @click="openDayDetail(day)"
             >
-              <!-- 格子头部：日期与星期 -->
+              <!-- 格子头部：仅保留日期数字 -->
               <div class="cell-top-bar">
                 <span class="day-date-num">{{ day.dayNum }}</span>
-                <span class="day-weekday-lbl">{{ day.weekDayName }}</span>
               </div>
 
               <!-- 格子主体：有记录显示金额 / 无记录显示“没花钱” -->
