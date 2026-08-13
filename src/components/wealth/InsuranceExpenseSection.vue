@@ -12,7 +12,7 @@
     </template>
 
     <el-form label-position="top">
-      <el-table :data="insuranceList" style="width: 100%" size="small" class="mini-table" :row-class-name="({row}) => !row.enabled ? 'disabled-row' : ''">
+      <el-table :data="insuranceList" :show-header="false" style="width: 100%" size="small" class="mini-table" :row-class-name="({row}) => !row.enabled ? 'disabled-row' : ''">
         <el-table-column width="45"><template #default="scope"><el-switch v-model="scope.row.enabled" size="small" /></template></el-table-column>
         <el-table-column prop="name" label="保单名称" min-width="120" />
         <el-table-column label="剩余年限" width="80" align="center">
@@ -41,32 +41,45 @@ defineEmits(['open-drawer'])
 </script>
 
 <style scoped>
-.glass-card { background: rgba(255, 255, 255, 0.9); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.3); }
-.card-header { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1e293b; }
+.glass-card { 
+  background: #ffffff; 
+  border-radius: 14px; 
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); 
+  border: 1px solid #e2e8f0; 
+}
+:deep(.el-card__body) {
+  padding: 12px 16px !important;
+}
+:deep(.el-card__header) {
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #f1f5f9;
+}
+.card-header { display: flex; align-items: center; gap: 8px; font-weight: 800; color: #1e293b; font-size: 15px; }
 .justify-between { justify-content: space-between; }
-.mb-20 { margin-bottom: 20px; }
+.mb-20 { margin-bottom: 16px; }
 
-/* 统一的高级胶囊型按钮样式 */
+/* 统一的微型胶囊型【保单说明】按钮样式 */
 .header-action-btn {
   font-size: 11px !important;
   font-weight: 600 !important;
   color: #6366f1 !important;
-  background: rgba(99, 102, 241, 0.08) !important;
-  border: 1px solid rgba(99, 102, 241, 0.15) !important;
-  padding: 4px 12px !important;
-  height: 24px !important;
-  border-radius: 20px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: #f0f3ff !important;
+  border: 1px solid #e0e7ff !important;
+  padding: 2px 10px !important;
+  height: 22px !important;
+  border-radius: 12px !important;
+  transition: all 0.2s ease !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
+}
+.header-action-btn .el-icon {
+  font-size: 11px !important;
 }
 .header-action-btn:hover {
-  background: rgba(99, 102, 241, 0.18) !important;
-  border-color: rgba(99, 102, 241, 0.3) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+  background: #e0e7ff !important;
+  border-color: #c7d2fe !important;
 }
 
 .mini-table :deep(.el-table__cell) { padding: 4px 0; }
