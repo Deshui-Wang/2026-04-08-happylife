@@ -75,14 +75,12 @@
         </div>
       </div>
 
-      <!-- 合计支出横幅 -->
-      <div class="total-expense-banner" style="margin-top: 24px;">
-        <div class="label">合计首年年支出 ({{ currentAge }}岁阶段时刻)</div>
-        <div class="value" style="display:flex; align-items:center; gap:8px; flex-wrap: wrap;">
-          <span style="font-size:13px; opacity:0.9; font-weight:normal;">
-            生活 ¥{{ ((totalAnnualExpense - activeAnnualPremium) || 0).toLocaleString() }} + 保费 ¥{{ activeAnnualPremium.toLocaleString() }} =
-          </span>
-          <span>¥ {{ totalAnnualExpense.toLocaleString() }}</span>
+      <!-- 合计支出横幅 (根据截图1还原两行上下排版结构) -->
+      <div class="total-expense-banner" style="margin-top: 20px;">
+        <div class="banner-title">合计首年年支出 ({{ currentAge }}岁阶段时刻)</div>
+        <div class="banner-calc-row">
+          <span>生活 ¥{{ ((totalAnnualExpense - activeAnnualPremium) || 0).toLocaleString() }} + 保费 ¥{{ activeAnnualPremium.toLocaleString() }} =</span>
+          <span class="banner-total-num">¥ {{ totalAnnualExpense.toLocaleString() }}</span>
         </div>
       </div>
     </el-form>
@@ -104,8 +102,20 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 </script>
 
 <style scoped>
-.glass-card { background: rgba(255, 255, 255, 0.9); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.3); }
-.card-header { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1e293b; }
+.glass-card { 
+  background: #ffffff; 
+  border-radius: 14px; 
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); 
+  border: 1px solid #e2e8f0; 
+}
+:deep(.el-card__body) {
+  padding: 14px 16px !important;
+}
+:deep(.el-card__header) {
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #f1f5f9;
+}
+.card-header { display: flex; align-items: center; gap: 8px; font-weight: 800; color: #1e293b; font-size: 15px; }
 .justify-between { justify-content: space-between; }
 
 .city-stats-pill {
@@ -114,24 +124,24 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   color: #6366f1;
   background: rgba(99, 102, 241, 0.08);
   border: 1px solid rgba(99, 102, 241, 0.15);
-  padding: 3px 12px;
-  border-radius: 20px;
+  padding: 2px 10px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
-  height: 24px;
+  height: 22px;
   box-sizing: border-box;
 }
 
 .city-stages-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
 }
 .city-stage-card {
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 12px;
   transition: all 0.3s ease;
   background: #ffffff;
 }
@@ -141,22 +151,22 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   opacity: 0.6;
 }
 .city-stage-card:not(.is-disabled) {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 .city-stage-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
 }
 .header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 .city-badge-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   color: #1e293b;
 }
@@ -165,13 +175,13 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 }
 .header-right-inputs {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 .input-mini-box {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 .mini-label {
   font-size: 11px;
@@ -179,20 +189,20 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   font-weight: 500;
 }
 .mini-num-input {
-  width: 100px;
+  width: 95px;
 }
 .city-stage-body {
-  margin-top: 16px;
+  margin-top: 12px;
   border-top: 1px dashed #f1f5f9;
-  padding-top: 16px;
+  padding-top: 12px;
 }
 .slider-row {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 .slider-label-text {
-  font-size: 13px;
+  font-size: 12px;
   color: #475569;
 }
 .slider-label-text strong {
@@ -204,7 +214,7 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   margin-left: 6px;
 }
 .city-age-slider {
-  padding: 0 10px 10px 10px;
+  padding: 0 8px 8px 8px;
 }
 :deep(.city-age-slider .el-slider__bar) {
   background-color: #6366f1;
@@ -213,23 +223,44 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   border-color: #6366f1;
 }
 
+/* 合计支出横幅（精确还原截图1的两行上下结构） */
 .total-expense-banner { 
-  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); 
+  background: #fff1f2; 
   border: 1px solid #fecdd3;
-  padding: 12px 16px; 
+  padding: 10px 14px; 
   border-radius: 10px; 
   color: #be123c; 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-.total-expense-banner .label { font-size: 13px; opacity: 0.9; }
-.total-expense-banner .value { font-size: 20px; font-weight: bold; }
+.total-expense-banner .banner-title { 
+  font-size: 13px; 
+  color: #be123c; 
+  font-weight: 500;
+  line-height: 1.3;
+}
+.total-expense-banner .banner-calc-row { 
+  font-size: 13px; 
+  color: #be123c;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+  line-height: 1.3;
+}
+.total-expense-banner .banner-total-num {
+  font-size: 20px;
+  font-weight: 800;
+  color: #be123c;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+}
 
 :deep(.el-input-number .el-input__wrapper) {
   background-color: #f8fafc;
   box-shadow: 0 0 0 1px #e2e8f0 inset !important;
-  border-radius: 8px;
+  border-radius: 6px;
+  height: 32px !important;
 }
 :deep(.el-input-number .el-input-number__decrease),
 :deep(.el-input-number .el-input-number__increase),
@@ -246,6 +277,6 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 :deep(.el-input__inner) {
   font-weight: 700 !important;
   color: #0f172a !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
 }
 </style>
