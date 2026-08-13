@@ -17,6 +17,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&family=Long+Cang&family=Pacifico&family=Quicksand:wght@700&display=swap"
     rel="stylesheet">
+  <script>
+    // iOS Standalone WebApp 防白屏与自动更新防护
+    window.addEventListener('error', function(e) {
+      if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
+        var lastReload = sessionStorage.getItem('last_auto_reload');
+        if (!lastReload || Date.now() - Number(lastReload) > 10000) {
+          sessionStorage.setItem('last_auto_reload', String(Date.now()));
+          window.location.reload();
+        }
+      }
+    }, true);
+  </script>
 </head>
 
 <body>
