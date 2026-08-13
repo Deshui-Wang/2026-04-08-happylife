@@ -191,33 +191,36 @@ const handleCalcInput = (btn) => {
 </script>
 
 <style scoped>
-.glass-card { background: rgba(255, 255, 255, 0.9); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.3); }
-.card-header { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1e293b; }
+.glass-card { 
+  background: #ffffff; 
+  border-radius: 16px; 
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); 
+  border: 1px solid #e2e8f0; 
+}
+.card-header { display: flex; align-items: center; gap: 8px; font-weight: 800; color: #1e293b; font-size: 16px; }
 .justify-between { justify-content: space-between; }
 .mb-20 { margin-bottom: 20px; }
-.mt-10 { margin-top: 10px; }
+.mt-10 { margin-top: 14px; }
 
 /* 统一的高级胶囊型按钮样式 */
 .header-action-btn {
-  font-size: 11px !important;
+  font-size: 12px !important;
   font-weight: 600 !important;
   color: #6366f1 !important;
-  background: rgba(99, 102, 241, 0.08) !important;
-  border: 1px solid rgba(99, 102, 241, 0.15) !important;
-  padding: 4px 12px !important;
-  height: 24px !important;
+  background: #f0f3ff !important;
+  border: 1px solid #e0e7ff !important;
+  padding: 4px 14px !important;
+  height: 28px !important;
   border-radius: 20px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: all 0.2s ease !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
 }
 .header-action-btn:hover {
-  background: rgba(99, 102, 241, 0.18) !important;
-  border-color: rgba(99, 102, 241, 0.3) !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+  background: #e0e7ff !important;
+  border-color: #c7d2fe !important;
 }
 
 .core-assets-inputs {
@@ -239,40 +242,53 @@ const handleCalcInput = (btn) => {
   padding-top: 8px;
 }
 
+/* 静态资产总额卡片（对应截图浅紫色卡片样式） */
 .asset-summary-banner {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  padding: 12px 16px;
-  border-radius: 10px;
-  color: white;
+  background: #f0f4ff;
+  border: 1px solid #e0e7ff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  color: #1e293b;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 .asset-summary-banner .summary-label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  opacity: 0.95;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+}
+.asset-summary-banner .summary-label .el-icon {
+  color: #475569;
+  font-size: 16px;
 }
 .asset-summary-banner .summary-value {
-  font-size: 20px;
+  font-size: 28px;
   font-weight: 800;
+  color: #4f46e5;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
 }
 .asset-summary-banner .currency {
-  font-size: 14px;
-  margin-right: 2px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #4f46e5;
 }
 
+/* 保险收益/返还卡片（对应截图淡绿色亮彩卡片样式） */
 .insurance-return-panel {
   margin-top: 8px;
 }
 .return-item {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 10px 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 12px 16px;
   margin-bottom: 8px;
   transition: all 0.3s ease;
 }
@@ -286,12 +302,12 @@ const handleCalcInput = (btn) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 .return-item .name {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
-  color: #1e293b;
+  color: #047857;
 }
 .return-item .item-body {
   display: flex;
@@ -299,13 +315,17 @@ const handleCalcInput = (btn) => {
   align-items: baseline;
 }
 .return-item .amount {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 800;
-  color: #10b981;
+  color: #059669;
 }
 .return-item .period {
-  font-size: 11px;
-  color: #94a3b8;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+:deep(.insurance-return-panel .el-switch) {
+  --el-switch-on-color: #10b981;
 }
 
 /* 计算器样式 */
@@ -346,13 +366,25 @@ const handleCalcInput = (btn) => {
   width: 100%;
 }
 
+:deep(.el-form-item__label) {
+  font-weight: 600 !important;
+  color: #475569 !important;
+  font-size: 13px !important;
+}
+
 :deep(.el-input-number .el-input__wrapper) {
   background-color: #f8fafc;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02) inset, 0 0 0 1px #e2e8f0 inset !important;
+  box-shadow: 0 0 0 1px #e2e8f0 inset !important;
   border-radius: 8px;
+  height: 38px;
+}
+:deep(.el-input-number .el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px #c7d2fe inset !important;
+  background-color: #ffffff;
 }
 :deep(.el-input__inner) {
-  font-weight: 600 !important;
-  color: #1e293b !important;
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  font-size: 14px !important;
 }
 </style>
