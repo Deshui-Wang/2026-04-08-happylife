@@ -201,119 +201,76 @@
                 <p class="section-subtitle">课程线产品经理 · 资深产品架构师 · AI+教育科技落地</p>
               </div>
               <div class="manifest-card-wrap">
-                <el-card class="glass-card manifest-job-card awang-card">
-                  <!-- 顶部核心职能与薪酬卡片 -->
-                  <div class="job-header">
-                    <div class="job-brand-info">
-                      <div class="company-logo-badge">
-                        <el-icon><Cpu /></el-icon>
-                      </div>
-                      <div class="company-text-info">
-                        <span class="job-label">北京花径信息科技 · 花径教育</span>
-                        <h3 class="job-name">课程线产品经理 / 资深产品架构师</h3>
-                        <span class="location-text">
-                          <el-icon><Location /></el-icon> 北京·海淀区·西北旺 (E ZIKOO智慧谷D1 永润路18号)
-                        </span>
+                <el-card class="glass-card manifest-studio-card">
+                  <div class="studio-header">
+                    <div class="studio-brand">
+                      <div class="brand-icon"><el-icon><Cpu /></el-icon></div>
+                      <div class="brand-info">
+                        <h3 class="studio-name">阿旺的理想事业</h3>
+                        <span class="studio-type">课程线产品经理 · 资深产品架构师</span>
                       </div>
                     </div>
-                    <div class="salary-tag purple-glow">
-                      <span class="value">¥ 20 - 30K</span>
-                      <span class="period">/月 (全额五险一金)</span>
+                    <div class="income-badge">
+                      <span class="range">¥ 20k - 30k</span>
+                      <span class="period">/月</span>
                     </div>
                   </div>
 
-                  <!-- 技能与能力标签矩阵 -->
-                  <div class="job-tags">
-                    <el-tag effect="dark" type="success">20-30K/月 待遇丰厚</el-tag>
-                    <el-tag effect="plain" type="primary">20年互联网与EdTech沉淀</el-tag>
-                    <el-tag effect="plain" type="warning">AI+教育产品架构 (LLM/RAG/Cursor)</el-tag>
-                    <el-tag effect="plain" type="danger">教务/中台/业财税一体化专家</el-tag>
-                    <el-tag effect="plain" type="info">海淀区西北旺·智慧谷写字楼</el-tag>
-                    <el-tag effect="plain" type="success">美国佩丁大学 MBA 硕士</el-tag>
+                  <div class="job-tags" style="margin-bottom: 18px;">
+                    <el-tag effect="plain" type="primary" round><el-icon><Shop /></el-icon> 花径教育 / EdTech头部企业</el-tag>
+                    <el-tag effect="plain" type="success" round><el-icon><Finished /></el-icon> 全额五险一金</el-tag>
+                    <el-tag effect="plain" type="warning" round><el-icon><Calendar /></el-icon> 周末双休</el-tag>
+                    <el-tag effect="plain" type="info" round><el-icon><MapLocation /></el-icon> 海淀西北旺(E ZIKOO智慧谷)</el-tag>
+                    <el-tag effect="plain" type="danger" round><el-icon><Cpu /></el-icon> AI+教育前沿落地</el-tag>
                   </div>
 
-                  <!-- 核心优势与福利亮点 -->
-                  <div class="job-perks-grid">
-                    <div class="perk-card">
-                      <div class="perk-icon-box purple">
-                        <el-icon><TrendCharts /></el-icon>
-                      </div>
-                      <div class="perk-info">
-                        <span class="perk-title">教务平台整体规划</span>
-                        <span class="perk-desc">主导权益发放、分班排课、课程资格核销，提升完课率与转化率</span>
-                      </div>
+                  <div class="studio-stats">
+                    <div class="stat-box">
+                      <el-icon><Location /></el-icon>
+                      <span class="stat-label">工作地点</span>
+                      <span class="stat-value">海淀西北旺</span>
                     </div>
-
-                    <div class="perk-card">
-                      <div class="perk-icon-box green">
-                        <el-icon><Cpu /></el-icon>
-                      </div>
-                      <div class="perk-info">
-                        <span class="perk-title">AI+教学场景实战先锋</span>
-                        <span class="perk-desc">率先打通大模型(LLM)、Prompt工程、RAG知识库在教学场景落地</span>
-                      </div>
+                    <div class="stat-box">
+                      <el-icon><Calendar /></el-icon>
+                      <span class="stat-label">作息安排</span>
+                      <span class="stat-value">周末双休</span>
                     </div>
-
-                    <div class="perk-card">
-                      <div class="perk-icon-box blue">
-                        <el-icon><Connection /></el-icon>
-                      </div>
-                      <div class="perk-info">
-                        <span class="perk-title">学员承接与档案留存</span>
-                        <span class="perk-desc">三方平台订单与自研中台无缝打通，实现全链路精准跟进与权限管控</span>
-                      </div>
-                    </div>
-
-                    <div class="perk-card">
-                      <div class="perk-icon-box orange">
-                        <el-icon><OfficeBuilding /></el-icon>
-                      </div>
-                      <div class="perk-info">
-                        <span class="perk-title">优雅办公与全额保障</span>
-                        <span class="perk-desc">海淀西北旺智慧谷写字楼，全额五险一金、双休保障、团队高度信任</span>
-                      </div>
+                    <div class="stat-box">
+                      <el-icon><Finished /></el-icon>
+                      <span class="stat-label">福利保障</span>
+                      <span class="stat-value">全额五险一金</span>
                     </div>
                   </div>
 
-                  <el-divider content-position="left">岗位职责与核心能力落地</el-divider>
-                  
-                  <div class="responsibility-list">
-                    <div class="resp-item">
-                      <div class="resp-number">01</div>
-                      <div class="resp-content">
-                        <strong>教务平台建设与优化：</strong>
-                        <p>负责在线教务平台的整体规划、功能设计与持续迭代，主导核心模块如权益自动发放、分班排课、多模式课程学习、课程资格核销等工具的产品设计与流程优化，支撑到课率、完课率、转化率等核心业务指标达成。</p>
+                  <el-divider>事业核心成就与价值落地</el-divider>
+
+                  <div class="client-success">
+                    <div class="success-item">
+                      <el-icon class="star-icon"><Star /></el-icon>
+                      <div class="success-text">
+                        <strong>架构赋能在线教务中台</strong>
+                        <p>主导教务中台、权益发放、分班排课与学员档案全链路流转，到课完课率显著提升</p>
                       </div>
                     </div>
-
-                    <div class="resp-item">
-                      <div class="resp-number">02</div>
-                      <div class="resp-content">
-                        <strong>学员承接与档案留存全链路优化：</strong>
-                        <p>负责三方平台订单及学员承接，与自研平台打通，优化学员线索留存、主动加v、分配学员销售转化等链路闭环，提升业务核心工作链路效率提升，实现学员档案信息化落库与全链路跟进记录，实现多权限管控。</p>
+                    <div class="success-item">
+                      <el-icon class="star-icon"><Cpu /></el-icon>
+                      <div class="success-text">
+                        <strong>AI+教学场景前沿落地</strong>
+                        <p>率先打通大模型(LLM)、Prompt工程与AI编辑工具在教学场景融合，构建创新壁垒</p>
                       </div>
                     </div>
-
-                    <div class="resp-item">
-                      <div class="resp-number">03</div>
-                      <div class="resp-content">
-                        <strong>AI 创新与战略推动：</strong>
-                        <p>结合行业趋势与竞品动态，深入理解在线教育商业模式，持续探索新技术（如AI大模型、Prompt工程、RAG知识库、Cursor编辑器）在教学场景中的应用可能，提升产品核心竞争力。</p>
-                      </div>
-                    </div>
-
-                    <div class="resp-item">
-                      <div class="resp-number">04</div>
-                      <div class="resp-content">
-                        <strong>产品全生命周期管理：</strong>
-                        <p>独立完成需求调研、用户访谈、原型设计、PRD撰写、开发协同、上线发布、业务培训及上线后的数据追踪与复盘，形成“需求-落地-验证”的完整闭环，为结果负责。</p>
+                    <div class="success-item">
+                      <el-icon class="star-icon"><Share /></el-icon>
+                      <div class="success-text">
+                        <strong>充分授权与高效协同</strong>
+                        <p>拥有自主决策力与降维架构设计能力，跨部门协同融洽，深受团队信任与尊重</p>
                       </div>
                     </div>
                   </div>
 
                   <div class="manifest-story purple-theme">
                     <div class="story-bubble">
-                      “我顺利来到了花径教育，担任课程线产品经理/资深产品架构师。在海淀区西北旺智慧谷优雅明亮的办公室里，我将近20年的互联网与教育科技沉淀以及AI前沿落地经验发挥得淋漓尽致。月薪20K-30K及全额五险一金等优厚待遇让我充满踏实与满足。我主导着在线教务平台与AI创新产品线的架构设计，从分班排课、学员档案到AI智能教学闭环，带领团队高效交付。在这里，我的架构能力与AI前沿洞察得到全方位认可，团队协作融洽，每一天都充满了成就感与职业自信。”
+                      “我顺利来到了理想的企业，担任课程线产品经理/资深产品架构师。在海淀区西北旺优雅明亮的办公室里，我将近20年的互联网与教育科技沉淀以及AI前沿落地经验发挥得淋漓尽致。20K-30K的月薪及全额五险一金等优厚保障让我踏实而从容。我主导着在线教务中台与AI创新产品线的架构闭环，带领团队高效交付。在这里，我的架构能力与AI前沿洞察得到全方位认可，团队协作融洽，每一天都充满了成就感与职业自信。”
                     </div>
                   </div>
                 </el-card>
