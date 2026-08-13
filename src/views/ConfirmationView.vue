@@ -211,14 +211,14 @@
                       </div>
                     </div>
                     <div class="income-badge">
-                      <span class="range">¥ 20k - 30k</span>
+                      <span class="range">¥ 35,000</span>
                       <span class="period">/月</span>
                     </div>
                   </div>
 
                   <div class="job-tags" style="margin-bottom: 18px;">
                     <el-tag effect="plain" type="primary" round><el-icon><Shop /></el-icon> 花径教育 / EdTech头部企业</el-tag>
-                    <el-tag effect="plain" type="success" round><el-icon><Finished /></el-icon> 全额五险一金</el-tag>
+                    <el-tag effect="plain" type="success" round><el-icon><Finished /></el-icon> 月薪 ¥35,000 (全额五险一金)</el-tag>
                     <el-tag effect="plain" type="warning" round><el-icon><Calendar /></el-icon> 周末双休</el-tag>
                     <el-tag effect="plain" type="info" round><el-icon><MapLocation /></el-icon> 海淀西北旺(E ZIKOO智慧谷)</el-tag>
                     <el-tag effect="plain" type="danger" round><el-icon><Cpu /></el-icon> AI+教育前沿落地</el-tag>
@@ -270,7 +270,7 @@
 
                   <div class="manifest-story purple-theme">
                     <div class="story-bubble">
-                      “我顺利来到了理想的企业，担任课程线产品经理/资深产品架构师。在海淀区西北旺优雅明亮的办公室里，我将近20年的互联网与教育科技沉淀以及AI前沿落地经验发挥得淋漓尽致。20K-30K的月薪及全额五险一金等优厚保障让我踏实而从容。我主导着在线教务中台与AI创新产品线的架构闭环，带领团队高效交付。在这里，我的架构能力与AI前沿洞察得到全方位认可，团队协作融洽，每一天都充满了成就感与职业自信。”
+                      “我顺利来到了理想的企业，担任课程线产品经理/资深产品架构师。在海淀区西北旺优雅明亮的办公室里，我将近20年的互联网与教育科技沉淀以及AI前沿落地经验发挥得淋漓尽致。35,000元的月薪及全额五险一金等优厚保障让我踏实而从容。我主导着在线教务中台与AI创新产品线的架构闭环，带领团队高效交付。在这里，我的架构能力与AI前沿洞察得到全方位认可，团队协作融洽，每一天都充满了成就感与职业自信。”
                     </div>
                   </div>
                 </el-card>
