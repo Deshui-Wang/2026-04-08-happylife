@@ -550,7 +550,8 @@ const toggleConsumer = (name) => {
   }
 }
 
-// 全端共享云端存储 Endpoint (选用高可用、无 Cloudflare 拦截防护的可靠 REST API)
+// 全端共享云端存储 Endpoint (优先使用项目原生的 Cloudflare 专属数据库 API，备用高可用通道)
+const LOCAL_API_URL = '/api/ledger'
 const PRIMARY_CLOUD_URL = 'https://api.npoint.io/34eb8bbbd493f18e95df'
 const PENDING_SYNC_KEY = 'happylife_pending_sync'
 
@@ -652,16 +653,35 @@ const syncToCloud = async (recordsToPush) => {
   try {
     isSyncing.value = true
     const payload = recordsToPush || records.value
-    await axios.post(PRIMARY_CLOUD_URL, payload, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      timeout: 10000
-    })
-    lastSyncTime.value = new Date()
-    localStorage.removeItem(PENDING_SYNC_KEY)
+    let success = false
+
+    // 1. 尝试原生 Cloudflare API
+    try {
+      const res = await axios.post(LOCAL_API_URL, payload, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 6000
+      })
+      if (res.data && res.data.success) {
+        success = true
+      }
+    } catch (e) {}
+
+    // 2. 尝试高可用备用 API
+    try {
+      await axios.post(PRIMARY_CLOUD_URL, payload, {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 8000
+      })
+      success = true
+    } catch (e) {}
+
+    if (success) {
+      lastSyncTime.value = new Date()
+      localStorage.removeItem(PENDING_SYNC_KEY)
+    } else {
+      localStorage.setItem(PENDING_SYNC_KEY, 'true')
+    }
   } catch (err) {
-    console.warn('云端推送暂未完成，已写入待追平补推队列:', err)
     localStorage.setItem(PENDING_SYNC_KEY, 'true')
   } finally {
     isSyncing.value = false
@@ -673,10 +693,28 @@ const syncFromCloud = async (showNotification = false) => {
   if (isSyncing.value) return
   try {
     isSyncing.value = true
-    const response = await axios.get(PRIMARY_CLOUD_URL, { timeout: 10000 })
-    let cloudData = response.data
-    if (typeof cloudData === 'string') {
-      try { cloudData = JSON.parse(cloudData) } catch(e) {}
+    let cloudData = null
+
+    // 1. 优先尝试从原生 Cloudflare 数据库拉取
+    try {
+      const res = await axios.get(LOCAL_API_URL, { timeout: 6000 })
+      if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+        cloudData = res.data
+      }
+    } catch (e) {}
+
+    // 2. 尝试从备用云服务端拉取
+    if (!cloudData) {
+      try {
+        const response = await axios.get(PRIMARY_CLOUD_URL, { timeout: 8000 })
+        let data = response.data
+        if (typeof data === 'string') {
+          try { data = JSON.parse(data) } catch (e) {}
+        }
+        if (Array.isArray(data)) {
+          cloudData = data
+        }
+      } catch (e) {}
     }
     
     if (Array.isArray(cloudData)) {
@@ -697,7 +735,6 @@ const syncFromCloud = async (showNotification = false) => {
       }
     }
   } catch (err) {
-    console.warn('云端获取失败，读取本地离线数据:', err)
     if (showNotification) {
       ElMessage.warning('网络同步暂未就绪，已读取本地暂存数据')
     }
