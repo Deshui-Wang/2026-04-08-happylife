@@ -29,8 +29,8 @@
       </div>
     </template>
     
-    <el-form label-position="top">
-      <el-divider content-position="left" style="margin-top: 0;">核心资产</el-divider>
+    <el-form label-position="top" class="compact-form">
+      <el-divider content-position="left" class="compact-divider">核心资产</el-divider>
       
       <div class="core-assets-inputs">
         <div class="asset-input-col">
@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <el-divider content-position="left">工作收入</el-divider>
+      <el-divider content-position="left" class="compact-divider">工作收入</el-divider>
       <el-row :gutter="10">
         <el-col :xs="12" :sm="12">
           <el-form-item label="月预计工作收入 (元)">
@@ -87,7 +87,7 @@
         </el-col>
       </el-row>
 
-      <el-divider content-position="left">退休收入</el-divider>
+      <el-divider content-position="left" class="compact-divider">退休收入</el-divider>
       <el-row :gutter="10">
         <el-col :xs="12" :sm="12">
           <el-form-item label="退休金预计金额 (元/月)">
@@ -95,7 +95,7 @@
           </el-form-item>
         </el-col>
         <el-col :xs="12" :sm="12">
-          <el-form-item>
+          <el-form-item label-class-name="retirement-label">
             <template #label>
               <div style="display: flex; align-items: center; gap: 4px;">
                 <span>预计退休年龄 (岁)</span>
@@ -112,7 +112,7 @@
         </el-col>
       </el-row>
 
-      <el-divider content-position="left">保险收益/返还</el-divider>
+      <el-divider content-position="left" class="compact-divider">保险收益/返还</el-divider>
       <div class="insurance-return-panel">
         <el-row :gutter="12">
           <el-col :xs="24" :sm="12">
@@ -193,40 +193,67 @@ const handleCalcInput = (btn) => {
 <style scoped>
 .glass-card { 
   background: #ffffff; 
-  border-radius: 16px; 
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); 
+  border-radius: 14px; 
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); 
   border: 1px solid #e2e8f0; 
 }
-.card-header { display: flex; align-items: center; gap: 8px; font-weight: 800; color: #1e293b; font-size: 16px; }
+:deep(.el-card__body) {
+  padding: 12px 16px 16px 16px !important;
+}
+:deep(.el-card__header) {
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #f1f5f9;
+}
+.card-header { display: flex; align-items: center; gap: 8px; font-weight: 800; color: #1e293b; font-size: 15px; }
 .justify-between { justify-content: space-between; }
-.mb-20 { margin-bottom: 20px; }
-.mt-10 { margin-top: 14px; }
+.mb-20 { margin-bottom: 16px; }
+.mt-10 { margin-top: 10px; }
 
-/* 统一的高级胶囊型按钮样式 */
+/* 微型胶囊型【辅助计算】按钮样式（精确匹配线上小巧尺寸） */
 .header-action-btn {
-  font-size: 12px !important;
+  font-size: 11px !important;
   font-weight: 600 !important;
   color: #6366f1 !important;
   background: #f0f3ff !important;
   border: 1px solid #e0e7ff !important;
-  padding: 4px 14px !important;
-  height: 28px !important;
-  border-radius: 20px !important;
+  padding: 2px 10px !important;
+  height: 22px !important;
+  border-radius: 12px !important;
   transition: all 0.2s ease !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
+}
+.header-action-btn .el-icon {
+  font-size: 11px !important;
 }
 .header-action-btn:hover {
   background: #e0e7ff !important;
   border-color: #c7d2fe !important;
 }
 
+/* 紧凑版 Divider 分割线 */
+.compact-divider {
+  margin: 12px 0 8px 0 !important;
+}
+:deep(.compact-divider .el-divider__text) {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #334155 !important;
+  background-color: #ffffff !important;
+  padding: 0 8px !important;
+}
+
+/* 紧凑版表单与 FormItem */
+.compact-form :deep(.el-form-item) {
+  margin-bottom: 6px !important;
+}
+
 .core-assets-inputs {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   width: 100%;
 }
 .core-assets-inputs .asset-input-col {
@@ -236,18 +263,18 @@ const handleCalcInput = (btn) => {
 .calc-symbol {
   flex: 0 0 auto;
   text-align: center;
-  font-size: 20px;
+  font-size: 16px;
   color: #6366f1;
   font-weight: bold;
-  padding-top: 8px;
+  padding-top: 16px;
 }
 
-/* 静态资产总额卡片（对应截图浅紫色卡片样式） */
+/* 静态资产总额卡片（精确匹配线上高度与外边距） */
 .asset-summary-banner {
   background: #f0f4ff;
   border: 1px solid #e0e7ff;
-  padding: 16px 20px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
   color: #1e293b;
   display: flex;
   justify-content: space-between;
@@ -256,17 +283,17 @@ const handleCalcInput = (btn) => {
 .asset-summary-banner .summary-label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 6px;
+  font-size: 13px;
   font-weight: 700;
   color: #334155;
 }
 .asset-summary-banner .summary-label .el-icon {
   color: #475569;
-  font-size: 16px;
+  font-size: 15px;
 }
 .asset-summary-banner .summary-value {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
   color: #4f46e5;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
@@ -275,21 +302,21 @@ const handleCalcInput = (btn) => {
   gap: 2px;
 }
 .asset-summary-banner .currency {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   color: #4f46e5;
 }
 
-/* 保险收益/返还卡片（对应截图淡绿色亮彩卡片样式） */
+/* 保险收益/返还卡片（精确匹配线上紧凑高度） */
 .insurance-return-panel {
-  margin-top: 8px;
+  margin-top: 4px;
 }
 .return-item {
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
-  border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 8px;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 4px;
   transition: all 0.3s ease;
 }
 .return-item.is-disabled {
@@ -302,10 +329,10 @@ const handleCalcInput = (btn) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 .return-item .name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: #047857;
 }
@@ -315,12 +342,12 @@ const handleCalcInput = (btn) => {
   align-items: baseline;
 }
 .return-item .amount {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: #059669;
 }
 .return-item .period {
-  font-size: 12px;
+  font-size: 11px;
   color: #4b5563;
 }
 
@@ -332,14 +359,14 @@ const handleCalcInput = (btn) => {
 .mini-calculator {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 .calc-screen {
   background: #f8fafc;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 8px;
+  border-radius: 6px;
   text-align: right;
-  min-height: 50px;
+  min-height: 44px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -347,19 +374,19 @@ const handleCalcInput = (btn) => {
 }
 .calc-screen .expr {
   font-family: monospace;
-  font-size: 16px;
+  font-size: 15px;
   color: #1e293b;
   word-break: break-all;
 }
 .calc-screen .res {
-  font-size: 14px;
+  font-size: 13px;
   color: #6366f1;
   font-weight: bold;
 }
 .calc-btns {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
+  gap: 4px;
 }
 .calc-btns .el-button {
   margin: 0 !important;
@@ -369,14 +396,16 @@ const handleCalcInput = (btn) => {
 :deep(.el-form-item__label) {
   font-weight: 600 !important;
   color: #475569 !important;
-  font-size: 13px !important;
+  font-size: 12px !important;
+  margin-bottom: 2px !important;
+  line-height: 1.4 !important;
 }
 
 :deep(.el-input-number .el-input__wrapper) {
   background-color: #f8fafc;
   box-shadow: 0 0 0 1px #e2e8f0 inset !important;
-  border-radius: 8px;
-  height: 38px;
+  border-radius: 6px;
+  height: 32px !important;
 }
 :deep(.el-input-number .el-input__wrapper:hover) {
   box-shadow: 0 0 0 1px #c7d2fe inset !important;
@@ -405,6 +434,6 @@ const handleCalcInput = (btn) => {
 :deep(.el-input__inner) {
   font-weight: 700 !important;
   color: #0f172a !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
 }
 </style>
