@@ -38,10 +38,10 @@
               :class="{ active: activeManifest === 'awang' }"
               @click="activeManifest = 'awang'"
             >
-              <div class="item-icon awang"><el-icon><Brush /></el-icon></div>
+              <div class="item-icon awang"><el-icon><Cpu /></el-icon></div>
               <div class="item-info">
                 <span class="label">阿旺事业</span>
-                <span class="desc">自由职业/工作室</span>
+                <span class="desc">课程线产品经理/架构师</span>
               </div>
             </div>
 
@@ -198,67 +198,122 @@
             <div v-if="activeManifest === 'awang'" class="content-wrapper">
               <div class="page-title-section">
                 <h2 class="section-title">阿旺事业显化</h2>
-                <p class="section-subtitle">自由职业 · 创意研究 · 财富自由</p>
+                <p class="section-subtitle">课程线产品经理 · 资深产品架构师 · AI+教育科技落地</p>
               </div>
               <div class="manifest-card-wrap">
-                <el-card class="glass-card manifest-studio-card">
-                  <div class="studio-header">
-                    <div class="studio-brand">
-                      <div class="brand-icon"><el-icon><Brush /></el-icon></div>
-                      <div class="brand-info">
-                        <h3 class="studio-name">阿旺个人工作室</h3>
-                        <span class="studio-type">设计 · 创意 · 谈话 · 研究</span>
+                <el-card class="glass-card manifest-job-card awang-card">
+                  <!-- 顶部核心职能与薪酬卡片 -->
+                  <div class="job-header">
+                    <div class="job-brand-info">
+                      <div class="company-logo-badge">
+                        <el-icon><Cpu /></el-icon>
+                      </div>
+                      <div class="company-text-info">
+                        <span class="job-label">北京花径信息科技 · 花径教育</span>
+                        <h3 class="job-name">课程线产品经理 / 资深产品架构师</h3>
+                        <span class="location-text">
+                          <el-icon><Location /></el-icon> 北京·海淀区·西北旺 (E ZIKOO智慧谷D1 永润路18号)
+                        </span>
                       </div>
                     </div>
-                    <div class="income-badge">
-                      <span class="range">¥ 15k - 50k</span>
-                      <span class="period">/月</span>
+                    <div class="salary-tag purple-glow">
+                      <span class="value">¥ 20 - 30K</span>
+                      <span class="period">/月 (全额五险一金)</span>
                     </div>
                   </div>
-                  <div class="studio-stats">
-                    <div class="stat-box">
-                      <el-icon><HomeFilled /></el-icon>
-                      <span class="stat-label">通勤时间</span>
-                      <span class="stat-value">0 分钟</span>
+
+                  <!-- 技能与能力标签矩阵 -->
+                  <div class="job-tags">
+                    <el-tag effect="dark" type="success">20-30K/月 待遇丰厚</el-tag>
+                    <el-tag effect="plain" type="primary">20年互联网与EdTech沉淀</el-tag>
+                    <el-tag effect="plain" type="warning">AI+教育产品架构 (LLM/RAG/Cursor)</el-tag>
+                    <el-tag effect="plain" type="danger">教务/中台/业财税一体化专家</el-tag>
+                    <el-tag effect="plain" type="info">海淀区西北旺·智慧谷写字楼</el-tag>
+                    <el-tag effect="plain" type="success">美国佩丁大学 MBA 硕士</el-tag>
+                  </div>
+
+                  <!-- 核心优势与福利亮点 -->
+                  <div class="job-perks-grid">
+                    <div class="perk-card">
+                      <div class="perk-icon-box purple">
+                        <el-icon><TrendCharts /></el-icon>
+                      </div>
+                      <div class="perk-info">
+                        <span class="perk-title">教务平台整体规划</span>
+                        <span class="perk-desc">主导权益发放、分班排课、课程资格核销，提升完课率与转化率</span>
+                      </div>
                     </div>
-                    <div class="stat-box">
-                      <el-icon><Calendar /></el-icon>
-                      <span class="stat-label">休息安排</span>
-                      <span class="stat-value">完全自由</span>
+
+                    <div class="perk-card">
+                      <div class="perk-icon-box green">
+                        <el-icon><Cpu /></el-icon>
+                      </div>
+                      <div class="perk-info">
+                        <span class="perk-title">AI+教学场景实战先锋</span>
+                        <span class="perk-desc">率先打通大模型(LLM)、Prompt工程、RAG知识库在教学场景落地</span>
+                      </div>
                     </div>
-                    <div class="stat-box">
-                      <el-icon><Finished /></el-icon>
-                      <span class="stat-label">五险一金</span>
-                      <span class="stat-value">工作室缴纳</span>
+
+                    <div class="perk-card">
+                      <div class="perk-icon-box blue">
+                        <el-icon><Connection /></el-icon>
+                      </div>
+                      <div class="perk-info">
+                        <span class="perk-title">学员承接与档案留存</span>
+                        <span class="perk-desc">三方平台订单与自研中台无缝打通，实现全链路精准跟进与权限管控</span>
+                      </div>
+                    </div>
+
+                    <div class="perk-card">
+                      <div class="perk-icon-box orange">
+                        <el-icon><OfficeBuilding /></el-icon>
+                      </div>
+                      <div class="perk-info">
+                        <span class="perk-title">优雅办公与全额保障</span>
+                        <span class="perk-desc">海淀西北旺智慧谷写字楼，全额五险一金、双休保障、团队高度信任</span>
+                      </div>
                     </div>
                   </div>
-                  <el-divider>客户与口碑</el-divider>
-                  <div class="client-success">
-                    <div class="success-item">
-                      <el-icon class="star-icon"><Star /></el-icon>
-                      <div class="success-text">
-                        <strong>深度信任</strong>
-                        <p>吸引志同道合的高质量客户</p>
+
+                  <el-divider content-position="left">岗位职责与核心能力落地</el-divider>
+                  
+                  <div class="responsibility-list">
+                    <div class="resp-item">
+                      <div class="resp-number">01</div>
+                      <div class="resp-content">
+                        <strong>教务平台建设与优化：</strong>
+                        <p>负责在线教务平台的整体规划、功能设计与持续迭代，主导核心模块如权益自动发放、分班排课、多模式课程学习、课程资格核销等工具的产品设计与流程优化，支撑到课率、完课率、转化率等核心业务指标达成。</p>
                       </div>
                     </div>
-                    <div class="success-item">
-                      <el-icon class="star-icon"><Refresh /></el-icon>
-                      <div class="success-text">
-                        <strong>高复购率</strong>
-                        <p>作品价值得到长期认可</p>
+
+                    <div class="resp-item">
+                      <div class="resp-number">02</div>
+                      <div class="resp-content">
+                        <strong>学员承接与档案留存全链路优化：</strong>
+                        <p>负责三方平台订单及学员承接，与自研平台打通，优化学员线索留存、主动加v、分配学员销售转化等链路闭环，提升业务核心工作链路效率提升，实现学员档案信息化落库与全链路跟进记录，实现多权限管控。</p>
                       </div>
                     </div>
-                    <div class="success-item">
-                      <el-icon class="star-icon"><Share /></el-icon>
-                      <div class="success-text">
-                        <strong>好评转介绍</strong>
-                        <p>口碑相传，源源不断的被动获客</p>
+
+                    <div class="resp-item">
+                      <div class="resp-number">03</div>
+                      <div class="resp-content">
+                        <strong>AI 创新与战略推动：</strong>
+                        <p>结合行业趋势与竞品动态，深入理解在线教育商业模式，持续探索新技术（如AI大模型、Prompt工程、RAG知识库、Cursor编辑器）在教学场景中的应用可能，提升产品核心竞争力。</p>
+                      </div>
+                    </div>
+
+                    <div class="resp-item">
+                      <div class="resp-number">04</div>
+                      <div class="resp-content">
+                        <strong>产品全生命周期管理：</strong>
+                        <p>独立完成需求调研、用户访谈、原型设计、PRD撰写、开发协同、上线发布、业务培训及上线后的数据追踪与复盘，形成“需求-落地-验证”的完整闭环，为结果负责。</p>
                       </div>
                     </div>
                   </div>
+
                   <div class="manifest-story purple-theme">
                     <div class="story-bubble">
-                      “我终于实现了彻底的职业自由。在自己的工作室里，我随心所欲地挥洒创意，进行深度研究与对谈。每个月1.5万到5万的不等收入让我拥有了十足的安全感，五险一金也由工作室按时足额缴纳。告别了通勤的劳顿，我拥有了对时间的绝对掌控权。最令我欣慰的是，我的客户都像老朋友一样志同道合，他们信任我、追随我，并不断把这份价值介绍给更多人。这种被需要、被尊重且自由的状态，就是我理想中的事业。”
+                      “我顺利来到了花径教育，担任课程线产品经理/资深产品架构师。在海淀区西北旺智慧谷优雅明亮的办公室里，我将近20年的互联网与教育科技沉淀以及AI前沿落地经验发挥得淋漓尽致。月薪20K-30K及全额五险一金等优厚待遇让我充满踏实与满足。我主导着在线教务平台与AI创新产品线的架构设计，从分班排课、学员档案到AI智能教学闭环，带领团队高效交付。在这里，我的架构能力与AI前沿洞察得到全方位认可，团队协作融洽，每一天都充满了成就感与职业自信。”
                     </div>
                   </div>
                 </el-card>
@@ -372,7 +427,7 @@ import {
   ArrowDown, InfoFilled, Filter, Connection,
   Shop, Calendar, MapLocation, Timer, Bowl, UserFilled,
   Brush, HomeFilled, Star, Refresh, Share, Postcard, Suitcase, Notebook,
-  FirstAidKit
+  FirstAidKit, Briefcase, Cpu, OfficeBuilding, TrendCharts, Location
 } from '@element-plus/icons-vue'
 
 const activeManifest = ref('bank')
@@ -696,6 +751,148 @@ const bankMockups = [
 .success-text strong { font-size: 14px; }
 .success-text p { font-size: 12px; color: #64748b; margin: 2px 0 0 0; }
 .purple-theme { border-left-color: #a855f7 !important; background: #faf5ff !important; }
+
+/* 阿旺事业专属新增样式 */
+.job-brand-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.company-logo-badge {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 26px;
+  box-shadow: 0 8px 18px rgba(139, 92, 246, 0.25);
+  flex-shrink: 0;
+}
+
+.company-text-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.location-text {
+  font-size: 12px;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.purple-glow {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.25);
+}
+
+.job-perks-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+@media (max-width: 640px) {
+  .job-perks-grid {
+    grid-template-columns: 1fr;
+  }
+  .job-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+.perk-card {
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.perk-icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.perk-icon-box.purple { background: #f3e8ff; color: #9333ea; }
+.perk-icon-box.green { background: #dcfce7; color: #16a34a; }
+.perk-icon-box.blue { background: #e0f2fe; color: #0284c7; }
+.perk-icon-box.orange { background: #ffedd5; color: #ea580c; }
+
+.perk-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.perk-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.perk-desc {
+  font-size: 11.5px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.responsibility-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.resp-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.resp-number {
+  font-size: 14px;
+  font-weight: 900;
+  color: #8b5cf6;
+  background: #f3e8ff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.resp-content strong {
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.resp-content p {
+  font-size: 12.5px;
+  color: #475569;
+  margin: 4px 0 0 0;
+  line-height: 1.5;
+}
 
 /* ★★★ 化验单专属样式 ★★★ */
 .manifest-report-wrap {
