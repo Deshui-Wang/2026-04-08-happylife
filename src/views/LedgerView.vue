@@ -325,7 +325,7 @@
                   <div class="cell-spend-count">{{ day.records.length }}笔</div>
                 </template>
                 <template v-else>
-                  <div class="cell-no-spend-tag">没花钱</div>
+                  <div class="cell-no-spend-tag">记账</div>
                 </template>
               </div>
             </div>
@@ -520,7 +520,7 @@
           <div class="summary-left">
             <span class="day-status-label">{{ selectedDayItem.hasRecords ? '当日支出小计' : '本日记录' }}</span>
             <span class="day-status-val">
-              {{ selectedDayItem.hasRecords ? '¥ ' + Number(selectedDayItem.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) : '🌿 没花钱' }}
+              {{ selectedDayItem.hasRecords ? '¥ ' + Number(selectedDayItem.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) : '暂无记账' }}
             </span>
           </div>
           <button class="btn-add-on-day" @click="openAddModalForDate(selectedDayItem.dateStr)">
@@ -572,7 +572,7 @@
 
         <!-- 当天无记录提示 -->
         <div v-else class="day-empty-box">
-          <div class="empty-icon-text">🎉 这一天没花钱，太棒啦！</div>
+          <div class="empty-icon-text">📝 这一天尚未记账</div>
           <p class="empty-sub-tip">点击右上角的【记一笔】按钮即可在当前选定日期补充记账</p>
         </div>
       </div>
