@@ -10,13 +10,7 @@
           :retirement-info="retirementInfo"
         />
 
-        <!-- 2. 保险支出模块 -->
-        <InsuranceExpenseSection
-          :insurance-list="insuranceList"
-          @open-drawer="drawerVisible = true"
-        />
-
-        <!-- 3. 居住城市模块 -->
+        <!-- 2. 居住城市模块 -->
         <CityLivingExpenseSection
           :city-costs-list="cityCostsList"
           :current-age="currentAge"
@@ -25,6 +19,12 @@
           :active-annual-premium="activeAnnualPremium"
           @city-enabled-change="onCityEnabledChange"
           @city-age-range-change="({ city, val }) => onCityAgeRangeChange(city, val)"
+        />
+
+        <!-- 3. 保险支出模块 -->
+        <InsuranceExpenseSection
+          :insurance-list="insuranceList"
+          @open-drawer="drawerVisible = true"
         />
       </el-col>
 
