@@ -2,26 +2,25 @@
   <div class="ledger-container animate-fade-in">
     <!-- 1. 顶栏总览卡片 (#0D2B2E 深墨绿 & #E8C268 鎏金) -->
     <div class="overview-header-card">
-      <!-- 虚线上方：左侧标题与金额 + 右侧存钱罐图片 (左右对齐) -->
-      <div class="overview-top-row">
-        <div class="overview-left-info">
-          <div class="summary-title-wrap">
-            <span class="badge-tag">好好记账 · 稳稳发财</span>
-            <span 
-              class="cloud-sync-chip" 
-              :class="{ 'syncing': isSyncing }" 
-              title="点击手动与云端同步全端账单数据"
-              @click="manualCloudSync"
-            >
-              <el-icon :class="{ 'spin-icon': isSyncing }"><Refresh /></el-icon>
-              <span>{{ syncStatusText }}</span>
-            </span>
-          </div>
+      <!-- 第一行：两个标签一行 -->
+      <div class="summary-title-wrap">
+        <span class="badge-tag">好好记账 · 稳稳发财</span>
+        <span 
+          class="cloud-sync-chip" 
+          :class="{ 'syncing': isSyncing }" 
+          title="点击手动与云端同步全端账单数据"
+          @click="manualCloudSync"
+        >
+          <el-icon :class="{ 'spin-icon': isSyncing }"><Refresh /></el-icon>
+          <span>{{ syncStatusText }}</span>
+        </span>
+      </div>
 
-          <div class="summary-amount-box">
-            <div class="currency-symbol">¥</div>
-            <div class="amount-num">{{ formattedTotalAmount }}</div>
-          </div>
+      <!-- 第二行：总金额与小猪一行 (左右对齐) -->
+      <div class="overview-top-row">
+        <div class="summary-amount-box">
+          <div class="currency-symbol">¥</div>
+          <div class="amount-num">{{ formattedTotalAmount }}</div>
         </div>
 
         <div class="overview-right-hero">
@@ -738,7 +737,7 @@ const lastSyncTime = ref(null)
 const syncStatusText = computed(() => {
   if (isSyncing.value) return '云端同步中...'
   if (lastSyncTime.value) return `多端已同步 (${dayjs(lastSyncTime.value).format('HH:mm')})`
-  return '多端云共享'
+  return '刷新'
 })
 
 // 过滤掉所有历史测试数据 (如 rec-1 88元饭菜、seed- 等)
@@ -1412,7 +1411,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 4px;
+  margin-bottom: 12px;
 }
 
 .badge-tag {
