@@ -187,10 +187,12 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   border-top: 1px dashed #f1f5f9;
   padding-top: 12px;
 }
+
+/* 增大“居住年龄段：”与进度条中间的间隙，缩小进度条与下方刻度数字的间隙 */
 .slider-row {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
 }
 .slider-label-text {
   font-size: 12px;
@@ -204,14 +206,13 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   color: #94a3b8;
   margin-left: 6px;
 }
-
-/* 滑块及底部刻度文字样式 - 留出足够下边距防重叠 */
 .city-age-slider {
-  padding: 0 8px 18px 8px;
+  padding: 0 8px 12px 8px;
 }
 :deep(.city-age-slider .el-slider__runway) {
   background-color: #e2e8f0;
-  margin-bottom: 22px !important;
+  margin-top: 4px !important;
+  margin-bottom: 16px !important;
 }
 :deep(.city-age-slider .el-slider__bar) {
   background-color: #6366f1;
@@ -222,7 +223,7 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 :deep(.el-slider__marks-text) {
   font-size: 11px !important;
   color: #94a3b8 !important;
-  top: 14px !important;
+  top: 10px !important;
 }
 
 /* 合计支出横幅 */
