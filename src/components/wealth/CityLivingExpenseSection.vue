@@ -75,8 +75,8 @@
         </div>
       </div>
 
-      <!-- 合计支出横幅 (根据截图1还原两行上下排版结构) -->
-      <div class="total-expense-banner" style="margin-top: 20px;">
+      <!-- 合计支出横幅 (带 16px 明确上边距间隙) -->
+      <div class="total-expense-banner" style="margin-top: 16px !important;">
         <div class="banner-title">合计首年年支出 ({{ currentAge }}岁阶段时刻)</div>
         <div class="banner-calc-row">
           <span>生活 ¥{{ ((totalAnnualExpense - activeAnnualPremium) || 0).toLocaleString() }} + 保费 ¥{{ activeAnnualPremium.toLocaleString() }} =</span>
@@ -215,7 +215,7 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   margin-left: 6px;
 }
 .city-age-slider {
-  padding: 0 8px 8px 8px;
+  padding: 0 8px 14px 8px;
 }
 :deep(.city-age-slider .el-slider__bar) {
   background-color: #6366f1;
@@ -223,8 +223,14 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 :deep(.city-age-slider .el-slider__button) {
   border-color: #6366f1;
 }
+/* 缩小年龄进度条下方的年龄刻度数字 */
+:deep(.el-slider__marks-text) {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  margin-top: 2px !important;
+}
 
-/* 合计支出横幅（精确还原截图1的两行上下结构） */
+/* 合计支出横幅 */
 .total-expense-banner { 
   background: #fff1f2; 
   border: 1px solid #fecdd3;
@@ -234,6 +240,7 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-top: 16px !important;
 }
 .total-expense-banner .banner-title { 
   font-size: 13px; 
