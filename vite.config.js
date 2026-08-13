@@ -9,6 +9,10 @@ export default defineConfig({
   server: {
     host: '0.0.0.0'
   },
+  build: {
+    target: ['es2015', 'safari13'],
+    cssTarget: 'chrome61'
+  },
   plugins: [
     vue(),
     AutoImport({
