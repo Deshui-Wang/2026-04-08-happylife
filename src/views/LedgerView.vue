@@ -1409,18 +1409,19 @@ onUnmounted(() => {
 
 .summary-title-wrap {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  width: 100%;
   margin-bottom: 12px;
 }
 
 .badge-tag {
-  background: rgba(232, 194, 104, 0.2);
-  border: 1px solid rgba(232, 194, 104, 0.5);
-  padding: 3px 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: none !important;
+  padding: 4px 14px;
   border-radius: 20px;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 13.5px;
+  font-weight: 700;
   color: #E8C268;
 }
 
@@ -1429,20 +1430,19 @@ onUnmounted(() => {
   align-items: center;
   gap: 4px;
   background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(232, 194, 104, 0.4);
-  padding: 3px 10px;
+  border: none !important;
+  padding: 4px 14px;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #fef08a;
+  font-size: 13px;
+  font-weight: 700;
+  color: #E8C268;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
 }
 
 .cloud-sync-chip:hover {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: #E8C268;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .cloud-sync-chip.syncing {
