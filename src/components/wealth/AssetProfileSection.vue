@@ -168,7 +168,6 @@ const handleCalcInput = (btn) => {
   if (btn === '=') {
     if (!calcExpr.value) return
     try {
-      // 简单安全表达式计算
       const sanitized = calcExpr.value.replace(/[^0-9+\-*/.]/g, '')
       const res = Function(`'use strict'; return (${sanitized})`)()
       calcResult.value = Number.isFinite(res) ? String(Math.round(res * 100) / 100) : '错误'
@@ -190,3 +189,170 @@ const handleCalcInput = (btn) => {
   }
 }
 </script>
+
+<style scoped>
+.glass-card { background: rgba(255, 255, 255, 0.9); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.3); }
+.card-header { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1e293b; }
+.justify-between { justify-content: space-between; }
+.mb-20 { margin-bottom: 20px; }
+.mt-10 { margin-top: 10px; }
+
+/* 统一的高级胶囊型按钮样式 */
+.header-action-btn {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #6366f1 !important;
+  background: rgba(99, 102, 241, 0.08) !important;
+  border: 1px solid rgba(99, 102, 241, 0.15) !important;
+  padding: 4px 12px !important;
+  height: 24px !important;
+  border-radius: 20px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.header-action-btn:hover {
+  background: rgba(99, 102, 241, 0.18) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.core-assets-inputs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.core-assets-inputs .asset-input-col {
+  flex: 1;
+  min-width: 0;
+}
+.calc-symbol {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: 20px;
+  color: #6366f1;
+  font-weight: bold;
+  padding-top: 8px;
+}
+
+.asset-summary-banner {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+.asset-summary-banner .summary-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  opacity: 0.95;
+}
+.asset-summary-banner .summary-value {
+  font-size: 20px;
+  font-weight: 800;
+}
+.asset-summary-banner .currency {
+  font-size: 14px;
+  margin-right: 2px;
+}
+
+.insurance-return-panel {
+  margin-top: 8px;
+}
+.return-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+}
+.return-item.is-disabled {
+  opacity: 0.45;
+  filter: grayscale(1);
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+.return-item .item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.return-item .name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+}
+.return-item .item-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.return-item .amount {
+  font-size: 14px;
+  font-weight: 800;
+  color: #10b981;
+}
+.return-item .period {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* 计算器样式 */
+.mini-calculator {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.calc-screen {
+  background: #f8fafc;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: right;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+}
+.calc-screen .expr {
+  font-family: monospace;
+  font-size: 16px;
+  color: #1e293b;
+  word-break: break-all;
+}
+.calc-screen .res {
+  font-size: 14px;
+  color: #6366f1;
+  font-weight: bold;
+}
+.calc-btns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+.calc-btns .el-button {
+  margin: 0 !important;
+  width: 100%;
+}
+
+:deep(.el-input-number .el-input__wrapper) {
+  background-color: #f8fafc;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02) inset, 0 0 0 1px #e2e8f0 inset !important;
+  border-radius: 8px;
+}
+:deep(.el-input__inner) {
+  font-weight: 600 !important;
+  color: #1e293b !important;
+}
+</style>

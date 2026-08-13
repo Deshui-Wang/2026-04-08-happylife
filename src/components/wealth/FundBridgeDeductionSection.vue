@@ -101,3 +101,94 @@ defineProps({
   retirementInfo: { type: Object, default: () => ({ estimatedPension: '0' }) }
 })
 </script>
+
+<style scoped>
+.glass-card { background: rgba(255, 255, 255, 0.9); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.3); }
+.card-header { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1e293b; }
+.justify-between { justify-content: space-between; }
+
+.formula-pill { background: #eef2ff; color: #6366f1; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-family: monospace; }
+
+/* 资金断层分析模块样式 */
+.bridge-card { border: 1px solid #e0e7ff; }
+.bridge-table-wrap { border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; }
+.bridge-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.bridge-table thead { position: sticky; top: 0; z-index: 10; }
+.bridge-table th {
+  background: #1e293b;
+  color: white;
+  padding: 8px 4px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.bridge-table th.col-out { background: #991b1b; }
+.bridge-table td { padding: 6px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+.bridge-table tbody tr:nth-child(even) { background: #f8fafc; }
+.bridge-table tbody tr:hover { background: #eef2ff; }
+
+.bridge-table tr.milestone36 { background: #fdf2f8 !important; border-left: 3px solid #d946ef; }
+.bridge-table tr.milestone60 { background: #f0fdf4 !important; border-left: 3px solid #22c55e; }
+.bridge-table tr.danger { background: #fef2f2 !important; }
+.bridge-table tr.danger td { color: #991b1b; }
+.bridge-table tr.warning { background: #fffbeb !important; }
+
+.age-cell { font-size: 12px; white-space: nowrap; }
+.milestone-tag { display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 4px; font-weight: bold; }
+.pension-tag { background: #f3e8ff; color: #7c3aed; }
+.ins-tag { background: #dcfce7; color: #16a34a; }
+
+.num-cell { font-family: 'SF Mono', 'Courier New', monospace; font-size: 11px; }
+.num-cell.income { color: #059669; font-weight: 600; }
+.num-cell.expense { color: #dc2626; font-weight: 600; }
+.safe-bal { color: #1d4ed8; }
+.danger-bal { color: #dc2626; }
+
+.water-bar-bg {
+  width: 100%;
+  height: 16px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.water-bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s ease, background 0.3s ease;
+  min-width: 2px;
+}
+.water-bar-fill.green { background: linear-gradient(90deg, #34d399, #10b981); }
+.water-bar-fill.yellow { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+.water-bar-fill.red { background: linear-gradient(90deg, #f87171, #ef4444); }
+.water-bar-label {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: bold;
+  color: #dc2626;
+}
+
+.bridge-summary {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.summary-item {
+  flex: 1;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid;
+}
+.summary-item.is-safe { background: #f0fdf4; border-color: #bbf7d0; }
+.summary-item.is-danger { background: #fef2f2; border-color: #fecaca; }
+.summary-item.is-info { background: #eff6ff; border-color: #bfdbfe; }
+.summary-label { font-size: 14px; font-weight: bold; margin-bottom: 6px; }
+.is-safe .summary-label { color: #15803d; }
+.is-danger .summary-label { color: #dc2626; }
+.is-info .summary-label { color: #1d4ed8; }
+.summary-value { font-size: 13px; color: #475569; line-height: 1.5; }
+</style>

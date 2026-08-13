@@ -102,3 +102,127 @@ defineProps({
 
 defineEmits(['city-enabled-change', 'city-age-range-change'])
 </script>
+
+<style scoped>
+.glass-card { background: rgba(255, 255, 255, 0.9); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.3); }
+.card-header { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1e293b; }
+.justify-between { justify-content: space-between; }
+
+.city-stats-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  padding: 3px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  box-sizing: border-box;
+}
+
+.city-stages-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+.city-stage-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  background: #ffffff;
+}
+.city-stage-card.is-disabled {
+  background: #f8fafc;
+  border-color: #f1f5f9;
+  opacity: 0.6;
+}
+.city-stage-card:not(.is-disabled) {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.city-stage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.city-badge-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+}
+.city-cost-tag {
+  font-weight: 600;
+}
+.header-right-inputs {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.input-mini-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mini-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+.mini-num-input {
+  width: 100px;
+}
+.city-stage-body {
+  margin-top: 16px;
+  border-top: 1px dashed #f1f5f9;
+  padding-top: 16px;
+}
+.slider-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.slider-label-text {
+  font-size: 13px;
+  color: #475569;
+}
+.slider-label-text strong {
+  color: #6366f1;
+}
+.duration-badge {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-left: 6px;
+}
+.city-age-slider {
+  padding: 0 10px 10px 10px;
+}
+:deep(.city-age-slider .el-slider__bar) {
+  background-color: #6366f1;
+}
+:deep(.city-age-slider .el-slider__button) {
+  border-color: #6366f1;
+}
+
+.total-expense-banner { 
+  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%); 
+  border: 1px solid #fecdd3;
+  padding: 12px 16px; 
+  border-radius: 10px; 
+  color: #be123c; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+}
+.total-expense-banner .label { font-size: 13px; opacity: 0.9; }
+.total-expense-banner .value { font-size: 20px; font-weight: bold; }
+</style>
