@@ -550,9 +550,9 @@ const toggleConsumer = (name) => {
   }
 }
 
-// 全端共享云端存储 Endpoint (不需要繁琐的用户登录体系，全家设备共享实时账本)
-const CLOUD_BIN_ID = '019feb5e-f278-7f13-ab1e-1fdb61d288c1'
-const CLOUD_URL = `https://jsonblob.com/api/jsonBlob/${CLOUD_BIN_ID}`
+// 全端共享云端存储 Endpoint (选用高可用、无 Cloudflare 拦截防护的可靠 REST API)
+const PRIMARY_CLOUD_URL = 'https://api.npoint.io/34eb8bbbd493f18e95df'
+const PENDING_SYNC_KEY = 'happylife_pending_sync'
 
 const isSyncing = ref(false)
 const lastSyncTime = ref(null)
@@ -652,15 +652,17 @@ const syncToCloud = async (recordsToPush) => {
   try {
     isSyncing.value = true
     const payload = recordsToPush || records.value
-    await axios.put(CLOUD_URL, payload, {
+    await axios.post(PRIMARY_CLOUD_URL, payload, {
       headers: {
         'Content-Type': 'application/json'
       },
       timeout: 10000
     })
     lastSyncTime.value = new Date()
+    localStorage.removeItem(PENDING_SYNC_KEY)
   } catch (err) {
-    console.warn('云端推送失败，数据已在本地安全完好保留:', err)
+    console.warn('云端推送暂未完成，已写入待追平补推队列:', err)
+    localStorage.setItem(PENDING_SYNC_KEY, 'true')
   } finally {
     isSyncing.value = false
   }
@@ -671,16 +673,21 @@ const syncFromCloud = async (showNotification = false) => {
   if (isSyncing.value) return
   try {
     isSyncing.value = true
-    const response = await axios.get(CLOUD_URL, { timeout: 10000 })
-    if (response.data && Array.isArray(response.data)) {
-      const merged = mergeRecords(records.value, response.data)
+    const response = await axios.get(PRIMARY_CLOUD_URL, { timeout: 10000 })
+    let cloudData = response.data
+    if (typeof cloudData === 'string') {
+      try { cloudData = JSON.parse(cloudData) } catch(e) {}
+    }
+    
+    if (Array.isArray(cloudData)) {
+      const merged = mergeRecords(records.value, cloudData)
       const hasNew = JSON.stringify(merged) !== JSON.stringify(records.value)
       
       records.value = merged
       saveToStorage()
 
-      // 若本地存在新账单或有去重更新，反向同步给云端
-      if (response.data.length !== merged.length) {
+      const isPending = localStorage.getItem(PENDING_SYNC_KEY) === 'true'
+      if (cloudData.length !== merged.length || isPending || hasNew) {
         await syncToCloud(merged)
       }
 
@@ -690,7 +697,7 @@ const syncFromCloud = async (showNotification = false) => {
       }
     }
   } catch (err) {
-    console.warn('云端获取失败，优先读取本地离线数据:', err)
+    console.warn('云端获取失败，读取本地离线数据:', err)
     if (showNotification) {
       ElMessage.warning('网络同步暂未就绪，已读取本地暂存数据')
     }
@@ -888,7 +895,7 @@ const addQuickAmount = (val) => {
   form.amount = Number((current + val).toFixed(2))
 }
 
-const saveRecord = () => {
+const saveRecord = async () => {
   if (!form.amount || Number(form.amount) <= 0) {
     ElMessage.warning('请输入有效的支出金额')
     return
@@ -916,7 +923,7 @@ const saveRecord = () => {
         timestamp: formattedTime
       }
       saveToStorage()
-      syncToCloud()
+      await syncToCloud()
       ElMessage.success('账单记录已成功更新')
     }
   } else {
@@ -931,7 +938,7 @@ const saveRecord = () => {
     }
     records.value.unshift(newRecord)
     saveToStorage()
-    syncToCloud()
+    await syncToCloud()
     ElMessage.success('成功记入一笔账单')
   }
 
@@ -943,10 +950,10 @@ const deleteRecord = (id) => {
     confirmButtonText: '删除',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(() => {
+  }).then(async () => {
     records.value = records.value.filter(r => r.id !== id)
     saveToStorage()
-    syncToCloud()
+    await syncToCloud()
     ElMessage.success('账单已删除')
   }).catch(() => {})
 }
@@ -960,10 +967,10 @@ const clearAllRecords = () => {
     confirmButtonText: '确定清空',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(() => {
+  }).then(async () => {
     records.value = []
     saveToStorage()
-    syncToCloud()
+    await syncToCloud()
     ElMessage.success('已清空所有账单，随时开始记录正式数据')
   }).catch(() => {})
 }
