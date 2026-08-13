@@ -382,6 +382,16 @@ const handleCalcInput = (btn) => {
   box-shadow: 0 0 0 1px #c7d2fe inset !important;
   background-color: #ffffff;
 }
+:deep(.el-input-number .el-input-number__decrease),
+:deep(.el-input-number .el-input-number__increase) {
+  background: transparent !important;
+  border-left: none !important;
+  color: #94a3b8 !important;
+}
+:deep(.el-input-number .el-input-number__decrease:hover),
+:deep(.el-input-number .el-input-number__increase:hover) {
+  color: #6366f1 !important;
+}
 :deep(.el-input__inner) {
   font-weight: 700 !important;
   color: #0f172a !important;

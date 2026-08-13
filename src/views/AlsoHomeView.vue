@@ -300,10 +300,10 @@ const assets = reactive({
   backPay: 0, 
   compensation: 311750, // 欠薪+赔偿 默认值，对应6个月入账总额
   supplementary: 0, // 补充资产金额 (元)
-  workingIncome: 20000,
-  workingYears: 10,
-  estimatedPension: 5000,
-  retirementAge: 54, // 预计退休年龄 (岁)
+  workingIncome: 30000,
+  workingYears: 2,
+  estimatedPension: 7000,
+  retirementAge: 52, // 预计退休年龄 (岁)
   returns: [
     { name: '优享年年', amount: 19206, start: 60, end: 79, enabled: true },
     { name: '传世金生', amount: 900000, age: 60, enabled: true }
