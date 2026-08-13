@@ -235,7 +235,7 @@ const handleCalcInput = (btn) => {
 
 /* 紧凑版 Divider 分割线 */
 .compact-divider {
-  margin: 12px 0 8px 0 !important;
+  margin: 12px 0 16px 0 !important;
 }
 :deep(.compact-divider .el-divider__text) {
   font-size: 13px !important;
