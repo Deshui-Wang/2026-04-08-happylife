@@ -238,77 +238,165 @@
       </div>
     </div>
 
-    <!-- 5. 账单明细列表 (含账单明细筛选) -->
+    <!-- 5. 账单明细列表 / 周日历网格视图 -->
     <div class="records-list-section">
       <div class="section-title-bar">
-        <h3>账单明细 ({{ filteredRecords.length }})</h3>
+        <div class="title-left-wrap">
+          <h3>账单明细 ({{ filteredRecords.length }})</h3>
+          <!-- 视图模式切换：按周日历网格 vs 列表模式 -->
+          <div class="view-mode-toggle">
+            <button 
+              class="mode-toggle-btn" 
+              :class="{ active: viewMode === 'calendar' }"
+              @click="viewMode = 'calendar'"
+            >
+              📅 周日历
+            </button>
+            <button 
+              class="mode-toggle-btn" 
+              :class="{ active: viewMode === 'list' }"
+              @click="viewMode = 'list'"
+            >
+              📜 列表
+            </button>
+          </div>
+        </div>
+
         <button class="btn-title-filter" @click="isFilterDrawerOpen = true">
           <el-icon><Search /></el-icon>
           <span>筛选</span>
         </button>
       </div>
 
-      <!-- 空状态 -->
-      <div v-if="filteredRecords.length === 0" class="empty-state-card">
-        <el-empty :description="records.length === 0 ? '欢迎开启家庭正式记账！目前暂无账单记录' : '暂无符合条件的账单记录'">
-          <button class="btn-primary-add inline-empty-btn" @click="openAddModal">
-            <el-icon style="margin-right: 4px;"><Plus /></el-icon> 记第一笔账
-          </button>
-        </el-empty>
-      </div>
-
-      <!-- 按日期分组列表 -->
-      <div v-else class="grouped-records-list">
-        <div v-for="group in groupedRecords" :key="group.date" class="date-group-card">
-          <div class="date-group-header">
-            <span class="date-str">{{ group.formattedDate }}</span>
-            <span class="date-total">当日小计: ¥{{ group.total.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+      <!-- A. 按周日历网格视图 (一行一周，每行 7 个格子，带有日期与星期) -->
+      <div v-if="viewMode === 'calendar'" class="calendar-view-card animate-fade-in">
+        <!-- 月份切换导航栏 -->
+        <div class="calendar-month-nav">
+          <div class="nav-month-title">
+            <span class="month-text">{{ currentCalendarMonth.format('YYYY 年 MM 月') }}</span>
           </div>
+          <div class="nav-btn-group">
+            <button class="nav-btn" title="上一个月" @click="prevMonth">‹ 上月</button>
+            <button class="nav-btn today" title="跳转本月" @click="goTodayMonth">今天</button>
+            <button class="nav-btn" title="下一个月" @click="nextMonth">下月 ›</button>
+          </div>
+        </div>
 
-          <div class="record-items-wrapper">
-            <div v-for="item in group.items" :key="item.id" class="record-item">
-              <!-- 行 1: Icon 与 分类 (右侧编辑与删除按钮) -->
-              <div class="record-row row-1">
-                <div class="cat-title-inline">
-                  <div class="cat-icon-badge" :style="{ backgroundColor: getCatInfo(item.category).bg }">
-                    <span>{{ getCatInfo(item.category).icon }}</span>
-                  </div>
-                  <span class="category-name">{{ item.category }}</span>
-                </div>
-                <div class="item-actions-group">
-                  <button class="btn-action-icon btn-edit" title="编辑记录" @click="openEditModal(item)">
-                    <el-icon><Edit /></el-icon>
-                  </button>
-                  <button class="btn-action-icon btn-delete" title="删除记录" @click="deleteRecord(item.id)">
-                    <el-icon><Delete /></el-icon>
-                  </button>
-                </div>
+        <!-- 星期标题头 (一行7列: 周一 ~ 周日) -->
+        <div class="calendar-weekdays-header">
+          <div class="weekday-col">一</div>
+          <div class="weekday-col">二</div>
+          <div class="weekday-col">三</div>
+          <div class="weekday-col">四</div>
+          <div class="weekday-col">五</div>
+          <div class="weekday-col">六</div>
+          <div class="weekday-col">日</div>
+        </div>
+
+        <!-- 周日历网格主体：一行一周，一行 7 个格子 -->
+        <div class="calendar-grid-body">
+          <div 
+            v-for="(week, wIdx) in calendarWeeks" 
+            :key="wIdx" 
+            class="calendar-week-row"
+          >
+            <div 
+              v-for="day in week" 
+              :key="day.dateStr" 
+              class="day-cell"
+              :class="{ 
+                'has-spending': day.hasRecords, 
+                'no-spending': !day.hasRecords, 
+                'is-today': day.isToday, 
+                'other-month': !day.isCurrentMonth 
+              }"
+              @click="openDayDetail(day)"
+            >
+              <!-- 格子头部：日期与星期 -->
+              <div class="cell-top-bar">
+                <span class="day-date-num">{{ day.dayNum }}日</span>
+                <span class="day-weekday-lbl">周{{ day.weekDayName }}</span>
               </div>
 
-              <!-- 行 2: 消费者 与 消费金额 -->
-              <div class="record-row row-2">
-                <div class="members-chips-wrap">
-                  <span
-                    v-for="uName in getRecordUsers(item)"
-                    :key="uName"
-                    class="member-chip"
-                    :style="{ backgroundColor: '#ffffff', borderColor: getMemberInfo(uName).color, color: getMemberInfo(uName).color }"
-                  >
-                    {{ uName }}
-                  </span>
-                </div>
-                <div class="item-amount">-¥{{ Number(item.amount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</div>
-              </div>
-
-              <!-- 行 3: 描述 与 时间 -->
-              <div class="record-row row-3">
-                <span class="desc-text">{{ item.description || '无详细描述' }}</span>
-                <span class="time-text">{{ formatTime(item.timestamp) }}</span>
+              <!-- 格子主体：有记录显示金额 / 无记录显示“没花钱” -->
+              <div class="cell-body-content">
+                <template v-if="day.hasRecords">
+                  <div class="cell-spend-amount">-¥{{ Number(day.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) }}</div>
+                  <div class="cell-spend-count">{{ day.records.length }}笔</div>
+                </template>
+                <template v-else>
+                  <div class="cell-no-spend-tag">没花钱</div>
+                </template>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- B. 列表模式视图 -->
+      <template v-else>
+        <!-- 空状态 -->
+        <div v-if="filteredRecords.length === 0" class="empty-state-card">
+          <el-empty :description="records.length === 0 ? '欢迎开启家庭正式记账！目前暂无账单记录' : '暂无符合条件的账单记录'">
+            <button class="btn-primary-add inline-empty-btn" @click="openAddModal">
+              <el-icon style="margin-right: 4px;"><Plus /></el-icon> 记第一笔账
+            </button>
+          </el-empty>
+        </div>
+
+        <!-- 按日期分组列表 -->
+        <div v-else class="grouped-records-list">
+          <div v-for="group in groupedRecords" :key="group.date" class="date-group-card">
+            <div class="date-group-header">
+              <span class="date-str">{{ group.formattedDate }}</span>
+              <span class="date-total">当日小计: ¥{{ group.total.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</span>
+            </div>
+
+            <div class="record-items-wrapper">
+              <div v-for="item in group.items" :key="item.id" class="record-item">
+                <!-- 行 1: Icon 与 分类 (右侧编辑与删除按钮) -->
+                <div class="record-row row-1">
+                  <div class="cat-title-inline">
+                    <div class="cat-icon-badge" :style="{ backgroundColor: getCatInfo(item.category).bg }">
+                      <span>{{ getCatInfo(item.category).icon }}</span>
+                    </div>
+                    <span class="category-name">{{ item.category }}</span>
+                  </div>
+                  <div class="item-actions-group">
+                    <button class="btn-action-icon btn-edit" title="编辑记录" @click="openEditModal(item)">
+                      <el-icon><Edit /></el-icon>
+                    </button>
+                    <button class="btn-action-icon btn-delete" title="删除记录" @click="deleteRecord(item.id)">
+                      <el-icon><Delete /></el-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 行 2: 消费者 与 消费金额 -->
+                <div class="record-row row-2">
+                  <div class="members-chips-wrap">
+                    <span
+                      v-for="uName in getRecordUsers(item)"
+                      :key="uName"
+                      class="member-chip"
+                      :style="{ backgroundColor: '#ffffff', borderColor: getMemberInfo(uName).color, color: getMemberInfo(uName).color }"
+                    >
+                      {{ uName }}
+                    </span>
+                  </div>
+                  <div class="item-amount">-¥{{ Number(item.amount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</div>
+                </div>
+
+                <!-- 行 3: 描述 与 时间 -->
+                <div class="record-row row-3">
+                  <span class="desc-text">{{ item.description || '无详细描述' }}</span>
+                  <span class="time-text">{{ formatTime(item.timestamp) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
 
     <!-- 6. 移动端快捷记账弹窗 Modal (支持消费者多选与编辑) -->
@@ -416,6 +504,79 @@
         </div>
       </form>
     </el-dialog>
+
+    <!-- 7. 单日账单明细与快速记账 Drawer 抽屉 (点击日历格子触发) -->
+    <el-drawer
+      v-model="isDayDetailDrawerOpen"
+      :title="selectedDayItem ? `${selectedDayItem.formattedFullDate} (周${selectedDayItem.weekDayName})` : '单日账单明细'"
+      direction="btt"
+      size="75%"
+      class="custom-day-detail-drawer"
+      destroy-on-close
+    >
+      <div v-if="selectedDayItem" class="day-detail-drawer-body">
+        <!-- 日额小计 Banner -->
+        <div class="day-summary-banner" :class="{ 'no-spend': !selectedDayItem.hasRecords }">
+          <div class="summary-left">
+            <span class="day-status-label">{{ selectedDayItem.hasRecords ? '当日支出小计' : '本日记录' }}</span>
+            <span class="day-status-val">
+              {{ selectedDayItem.hasRecords ? '¥ ' + Number(selectedDayItem.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) : '🌿 没花钱' }}
+            </span>
+          </div>
+          <button class="btn-add-on-day" @click="openAddModalForDate(selectedDayItem.dateStr)">
+            <el-icon><Plus /></el-icon>
+            <span>记一笔</span>
+          </button>
+        </div>
+
+        <!-- 当天账单记录列表 -->
+        <div v-if="selectedDayItem.hasRecords" class="day-records-sublist">
+          <div v-for="item in selectedDayItem.records" :key="item.id" class="record-item">
+            <div class="record-row row-1">
+              <div class="cat-title-inline">
+                <div class="cat-icon-badge" :style="{ backgroundColor: getCatInfo(item.category).bg }">
+                  <span>{{ getCatInfo(item.category).icon }}</span>
+                </div>
+                <span class="category-name">{{ item.category }}</span>
+              </div>
+              <div class="item-actions-group">
+                <button class="btn-action-icon btn-edit" title="编辑记录" @click="openEditModal(item)">
+                  <el-icon><Edit /></el-icon>
+                </button>
+                <button class="btn-action-icon btn-delete" title="删除记录" @click="deleteRecord(item.id)">
+                  <el-icon><Delete /></el-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="record-row row-2">
+              <div class="members-chips-wrap">
+                <span
+                  v-for="uName in getRecordUsers(item)"
+                  :key="uName"
+                  class="member-chip"
+                  :style="{ backgroundColor: '#ffffff', borderColor: getMemberInfo(uName).color, color: getMemberInfo(uName).color }"
+                >
+                  {{ uName }}
+                </span>
+              </div>
+              <div class="item-amount">-¥{{ Number(item.amount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</div>
+            </div>
+
+            <div class="record-row row-3">
+              <span class="desc-text">{{ item.description || '无详细描述' }}</span>
+              <span class="time-text">{{ formatTime(item.timestamp) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 当天无记录提示 -->
+        <div v-else class="day-empty-box">
+          <div class="empty-icon-text">🎉 这一天没花钱，太棒啦！</div>
+          <p class="empty-sub-tip">点击右上角的【记一笔】按钮即可在当前选定日期补充记账</p>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>
 
@@ -453,6 +614,22 @@ const CATEGORIES = [
 ]
 
 const STORAGE_KEY = 'happylife_family_ledger_records'
+
+// 视图切换模式：'calendar'（按周日历网格，默认） / 'list'（传统列表明细）
+const viewMode = ref('calendar')
+const currentCalendarMonth = ref(dayjs())
+const isDayDetailDrawerOpen = ref(false)
+const selectedDayItem = ref(null)
+
+const prevMonth = () => {
+  currentCalendarMonth.value = currentCalendarMonth.value.subtract(1, 'month')
+}
+const nextMonth = () => {
+  currentCalendarMonth.value = currentCalendarMonth.value.add(1, 'month')
+}
+const goTodayMonth = () => {
+  currentCalendarMonth.value = dayjs()
+}
 
 // 筛选响应式状态
 const timeRange = ref('month')
@@ -905,15 +1082,95 @@ const groupedRecords = computed(() => {
   return Object.values(groups).sort((a, b) => dayjs(b.date).valueOf() - dayjs(a.date).valueOf())
 })
 
-const openAddModal = () => {
+// 核心计算属性：按周划分日历阵列 (一行一周，每行 7 个格子)
+const calendarWeeks = computed(() => {
+  const targetMonth = currentCalendarMonth.value
+  const startOfMonth = targetMonth.startOf('month')
+  const endOfMonth = targetMonth.endOf('month')
+  
+  // 星期计算 (1=周一 ... 7/0=周日)
+  const firstDayOfWeek = startOfMonth.day()
+  const diffToMon = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1
+  let currentPointer = startOfMonth.subtract(diffToMon, 'day')
+  
+  const lastDayOfWeek = endOfMonth.day()
+  const diffToSun = lastDayOfWeek === 0 ? 0 : 7 - lastDayOfWeek
+  const endPointer = endOfMonth.add(diffToSun, 'day')
+  
+  const weeks = []
+  let currentWeek = []
+  
+  while (currentPointer.isBefore(endPointer) || currentPointer.isSame(endPointer, 'day')) {
+    const dStr = currentPointer.format('YYYY-MM-DD')
+    const isCurrentMonth = currentPointer.isSame(targetMonth, 'month')
+    
+    // 该日期的全部符合条件账单
+    const dayRecords = filteredRecords.value.filter(r => dayjs(r.timestamp).format('YYYY-MM-DD') === dStr)
+    const dayTotal = dayRecords.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+    
+    currentWeek.push({
+      dateStr: dStr,
+      dayNum: currentPointer.date(),
+      formattedFullDate: currentPointer.format('YYYY年MM月DD日'),
+      weekDayName: ['日', '一', '二', '三', '四', '五', '六'][currentPointer.day()],
+      isToday: currentPointer.isSame(dayjs(), 'day'),
+      isCurrentMonth,
+      records: dayRecords,
+      hasRecords: dayRecords.length > 0,
+      totalAmount: dayTotal
+    })
+    
+    if (currentWeek.length === 7) {
+      weeks.push(currentWeek)
+      currentWeek = []
+    }
+    
+    currentPointer = currentPointer.add(1, 'day')
+  }
+  
+  return weeks
+})
+
+// 刷新当前打开的单日明细抽屉数据
+const refreshSelectedDayItem = (dateStr) => {
+  if (!selectedDayItem.value) return
+  const targetDate = dateStr || selectedDayItem.value.dateStr
+  const updatedDayRecords = filteredRecords.value.filter(r => dayjs(r.timestamp).format('YYYY-MM-DD') === targetDate)
+  const updatedTotal = updatedDayRecords.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+  
+  selectedDayItem.value = {
+    ...selectedDayItem.value,
+    dateStr: targetDate,
+    formattedFullDate: dayjs(targetDate).format('YYYY年MM月DD日'),
+    weekDayName: ['日', '一', '二', '三', '四', '五', '六'][dayjs(targetDate).day()],
+    records: updatedDayRecords,
+    hasRecords: updatedDayRecords.length > 0,
+    totalAmount: updatedTotal
+  }
+}
+
+const openDayDetail = (dayItem) => {
+  selectedDayItem.value = dayItem
+  isDayDetailDrawerOpen.value = true
+}
+
+const openAddModalForDate = (dateStr) => {
   isEditMode.value = false
   editingRecordId.value = null
   form.users = selectedMember.value !== 'all' ? [selectedMember.value] : [MEMBERS[0].name]
   form.category = selectedCategory.value !== 'all' ? selectedCategory.value : '饭菜'
   form.amount = ''
   form.description = ''
-  form.timestamp = dayjs().format('YYYY-MM-DD HH:mm:ss')
+  
+  const targetDate = dateStr || dayjs().format('YYYY-MM-DD')
+  const currentTimeStr = dayjs().format('HH:mm:ss')
+  form.timestamp = `${targetDate} ${currentTimeStr}`
+  
   isAddModalOpen.value = true
+}
+
+const openAddModal = () => {
+  openAddModalForDate(dayjs().format('YYYY-MM-DD'))
 }
 
 const openEditModal = (item) => {
@@ -961,6 +1218,7 @@ const saveRecord = async () => {
       }
       saveToStorage()
       await syncToCloud()
+      refreshSelectedDayItem(dayjs(formattedTime).format('YYYY-MM-DD'))
       ElMessage.success('账单记录已成功更新')
     }
   } else {
@@ -976,6 +1234,7 @@ const saveRecord = async () => {
     records.value.unshift(newRecord)
     saveToStorage()
     await syncToCloud()
+    refreshSelectedDayItem(dayjs(formattedTime).format('YYYY-MM-DD'))
     ElMessage.success('成功记入一笔账单')
   }
 
@@ -988,9 +1247,12 @@ const deleteRecord = (id) => {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async () => {
+    const targetItem = records.value.find(r => r.id === id)
+    const targetDateStr = targetItem ? dayjs(targetItem.timestamp).format('YYYY-MM-DD') : null
     records.value = records.value.filter(r => r.id !== id)
     saveToStorage()
     await syncToCloud()
+    if (targetDateStr) refreshSelectedDayItem(targetDateStr)
     ElMessage.success('账单已删除')
   }).catch(() => {})
 }
@@ -2208,6 +2470,298 @@ onUnmounted(() => {
   }
   .desc-text {
     max-width: 150px;
+  }
+}
+
+/* ==================== 8. 周日历网格模式专属样式 (一行一周，每行7格子) ==================== */
+.title-left-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.view-mode-toggle {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+.mode-toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mode-toggle-btn.active {
+  background: #ffffff;
+  color: #0D2B2E;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.calendar-view-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  margin-bottom: 20px;
+}
+
+.calendar-month-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #f1f5f9;
+}
+.month-text {
+  font-size: 17px;
+  font-weight: 900;
+  color: #0D2B2E;
+}
+.nav-btn-group {
+  display: flex;
+  gap: 6px;
+}
+.nav-btn {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.nav-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+.nav-btn.today {
+  background: rgba(13, 43, 46, 0.08);
+  border-color: rgba(13, 43, 46, 0.2);
+  color: #0D2B2E;
+}
+
+.calendar-weekdays-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.weekday-col {
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748b;
+  padding: 6px 0;
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+
+.calendar-grid-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.calendar-week-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day-cell {
+  min-height: 76px;
+  border-radius: 10px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+.day-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* 没有花钱状态 */
+.day-cell.no-spending {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+/* 有消费发生状态 */
+.day-cell.has-spending {
+  background: #fff1f2;
+  border-color: #fecdd3;
+}
+/* 今天高亮 */
+.day-cell.is-today {
+  border: 2px solid #8b5cf6 !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
+}
+/* 非本月暗化 */
+.day-cell.other-month {
+  opacity: 0.4;
+}
+
+.cell-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.day-date-num {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+}
+.day-weekday-lbl {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.cell-body-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  flex: 1;
+}
+
+/* “没花钱”胶囊文案 */
+.cell-no-spend-tag {
+  font-size: 11px;
+  font-weight: 800;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 3px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.cell-spend-amount {
+  font-size: 12px;
+  font-weight: 900;
+  color: #be123c;
+  white-space: nowrap;
+}
+.cell-spend-count {
+  font-size: 10px;
+  font-weight: 600;
+  color: #9f1239;
+  opacity: 0.8;
+}
+
+/* 单日账单明细 Drawer 抽屉样式 */
+.day-detail-drawer-body {
+  padding: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.day-summary-banner {
+  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+  border: 1px solid #fecdd3;
+  padding: 14px 18px;
+  border-radius: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.day-summary-banner.no-spend {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #bbf7d0;
+}
+
+.summary-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.day-status-label {
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 600;
+}
+.day-status-val {
+  font-size: 20px;
+  font-weight: 900;
+  color: #0f172a;
+}
+.btn-add-on-day {
+  background: #0D2B2E;
+  color: #E8C268;
+  border: 1px solid #E8C268;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(13, 43, 46, 0.2);
+}
+.btn-add-on-day:hover {
+  background: #174e54;
+}
+
+.day-empty-box {
+  text-align: center;
+  padding: 30px 10px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}
+.empty-icon-text {
+  font-size: 16px;
+  font-weight: 800;
+  color: #059669;
+  margin-bottom: 6px;
+}
+.empty-sub-tip {
+  font-size: 12px;
+  color: #64748b;
+}
+
+@media (max-width: 600px) {
+  .day-cell {
+    min-height: 64px;
+    padding: 4px 2px;
+  }
+  .day-date-num {
+    font-size: 11px;
+  }
+  .day-weekday-lbl {
+    font-size: 9px;
+  }
+  .cell-no-spend-tag {
+    font-size: 9.5px;
+    padding: 2px 3px;
+  }
+  .cell-spend-amount {
+    font-size: 10.5px;
+  }
+  .cell-spend-count {
+    font-size: 9px;
   }
 }
 </style>
