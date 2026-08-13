@@ -16,9 +16,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>💰RICH💰</title>
 
-  <!-- iOS Safari 普通模式强缓存破解与无感自动恢复脚本 -->
+  <!-- iOS Safari 防白屏与动态时间戳突破强缓存脚本 -->
   <script>
     (function() {
+      function forceFreshReload() {
+        try {
+          var lastTs = sessionStorage.getItem('ios_last_fresh_ts');
+          var now = Date.now();
+          if (!lastTs || now - Number(lastTs) > 3000) {
+            sessionStorage.setItem('ios_last_fresh_ts', String(now));
+            var href = window.location.href;
+            var cleanUrl = href.replace(/([?&])fresh=[^&]*/g, '').replace(/([?&])v=[^&]*/g, '').replace(/\?$/, '');
+            var sep = cleanUrl.indexOf('?') === -1 ? '?' : '&';
+            window.location.href = cleanUrl + sep + 'fresh=' + now;
+          }
+        } catch(e) {}
+      }
+
       try {
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(function(registrations) {
@@ -29,33 +43,21 @@
         }
       } catch(e) {}
 
-      // 捕获脚本加载错误
+      // 捕获静态资源 404/错误
       window.addEventListener('error', function(e) {
         if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
-          var href = window.location.href;
-          if (href.indexOf('fresh=') === -1) {
-            var sep = href.indexOf('?') === -1 ? '?' : '&';
-            window.location.href = href + sep + 'fresh=' + Date.now();
-          } else {
-            window.location.reload(true);
-          }
+          forceFreshReload();
         }
       }, true);
 
-      // DOM 挂载检测：若 1.2 秒内仍然为空（白屏），自动带上 fresh 参数强制突破 HTTP 强缓存
+      // DOM 挂载检测：1 秒后若 #app 节点为空，自动以最新时间戳重载
       window.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
           var app = document.getElementById('app');
           if (app && (!app.children || app.children.length === 0)) {
-            var href = window.location.href;
-            if (href.indexOf('fresh=') === -1) {
-              var sep = href.indexOf('?') === -1 ? '?' : '&';
-              window.location.href = href + sep + 'fresh=' + Date.now();
-            } else {
-              window.location.reload(true);
-            }
+            forceFreshReload();
           }
-        }, 1200);
+        }, 1000);
       });
     })();
   </script>
