@@ -3,7 +3,7 @@
     <header class="navbar animate-fade-in">
       <div class="header-content">
         <div class="logo">
-          <img src="/src/pic/logo-icon-340x340.svg" alt="logo" style="width: 44px; height: 44px; object-fit: contain;" />
+          <img :src="logoIcon" alt="logo" style="width: 44px; height: 44px; object-fit: contain;" />
           <span class="gradient-text">RICH</span>
         </div>
         <el-tabs v-model="activeTab" class="custom-tabs header-tabs">
@@ -49,6 +49,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { MagicStick } from '@element-plus/icons-vue'
+import logoIcon from './pic/logo-icon-340x340.svg'
 import HomeView from './views/HomeView.vue'
 import LedgerView from './views/LedgerView.vue'
 import AlsoHomeView from './views/AlsoHomeView.vue'
