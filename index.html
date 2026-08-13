@@ -3,6 +3,9 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="icon" type="image/png" href="/apple-touch-icon.png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png" />
@@ -13,37 +16,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>💰RICH💰</title>
 
-  <!-- iOS Standalone WebApp / Safari 强力防白屏与自动恢复脚本 -->
+  <!-- iOS Safari 普通模式强缓存破解与无感自动恢复脚本 -->
   <script>
     (function() {
-      // 1. 清理可能卡死 iOS Safari 强缓存的旧 Service Worker
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for (var registration of registrations) {
-            registration.unregister();
-          }
-        });
-      }
+      try {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for (var r of registrations) {
+              r.unregister();
+            }
+          });
+        }
+      } catch(e) {}
 
-      // 2. 捕获 JS/CSS 静态资源加载失效（如发版后旧 Hash 文件不复存在）自动刷新防白屏
+      // 捕获脚本加载错误
       window.addEventListener('error', function(e) {
         if (e.target && (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK')) {
-          var lastReload = sessionStorage.getItem('ios_auto_reload_ts');
-          if (!lastReload || Date.now() - Number(lastReload) > 4000) {
-            sessionStorage.setItem('ios_auto_reload_ts', String(Date.now()));
+          var href = window.location.href;
+          if (href.indexOf('fresh=') === -1) {
+            var sep = href.indexOf('?') === -1 ? '?' : '&';
+            window.location.href = href + sep + 'fresh=' + Date.now();
+          } else {
             window.location.reload(true);
           }
         }
       }, true);
 
-      // 3. 针对 iOS 桌面 PWA 图标切前台时 DOM 为空的极度极端防御
-      document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'visible') {
-          var appEl = document.getElementById('app');
-          if (appEl && (!appEl.children || appEl.children.length === 0)) {
-            window.location.reload(true);
+      // DOM 挂载检测：若 1.2 秒内仍然为空（白屏），自动带上 fresh 参数强制突破 HTTP 强缓存
+      window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          var app = document.getElementById('app');
+          if (app && (!app.children || app.children.length === 0)) {
+            var href = window.location.href;
+            if (href.indexOf('fresh=') === -1) {
+              var sep = href.indexOf('?') === -1 ? '?' : '&';
+              window.location.href = href + sep + 'fresh=' + Date.now();
+            } else {
+              window.location.reload(true);
+            }
           }
-        }
+        }, 1200);
       });
     })();
   </script>
