@@ -524,15 +524,10 @@
               {{ selectedDayItem.hasRecords ? '¥ ' + Number(selectedDayItem.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) : '暂无记账' }}
             </span>
           </div>
-          <div class="summary-right-actions">
-            <button class="btn-add-on-day" @click="openAddModalForDate(selectedDayItem.dateStr)">
-              <el-icon><Plus /></el-icon>
-              <span>记一笔</span>
-            </button>
-            <button class="btn-close-day-drawer" title="关闭明细" @click="isDayDetailDrawerOpen = false">
-              <el-icon><Close /></el-icon>
-            </button>
-          </div>
+          <button class="btn-add-on-day" @click="openAddModalForDate(selectedDayItem.dateStr)">
+            <el-icon><Plus /></el-icon>
+            <span>记一笔</span>
+          </button>
         </div>
 
         <!-- 当天账单记录列表 -->
