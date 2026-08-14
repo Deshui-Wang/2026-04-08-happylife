@@ -165,21 +165,26 @@
 
     <!-- 4. 统计分析与页签切换 (温馨甜蜜家庭风) -->
     <div v-if="filteredRecords.length > 0" class="sweet-stats-card">
-      <div class="stats-tabs-header">
-        <button 
-          class="stats-tab-btn" 
-          :class="{ active: activeStatsTab === 'consumer' }" 
-          @click="activeStatsTab = 'consumer'"
-        >
-          消费者
-        </button>
-        <button 
-          class="stats-tab-btn" 
-          :class="{ active: activeStatsTab === 'category' }" 
-          @click="activeStatsTab = 'category'"
-        >
-          消费类型
-        </button>
+      <div class="stats-header-bar">
+        <div class="title-left-wrap">
+          <h3 class="stats-section-title">消费排行</h3>
+          <div class="stats-tabs-header">
+            <button 
+              class="stats-tab-btn" 
+              :class="{ active: activeStatsTab === 'consumer' }" 
+              @click="activeStatsTab = 'consumer'"
+            >
+              消费者
+            </button>
+            <button 
+              class="stats-tab-btn" 
+              :class="{ active: activeStatsTab === 'category' }" 
+              @click="activeStatsTab = 'category'"
+            >
+              消费类型
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Tab 1: 消费者支出占比 (清爽单行横线分割) -->
@@ -243,7 +248,7 @@
     <div class="records-list-section">
       <div class="section-title-bar">
         <div class="title-left-wrap">
-          <h3>账单明细 ({{ filteredRecords.length }})</h3>
+          <h3>账单明细</h3>
           <!-- 视图模式切换：按周日历网格 vs 列表模式 -->
           <div class="view-mode-toggle">
             <button 
@@ -1905,13 +1910,26 @@ onUnmounted(() => {
   margin-bottom: 22px;
 }
 
+.stats-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.stats-section-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0D2B2E;
+  margin: 0;
+}
+
 .stats-tabs-header {
   display: inline-flex;
   background: #f1f5f9;
   border-radius: 10px;
   padding: 3px;
   border: 1px solid #e2e8f0;
-  margin-bottom: 18px;
 }
 
 .stats-tab-btn {
