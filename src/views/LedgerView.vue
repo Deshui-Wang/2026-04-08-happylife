@@ -842,13 +842,15 @@ const syncToCloud = async (recordsToPush) => {
     } catch (e) {}
 
     // 2. 尝试高可用备用 API
-    try {
-      await axios.post(PRIMARY_CLOUD_URL, payload, {
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 8000
-      })
-      success = true
-    } catch (e) {}
+    if (!success) {
+      try {
+        await axios.post(PRIMARY_CLOUD_URL, payload, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 8000
+        })
+        success = true
+      } catch (e) {}
+    }
 
     if (success) {
       lastSyncTime.value = new Date()
@@ -873,13 +875,13 @@ const syncFromCloud = async (showNotification = false) => {
     // 1. 优先尝试从原生 Cloudflare 数据库拉取
     try {
       const res = await axios.get(LOCAL_API_URL, { timeout: 6000 })
-      if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+      if (res.data && Array.isArray(res.data)) {
         cloudData = res.data
       }
     } catch (e) {}
 
     // 2. 尝试从备用云服务端拉取
-    if (!cloudData) {
+    if (cloudData === null) {
       try {
         const response = await axios.get(PRIMARY_CLOUD_URL, { timeout: 8000 })
         let data = response.data
@@ -894,19 +896,24 @@ const syncFromCloud = async (showNotification = false) => {
     
     if (Array.isArray(cloudData)) {
       const merged = mergeRecords(records.value, cloudData)
-      const hasNew = JSON.stringify(merged) !== JSON.stringify(records.value)
+      const hasNew = JSON.stringify(merged) !== JSON.stringify(records.value) || JSON.stringify(merged) !== JSON.stringify(cloudData)
       
       records.value = merged
       saveToStorage()
 
       const isPending = localStorage.getItem(PENDING_SYNC_KEY) === 'true'
-      if (cloudData.length !== merged.length || isPending || hasNew) {
+      // 只要合并后的账单与云端不一致（即本地有云端没有的数据），或有未完成的同步标记，就强制推送到云端
+      if (JSON.stringify(merged) !== JSON.stringify(cloudData) || isPending) {
         await syncToCloud(merged)
       }
 
       lastSyncTime.value = new Date()
       if (showNotification) {
         ElMessage.success(hasNew ? '已成功同步最新多端账单数据！' : '当前已是最新云端共享账本数据')
+      }
+    } else {
+      if (showNotification) {
+        ElMessage.warning('网络同步暂未就绪，已读取本地暂存数据')
       }
     }
   } catch (err) {
