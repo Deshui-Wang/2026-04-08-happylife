@@ -323,10 +323,12 @@
                 <span class="day-date-num">{{ day.dayNum }}</span>
               </div>
 
-              <!-- 格子主体：有记录显示金额 / 无记录显示“没花钱” -->
+              <!-- 格子主体：有记录显示金额 / 无记录显示“记账” -->
               <div class="cell-body-content">
                 <template v-if="day.hasRecords">
-                  <div class="cell-spend-amount">-¥{{ Number(day.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) }}</div>
+                  <div class="cell-spend-amount" :class="{ 'is-income': day.isIncome }">
+                    ¥{{ Number(day.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) }}
+                  </div>
                   <div class="cell-spend-count">{{ day.records.length }}笔</div>
                 </template>
                 <template v-else>
@@ -1126,8 +1128,21 @@ const calendarWeeks = computed(() => {
     
     // 该日期的全部符合条件账单
     const dayRecords = filteredRecords.value.filter(r => dayjs(r.timestamp).format('YYYY-MM-DD') === dStr)
-    const dayTotal = dayRecords.reduce((sum, item) => sum + Number(item.amount || 0), 0)
     
+    let dayExpense = 0
+    let dayIncome = 0
+    dayRecords.forEach(item => {
+      const amt = Number(item.amount || 0)
+      if (item.type === 'income' || item.isIncome || item.category === '收入' || amt < 0) {
+        dayIncome += Math.abs(amt)
+      } else {
+        dayExpense += amt
+      }
+    })
+    
+    const isIncomeDay = dayIncome > dayExpense
+    const displayAmount = isIncomeDay ? dayIncome : dayExpense
+
     currentWeek.push({
       dateStr: dStr,
       dayNum: currentPointer.date(),
@@ -1137,7 +1152,8 @@ const calendarWeeks = computed(() => {
       isCurrentMonth,
       records: dayRecords,
       hasRecords: dayRecords.length > 0,
-      totalAmount: dayTotal
+      totalAmount: displayAmount,
+      isIncome: isIncomeDay
     })
     
     if (currentWeek.length === 7) {
@@ -2739,6 +2755,9 @@ onUnmounted(() => {
   font-weight: 900;
   color: #be123c;
   white-space: nowrap;
+}
+.cell-spend-amount.is-income {
+  color: #059669;
 }
 .cell-spend-count {
   font-size: 10px;
