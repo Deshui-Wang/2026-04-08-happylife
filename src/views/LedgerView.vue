@@ -327,7 +327,7 @@
               <div class="cell-body-content">
                 <template v-if="day.hasRecords">
                   <div class="cell-spend-amount" :class="{ 'is-income': day.isIncome }">
-                    ¥{{ Number(day.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) }}
+                    {{ Number(day.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }) }}
                   </div>
                   <div class="cell-spend-count">{{ day.records.length }}笔</div>
                 </template>
