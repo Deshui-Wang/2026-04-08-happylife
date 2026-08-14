@@ -508,9 +508,10 @@
       v-model="isDayDetailDrawerOpen"
       :title="selectedDayItem ? `${selectedDayItem.formattedFullDate} (周${selectedDayItem.weekDayName})` : '单日账单明细'"
       direction="btt"
-      size="75%"
+      size="80%"
       class="custom-day-detail-drawer"
       destroy-on-close
+      :append-to-body="true"
     >
       <div v-if="selectedDayItem" class="day-detail-drawer-body">
         <!-- 日额小计 Banner -->
@@ -521,10 +522,15 @@
               {{ selectedDayItem.hasRecords ? '¥ ' + Number(selectedDayItem.totalAmount).toLocaleString('zh-CN', { minimumFractionDigits: 2 }) : '暂无记账' }}
             </span>
           </div>
-          <button class="btn-add-on-day" @click="openAddModalForDate(selectedDayItem.dateStr)">
-            <el-icon><Plus /></el-icon>
-            <span>记一笔</span>
-          </button>
+          <div class="summary-right-actions">
+            <button class="btn-add-on-day" @click="openAddModalForDate(selectedDayItem.dateStr)">
+              <el-icon><Plus /></el-icon>
+              <span>记一笔</span>
+            </button>
+            <button class="btn-close-day-drawer" title="关闭明细" @click="isDayDetailDrawerOpen = false">
+              <el-icon><Close /></el-icon>
+            </button>
+          </div>
         </div>
 
         <!-- 当天账单记录列表 -->
@@ -573,6 +579,13 @@
           <div class="empty-icon-text">📝 这一天尚未记账</div>
           <p class="empty-sub-tip">点击右上角的【记一笔】按钮即可在当前选定日期补充记账</p>
         </div>
+
+        <!-- 底部显式关闭按钮 -->
+        <div class="day-drawer-footer">
+          <button class="btn-drawer-close-full" @click="isDayDetailDrawerOpen = false">
+            关闭明细
+          </button>
+        </div>
       </div>
     </el-drawer>
   </div>
@@ -580,7 +593,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
-import { Plus, Search, Delete, Calendar, User, Discount, Edit, Download, Upload, Refresh } from '@element-plus/icons-vue'
+import { Plus, Search, Delete, Calendar, User, Discount, Edit, Download, Upload, Refresh, Close } from '@element-plus/icons-vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
@@ -2674,12 +2687,55 @@ onUnmounted(() => {
   opacity: 0.8;
 }
 
-/* 单日账单明细 Drawer 抽屉样式 */
+/* 单日账单明细 Drawer 抽屉深度覆盖与流动滚动强化 */
+:deep(.custom-day-detail-drawer) {
+  border-top-left-radius: 24px !important;
+  border-top-right-radius: 24px !important;
+  max-height: 85vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+:deep(.custom-day-detail-drawer .el-drawer__header) {
+  margin-bottom: 0 !important;
+  padding: 16px 20px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  flex-shrink: 0 !important;
+}
+
+:deep(.custom-day-detail-drawer .el-drawer__title) {
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  font-size: 16px !important;
+}
+
+:deep(.custom-day-detail-drawer .el-drawer__close-btn) {
+  font-size: 22px !important;
+  color: #64748b !important;
+  padding: 8px !important;
+  background: #f1f5f9 !important;
+  border-radius: 50% !important;
+  transition: all 0.2s ease !important;
+}
+:deep(.custom-day-detail-drawer .el-drawer__close-btn:hover) {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+:deep(.custom-day-detail-drawer .el-drawer__body) {
+  padding: 16px 20px 24px 20px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  flex: 1 !important;
+}
+
 .day-detail-drawer-body {
-  padding: 10px 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 100%;
 }
 
 .day-summary-banner {
@@ -2711,6 +2767,13 @@ onUnmounted(() => {
   font-weight: 900;
   color: #0f172a;
 }
+
+.summary-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .btn-add-on-day {
   background: #0D2B2E;
   color: #E8C268;
@@ -2727,6 +2790,55 @@ onUnmounted(() => {
 }
 .btn-add-on-day:hover {
   background: #174e54;
+}
+
+.btn-close-day-drawer {
+  background: #ffffff;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+.btn-close-day-drawer:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.day-records-sublist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 10px;
+}
+
+.day-drawer-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  padding-bottom: 10px;
+}
+
+.btn-drawer-close-full {
+  width: 100%;
+  padding: 12px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-drawer-close-full:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 .day-empty-box {
