@@ -56,9 +56,10 @@
       v-model="isFilterDrawerOpen"
       title="筛选条件查询"
       direction="btt"
-      size="85%"
+      size="80%"
       class="custom-filter-drawer"
       destroy-on-close
+      :append-to-body="true"
     >
       <div class="drawer-filter-body">
         <!-- 时间范围 -->
@@ -156,6 +157,7 @@
       <template #footer>
         <div class="drawer-footer-actions">
           <button class="btn-drawer-reset" @click="resetFilters">重置条件</button>
+          <button class="btn-drawer-close-inline" @click="isFilterDrawerOpen = false">关闭</button>
           <button class="btn-drawer-apply" @click="isFilterDrawerOpen = false">完成筛选</button>
         </div>
       </template>
@@ -1730,7 +1732,9 @@ onUnmounted(() => {
   border-top-left-radius: 24px !important;
   border-top-right-radius: 24px !important;
   background: #ffffff !important;
-  overflow: hidden !important;
+  max-height: 85vh !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 :deep(.custom-filter-drawer .el-drawer__header) {
@@ -1739,6 +1743,7 @@ onUnmounted(() => {
   border-bottom: 1.5px solid #e2e8f0 !important;
   color: #0D2B2E !important;
   font-weight: 900 !important;
+  flex-shrink: 0 !important;
 }
 
 :deep(.custom-filter-drawer .el-drawer__title) {
@@ -1747,9 +1752,30 @@ onUnmounted(() => {
   font-size: 1.15rem !important;
 }
 
+:deep(.custom-filter-drawer .el-drawer__close-btn) {
+  font-size: 22px !important;
+  color: #64748b !important;
+  padding: 8px !important;
+  background: #f1f5f9 !important;
+  border-radius: 50% !important;
+  transition: all 0.2s ease !important;
+}
+:deep(.custom-filter-drawer .el-drawer__close-btn:hover) {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
 :deep(.custom-filter-drawer .el-drawer__body) {
   padding: 18px 20px !important;
   overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  flex: 1 !important;
+}
+
+:deep(.custom-filter-drawer .el-drawer__footer) {
+  padding: 0 !important;
+  flex-shrink: 0 !important;
 }
 
 .drawer-filter-body {
@@ -1825,10 +1851,12 @@ onUnmounted(() => {
 
 .drawer-footer-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: flex-end;
-  padding: 12px 20px;
+  align-items: center;
+  padding: 14px 20px;
   border-top: 1px dashed #e2e8f0;
+  background: #ffffff;
 }
 
 .btn-drawer-reset {
@@ -1836,10 +1864,27 @@ onUnmounted(() => {
   border: 1px solid #cbd5e1;
   color: #475569;
   border-radius: 12px;
-  padding: 10px 22px;
+  padding: 10px 16px;
   font-size: 13.5px;
   font-weight: 800;
   cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-drawer-close-inline {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #64748b;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-drawer-close-inline:hover {
+  background: #f8fafc;
+  color: #0f172a;
 }
 
 .btn-drawer-apply {
@@ -2233,6 +2278,8 @@ onUnmounted(() => {
 :deep(.custom-add-ledger-dialog .el-dialog__body) {
   flex: 1 !important;
   overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
   padding: 18px 20px !important;
   background: #ffffff !important;
 }
