@@ -1908,23 +1908,22 @@ onUnmounted(() => {
 .stats-tabs-header {
   display: inline-flex;
   background: #f1f5f9;
-  border-radius: 16px;
-  padding: 4px;
-  gap: 4px;
+  border-radius: 10px;
+  padding: 3px;
   border: 1px solid #e2e8f0;
   margin-bottom: 18px;
 }
 
 .stats-tab-btn {
-  background: transparent;
   border: none;
+  background: transparent;
+  padding: 5px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
   color: #64748b;
-  border-radius: 12px;
-  padding: 7px 22px;
-  font-size: 13.5px;
-  font-weight: 800;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.2s ease;
 }
 
 .stats-tab-btn:hover {
@@ -1932,9 +1931,10 @@ onUnmounted(() => {
 }
 
 .stats-tab-btn.active {
-  background: #0D2B2E;
-  color: #E8C268;
-  box-shadow: 0 4px 12px rgba(13, 43, 46, 0.2);
+  background: #ffffff;
+  color: #0D2B2E;
+  font-weight: 800;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .sweet-stats-list {
