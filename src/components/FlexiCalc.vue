@@ -188,18 +188,6 @@
             </div>
           </template>
 
-          <!-- 汇总预警 (置顶) -->
-          <div class="bridge-summary">
-            <div class="summary-item" :class="gapAnalysis.hasGap ? 'is-danger' : 'is-safe'">
-              <div class="summary-label">{{ gapAnalysis.hasGap ? '⚠ 资金断层预警' : '✅ 资金安全' }}</div>
-              <div class="summary-value">{{ gapAnalysis.message }}</div>
-            </div>
-            <div class="summary-item is-info">
-              <div class="summary-label">关键里程碑</div>
-              <div class="summary-value">53岁10个月领退休金({{ retirementInfo.estimatedPension }}/月) · 60岁传世金生到账(90w)</div>
-            </div>
-          </div>
-
           <!-- 逐年推演表格 -->
           <div class="bridge-table-wrap">
             <table class="bridge-table">
