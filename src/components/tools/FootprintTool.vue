@@ -1,17 +1,17 @@
 <template>
   <div class="footprint-tool animate-fade-in">
-    <!-- 工具顶部导航栏 -->
-    <div class="tool-header-bar mb-20">
-      <el-button class="btn-back-hub" @click="$emit('back')" size="default">
-        <el-icon><Back /></el-icon>返回万能工具箱
-      </el-button>
-      <div class="tool-header-title">
-        <span class="tool-badge-pill">万能工具箱 · 生活见证</span>
+    <!-- 工具顶部导航栏（单行极简高雅设计） -->
+    <div class="tool-header-row mb-20">
+      <div class="header-left-group">
+        <div class="btn-back-clean" @click="$emit('back')">
+          <el-icon><ArrowLeft /></el-icon>
+          <span>返回</span>
+        </div>
+        <div class="header-divider"></div>
         <h2 class="section-title">幸福足迹</h2>
+        <span class="section-subtitle">家庭旅行 · 地区点亮 · 幸福与足迹双重见证</span>
       </div>
     </div>
-
-    <p class="section-subtitle mb-20">家庭旅行 · 地区点亮 · 幸福与足迹双重见证</p>
 
     <!-- 顶部操作栏 -->
     <el-card class="glass-card control-panel-card" :body-style="{ padding: '24px 30px' }">
@@ -74,10 +74,10 @@
           <div class="archive-header">
             <div class="header-title">
               <el-icon class="header-icon"><Notebook /></el-icon>
-              <span>足迹文字档案 (文字版)</span>
+              <span>足迹文字档案</span>
             </div>
             <div class="stats-badge">
-              已点亮 <strong>{{ visitedProvincesCount }}</strong> / 34 个省级行政区
+              已点亮 <strong>{{ visitedProvincesCount }}</strong> 个省级行政区
             </div>
           </div>
 
@@ -216,7 +216,8 @@ import {
   SuccessFilled, 
   Plus, 
   Close,
-  Back
+  Back,
+  ArrowLeft
 } from '@element-plus/icons-vue'
 
 defineEmits(['back'])
@@ -511,30 +512,42 @@ onMounted(() => {
 .footprint-tool { padding: 0; margin: 0 auto; }
 .mb-20 { margin-bottom: 20px; }
 
-.tool-header-bar {
+.tool-header-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  padding: 4px 0;
 }
-.btn-back-hub {
-  border-radius: 20px;
-  font-weight: 600;
-  border-color: #cbd5e1;
-  color: #475569;
-}
-.tool-header-title {
+.header-left-group {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
-.tool-badge-pill {
-  font-size: 11px;
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
   font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+.btn-back-clean:hover {
   color: #6366f1;
+  background: rgba(99, 102, 241, 0.08);
+}
+.header-divider {
+  width: 1px;
+  height: 16px;
+  background: #cbd5e1;
 }
 
-.section-title { font-size: 1.8rem; font-weight: 800; color: #1e293b; margin: 0; }
-.section-subtitle { color: #64748b; margin-top: 5px; font-size: 14px; }
+.section-title { font-size: 1.5rem; font-weight: 800; color: #1e293b; margin: 0; }
+.section-subtitle { color: #64748b; font-size: 13.5px; margin: 0; font-weight: 400; }
 
 .glass-card { 
   border-radius: 24px; 
