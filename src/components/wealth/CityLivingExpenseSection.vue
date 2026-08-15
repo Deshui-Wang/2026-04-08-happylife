@@ -3,7 +3,7 @@
     <template #header>
       <div class="card-header justify-between">
         <div style="display:flex; align-items:center; gap:8px;">
-          <el-icon><Location /></el-icon><span>居住城市与生活开支 (时间段设置)</span>
+          <el-icon><Location /></el-icon><span>居住城市与生活开支</span>
         </div>
         <span class="city-stats-pill"> {{ cityCostsList.length }} 个城市</span>
       </div>
@@ -186,8 +186,9 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 }
 .header-left {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
 }
 .city-badge-name {
   font-size: 16px;
@@ -195,8 +196,19 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
   color: #1e293b;
 }
 
-.city-cost-tag {
-  font-weight: 600;
+:deep(.city-cost-tag) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 1px solid rgba(99, 102, 241, 0.35) !important;
+  color: #6366f1 !important;
+  font-weight: 700 !important;
+  font-size: 11.5px !important;
+  padding: 0 8px !important;
+  height: 22px !important;
+  line-height: 20px !important;
+  border-radius: 6px !important;
+  display: inline-flex !important;
+  align-items: center !important;
 }
 .header-right-inputs {
   display: flex;
