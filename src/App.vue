@@ -11,7 +11,7 @@
           <el-tab-pane label="账本" name="ledger"></el-tab-pane>
           <el-tab-pane label="财富" name="also-home"></el-tab-pane>
           <el-tab-pane label="显化" name="confirmation"></el-tab-pane>
-          <el-tab-pane label="足迹" name="footprint"></el-tab-pane>
+          <el-tab-pane label="万能" name="footprint"></el-tab-pane>
           <el-tab-pane label="修行" name="dictionary"></el-tab-pane>
         </el-tabs>
       </div>
