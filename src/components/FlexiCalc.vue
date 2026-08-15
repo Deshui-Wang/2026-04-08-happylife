@@ -291,8 +291,8 @@ const totalAssets = computed(() => {
 
 const selectedCity = ref('tieling')
 const cityCosts = {
-  heze: { monthly: 2500 },
-  tieling: { monthly: 2000 }
+  heze: { monthly: 1500 },
+  tieling: { monthly: 1000 }
 }
 
 // 严格按照您的截图(2026/44岁时刻)

@@ -315,9 +315,9 @@ const totalAssets = computed(() => {
 })
 
 const cityCostsList = ref([
-  { id: 'beijing', label: '北京', monthly: 9300, living: 5000, rent: 4300, ageRange: [44, 54], enabled: true },
-  { id: 'tieling', label: '铁岭', monthly: 2000, living: 2000, rent: 0, ageRange: [55, 100], enabled: true },
-  { id: 'heze', label: '菏泽', monthly: 2500, living: 2500, rent: 0, ageRange: [55, 100], enabled: true }
+  { id: 'beijing', label: '北京', monthly: 7800, living: 3500, rent: 4300, ageRange: [44, 50], enabled: true },
+  { id: 'tieling', label: '铁岭', monthly: 1000, living: 1000, rent: 0, ageRange: [51, 100], enabled: true },
+  { id: 'heze', label: '菏泽', monthly: 1500, living: 1500, rent: 0, ageRange: [51, 100], enabled: true }
 ])
 
 const ageMarks = computed(() => ({
