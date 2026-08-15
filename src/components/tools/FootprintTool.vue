@@ -15,24 +15,22 @@
 
     <!-- 顶部操作栏 -->
     <el-card class="glass-card control-panel-card" :body-style="{ padding: '24px 30px' }">
-      <div class="input-header">
-        <div class="input-with-button">
-          <el-input 
-            v-model="newPlace" 
-            placeholder="输入已到访的城市或省份点亮（如：北京、铁岭、四川、湖南）" 
-            class="city-input"
-            @keyup.enter="addFootprint"
-            clearable
-          >
-            <template #prefix>
-              <el-icon class="el-input__icon"><Compass /></el-icon>
-            </template>
-          </el-input>
-          <el-button type="primary" class="lit-btn" @click="addFootprint">
-            <el-icon class="btn-icon"><MapLocation /></el-icon>点亮区域
-          </el-button>
-        </div>
-        <el-button @click="clearAll" type="danger" plain size="default" class="clear-btn">
+      <div class="input-header-row">
+        <el-input 
+          v-model="newPlace" 
+          placeholder="输入已到访的城市或省份点亮（如：北京、铁岭、四川、湖南）" 
+          class="city-input"
+          @keyup.enter="addFootprint"
+          clearable
+        >
+          <template #prefix>
+            <el-icon class="el-input__icon"><Compass /></el-icon>
+          </template>
+        </el-input>
+        <el-button type="primary" class="lit-btn" @click="addFootprint">
+          <el-icon class="btn-icon"><MapLocation /></el-icon>点亮区域
+        </el-button>
+        <el-button @click="clearAll" type="danger" plain class="clear-btn">
           <el-icon><Delete /></el-icon>清空足迹
         </el-button>
       </div>
@@ -558,38 +556,47 @@ onMounted(() => {
   margin-bottom: 24px;
 }
 
-.input-header {
+.input-header-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.input-with-button {
-  display: flex;
   gap: 12px;
-  flex: 1;
-  min-width: 320px;
+  width: 100%;
+  flex-wrap: nowrap;
 }
 .city-input {
   flex: 1;
+  min-width: 0;
 }
 :deep(.city-input .el-input__wrapper) {
   border-radius: 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) inset;
-  padding: 8px 16px;
+  padding: 4px 16px;
+  height: 42px;
 }
 .lit-btn {
   border-radius: 14px;
   padding: 0 24px;
+  height: 42px;
   font-weight: 600;
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   border: none;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .clear-btn {
   border-radius: 14px;
+  height: 42px;
+  padding: 0 18px;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tags-section {
