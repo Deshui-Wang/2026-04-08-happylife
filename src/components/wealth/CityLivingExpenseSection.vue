@@ -197,18 +197,16 @@ defineEmits(['city-enabled-change', 'city-age-range-change'])
 }
 
 :deep(.city-cost-tag) {
-  background: transparent !important;
+  background: none !important;
   background-color: transparent !important;
-  border: 1px solid rgba(99, 102, 241, 0.35) !important;
+  border: none !important;
   color: #6366f1 !important;
   font-weight: 700 !important;
-  font-size: 11.5px !important;
-  padding: 0 8px !important;
-  height: 22px !important;
-  line-height: 20px !important;
-  border-radius: 6px !important;
-  display: inline-flex !important;
-  align-items: center !important;
+  font-size: 12px !important;
+  padding: 0 !important;
+  height: auto !important;
+  line-height: 1.2 !important;
+  display: inline-block !important;
 }
 .header-right-inputs {
   display: flex;
