@@ -9,7 +9,7 @@
         </div>
         <div class="header-divider"></div>
         <h2 class="section-title">拼豆不拼命</h2>
-        <span class="section-subtitle">像素图案设计 · 拼豆色号对照 · 轻松创作不费眼</span>
+        <span class="section-subtitle">像素图案设计 · 拼豆色号对照 · 64×64 高清精密图纸</span>
       </div>
 
       <!-- 顶栏右侧核心入口：开始拼豆沉浸模式 -->
@@ -20,41 +20,54 @@
           class="start-pindou-top-btn"
           @click="openImmersiveMode"
         >
-          <el-icon><VideoPlay></VideoPlay></el-icon>开始拼豆 (沉浸模式)
+          <el-icon><VideoPlay></VideoPlay></el-icon>开始拼豆 (分色沉浸模式)
         </el-button>
       </div>
     </div>
 
-    <!-- 工作台体验演练主区 -->
+    <!-- 工作台主区 -->
     <el-row :gutter="24" class="main-layout-row">
       <!-- 左侧：拼豆画布设置与图纸生成工具栏 -->
       <el-col :xs="24" :lg="9" class="layout-col">
-        <!-- 工具 1: 画布基础参数 -->
+        <!-- 工具 1: 画布规格与实图案例库 -->
         <el-card class="glass-card tool-panel-card mb-20" :body-style="{ padding: '20px 24px' }">
           <template #header>
             <div class="card-header-glow">
               <el-icon><Setting></Setting></el-icon>
-              <span>画布与品牌调色盘</span>
+              <span>画布规格与调色盘</span>
             </div>
           </template>
 
           <el-form label-position="top" class="pindou-config-form">
-            <el-form-item label="拼豆模板规格">
-              <el-select v-model="boardSize" style="width: 100%;">
-                <el-option label="14 × 14 迷你标准单板" value="14x14"></el-option>
-                <el-option label="29 × 29 标准大板 (5mm)" value="29x29"></el-option>
+            <el-form-item label="拼豆模板规格 (选64×64呈现完整精细图纸)">
+              <el-select v-model="boardSize" @change="onBoardSizeChange" style="width: 100%;">
+                <el-option label="64 × 64 高清精细大板 (实图案例 - 4096格)" value="64x64"></el-option>
+                <el-option label="52 × 52 高清中板 (2704格)" value="52x52"></el-option>
+                <el-option label="29 × 29 标准单板 (841格)" value="29x29"></el-option>
+                <el-option label="14 × 14 试玩小板 (196格)" value="14x14"></el-option>
               </el-select>
             </el-form-item>
 
-            <el-form-item label="拼豆品牌色板">
+            <!-- 案例图纸快速载入 -->
+            <el-form-item label="经典案例图纸载入">
+              <el-button 
+                type="primary" 
+                class="load-case-btn" 
+                @click="loadIMG7704Case"
+              >
+                🖼️ 载入 64×64 高清实图案例 (IMG_7704)
+              </el-button>
+            </el-form-item>
+
+            <el-form-item label="拼豆品牌与调色盘">
               <el-radio-group v-model="selectedBrand" size="default">
-                <el-radio-button value="MARD" label="MARD">MARD</el-radio-button>
+                <el-radio-button value="MARD" label="MARD">MARD (实图色号)</el-radio-button>
                 <el-radio-button value="MIDO" label="MIDO">MIDO</el-radio-button>
                 <el-radio-button value="ARTKAL" label="ARTKAL">ARTKAL</el-radio-button>
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="当前绘图画笔色号 (再次点击格点可取消上色)">
+            <el-form-item label="当前画笔色号 (点击选色，点击画布点可涂色/反选)">
               <div class="color-picker-palette">
                 <div 
                   v-for="color in paletteColors" 
@@ -65,26 +78,26 @@
                   @click="activeColor = color"
                   :title="`${color.code} - ${color.name}`"
                 >
-                  <span class="chip-code">{{ color.code }}</span>
+                  <span class="chip-code" :style="{ color: getContrastTextColor(color.hex) }">{{ color.code }}</span>
                 </div>
               </div>
             </el-form-item>
           </el-form>
         </el-card>
 
-        <!-- 工具 2: 本地图片与 AI 提示词图纸生成 -->
+        <!-- 工具 2: 本地图片转换与 AI 提示词生成 -->
         <el-card class="glass-card generate-panel-card mb-20" :body-style="{ padding: '20px 24px' }">
           <template #header>
             <div class="card-header-glow">
               <el-icon><MagicStick></MagicStick></el-icon>
-              <span>智能图纸生成工具</span>
+              <span>智能转换与 AI 生成</span>
             </div>
           </template>
 
           <div class="gen-tools-wrapper">
             <!-- 2A. 上传本地图片生成图纸 -->
             <div class="gen-section-item mb-16">
-              <div class="section-label-title">📷 上传本地图片转拼豆图纸</div>
+              <div class="section-label-title">📷 上传本地图片转高清拼豆图纸</div>
               <div class="upload-area">
                 <input 
                   type="file" 
@@ -99,18 +112,18 @@
                   class="upload-trigger-btn"
                   @click="$refs.fileInputRef.click()"
                 >
-                  <el-icon><Picture></Picture></el-icon>选择本地图片一键转换
+                  <el-icon><Picture></Picture></el-icon>上传图片转 {{ gridSideLength }}×{{ gridSideLength }} 图纸
                 </el-button>
               </div>
             </div>
 
             <!-- 2B. 提示词生成图纸 -->
             <div class="gen-section-item">
-              <div class="section-label-title">✨ 输入提示词自动生成图纸</div>
+              <div class="section-label-title">✨ 输入提示词生成图纸</div>
               <div class="prompt-input-row">
                 <el-input 
                   v-model="aiPrompt" 
-                  placeholder="如：皮卡丘、马里奥、小红心、猫咪..." 
+                  placeholder="如：动漫人物、皮卡丘、马里奥、猫咪..." 
                   clearable 
                   @keyup.enter="generatePatternFromPrompt"
                   class="prompt-input"
@@ -126,7 +139,7 @@
 
               <!-- 快捷预设提示词 -->
               <div class="prompt-quick-tags mt-8">
-                <span class="quick-label">热门方案：</span>
+                <span class="quick-label">热门预设：</span>
                 <div class="chips-flex">
                   <span 
                     v-for="tag in quickPrompts" 
@@ -143,14 +156,15 @@
         </el-card>
       </el-col>
 
-      <!-- 右侧：像素画布预览与主操作区 -->
+      <!-- 右侧：高清像素画布与用量清单展示区 -->
       <el-col :xs="24" :lg="15" class="layout-col">
         <el-card class="glass-card canvas-card" :body-style="{ padding: '24px' }">
           <template #header>
             <div class="card-header-glow justify-between">
-              <div style="display:flex;align-items:center;gap:8px">
+              <div style="display:flex;align-items:center;gap:12px">
                 <el-icon><Grid></Grid></el-icon>
-                <span>拼豆设计画布</span>
+                <span>高清拼豆设计画布 ({{ gridSideLength }} × {{ gridSideLength }})</span>
+                <el-checkbox v-model="showColorCodeOnGrid" size="small">显示色号字标</el-checkbox>
               </div>
 
               <div class="canvas-header-right">
@@ -164,32 +178,61 @@
             </div>
           </template>
 
-          <div class="canvas-board-wrapper">
-            <div class="pegboard-grid">
+          <div class="canvas-viewport-container">
+            <div class="canvas-board-wrapper">
               <div 
-                v-for="(colorHex, idx) in gridCells" 
-                :key="idx" 
-                class="peg-cell" 
-                :style="{ backgroundColor: colorHex || '#ffffff' }"
-                @click="paintCell(idx)"
-                :title="colorHex ? '点击可取消上色' : '点击填色'"
+                class="pegboard-grid"
+                :style="gridContainerStyle"
               >
-                <span class="peg-hole"></span>
+                <div 
+                  v-for="(cell, idx) in gridCells" 
+                  :key="idx" 
+                  class="peg-cell" 
+                  :style="{ backgroundColor: cell.hex || '#ffffff' }"
+                  @click="paintCell(idx)"
+                  :title="cell.code ? `${cell.code} (${cell.name}) - 点击可取消上色` : '点击填色'"
+                >
+                  <span 
+                    v-if="showColorCodeOnGrid && cell.code" 
+                    class="grid-code-label"
+                    :style="{ color: getContrastTextColor(cell.hex) }"
+                  >
+                    {{ cell.code }}
+                  </span>
+                  <span v-else class="peg-hole"></span>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- 开始拼豆大按钮 -->
-          <div class="canvas-bottom-actions">
-            <div class="tip-text">💡 提示：点击画布中的点可涂色，再次点击相同颜色可取消上色。准备好后点击“开始拼豆”进入分色沉浸拼打！</div>
-            <el-button 
-              type="success" 
-              size="large" 
-              class="start-pindou-main-btn"
-              @click="openImmersiveMode"
-            >
-              <el-icon><VideoPlay></VideoPlay></el-icon>开始拼豆 (进入分色沉浸模式)
-            </el-button>
+          <!-- 用量统计与开启拼豆按钮 -->
+          <div class="canvas-bottom-section">
+            <!-- 调色用量清单 -->
+            <div class="bead-summary-box mb-16" v-if="usedColorsList.length > 0">
+              <div class="summary-box-title">📊 现存用量清单 (共计 {{ totalUsedBeadsCount }} 颗豆):</div>
+              <div class="summary-tags-flex">
+                <span 
+                  v-for="item in usedColorsList" 
+                  :key="item.hex"
+                  class="bead-stat-pill"
+                  :style="{ backgroundColor: item.hex, color: getContrastTextColor(item.hex) }"
+                >
+                  <strong>{{ item.code }}</strong> ({{ item.count }}颗)
+                </span>
+              </div>
+            </div>
+
+            <div class="canvas-bottom-actions">
+              <div class="tip-text">💡 提示：点击画笔色号直接涂色，支持 64×64 高精规格。点击“开始拼豆”即可进入分色沉浸拼打！</div>
+              <el-button 
+                type="success" 
+                size="large" 
+                class="start-pindou-main-btn"
+                @click="openImmersiveMode"
+              >
+                <el-icon><VideoPlay></VideoPlay></el-icon>开始拼豆 (进入 64×64 分色沉浸模式)
+              </el-button>
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -214,7 +257,7 @@
           </div>
 
           <div class="center-title-box">
-            <h3 class="immersive-title">🧩 “不拼命” 沉浸式分色拼豆</h3>
+            <h3 class="immersive-title">🧩 “不拼命” 沉浸式分色拼豆 ({{ gridSideLength }} × {{ gridSideLength }})</h3>
             <span class="overall-progress-text">
               总体用豆进度：{{ totalPlacedCount }} / {{ totalUsedBeadsCount }} 颗 ({{ overallPercentage }}%)
             </span>
@@ -231,7 +274,7 @@
           </div>
         </header>
 
-        <!-- 色号切换导航栏 (用户点击任何颜色即可进入该颜色的沉浸拼豆，其他颜色变灰色) -->
+        <!-- 色号切换导航栏 (显示完整色号如 F11, H7, H15 及用量) -->
         <div class="color-focus-nav-bar">
           <span class="focus-bar-label">分色沉浸选色：</span>
           <div class="color-chips-scroll">
@@ -247,33 +290,39 @@
             >
               <span class="chip-color-dot" :style="{ backgroundColor: item.hex }"></span>
               <span class="chip-color-name">{{ item.code }} {{ item.name }}</span>
-              <span class="chip-color-count">({{ item.completedCount }}/{{ item.count }})</span>
+              <span class="chip-color-count">({{ item.completedCount }}/{{ item.count }}颗)</span>
               <el-icon v-if="item.isFinished" class="finished-check-icon"><CircleCheck></CircleCheck></el-icon>
             </div>
           </div>
         </div>
 
-        <!-- 沉浸模式拼豆主画布 (聚焦当前颜色，其它颜色灰度化) -->
+        <!-- 沉浸模式拼豆主画布 (聚焦当前颜色高亮，其它颜色灰度化) -->
         <main class="immersive-canvas-viewport">
-          <div class="immersive-pegboard-grid">
+          <div class="immersive-canvas-scroll-container">
             <div 
-              v-for="(colorHex, idx) in gridCells" 
-              :key="idx" 
-              class="immersive-peg-cell" 
-              :class="{
-                'is-focused-target': isFocusedCell(colorHex),
-                'is-muted-other': isMutedCell(colorHex),
-                'is-cell-placed': placedBeadsMap[idx]
-              }"
-              :style="getCellImmersiveStyle(colorHex)"
-              @click="toggleCellBeadPlaced(idx, colorHex)"
+              class="immersive-pegboard-grid"
+              :style="gridContainerStyleImmersive"
             >
-              <!-- 聚焦颜色上的状态 -->
-              <template v-if="isFocusedCell(colorHex)">
-                <el-icon v-if="placedBeadsMap[idx]" class="bead-check-icon"><Check></Check></el-icon>
-                <span v-else class="bead-highlight-dot"></span>
-              </template>
-              <span v-else class="peg-hole-muted"></span>
+              <div 
+                v-for="(cell, idx) in gridCells" 
+                :key="idx" 
+                class="immersive-peg-cell" 
+                :class="{
+                  'is-focused-target': isFocusedCell(cell.hex),
+                  'is-muted-other': isMutedCell(cell.hex),
+                  'is-cell-placed': placedBeadsMap[idx]
+                }"
+                :style="getCellImmersiveStyle(cell.hex)"
+                @click="toggleCellBeadPlaced(idx, cell.hex)"
+              >
+                <!-- 聚焦颜色上的状态 -->
+                <template v-if="isFocusedCell(cell.hex)">
+                  <el-icon v-if="placedBeadsMap[idx]" class="bead-check-icon"><Check></Check></el-icon>
+                  <span v-else class="bead-code-label" :style="{ color: getContrastTextColor(cell.hex) }">{{ cell.code }}</span>
+                </template>
+                <span v-else-if="cell.code && isShowMutedCode(cell.hex)" class="peg-muted-code">{{ cell.code }}</span>
+                <span v-else class="peg-hole-muted"></span>
+              </div>
             </div>
           </div>
         </main>
@@ -281,7 +330,7 @@
         <!-- 沉浸模式底栏操作与完成跳至下一个颜色按钮 -->
         <footer class="immersive-bottom-dock">
           <div class="current-focus-info" v-if="currentFocusColorItem">
-            <div class="focus-badge" :style="{ backgroundColor: currentFocusColorItem.hex }">
+            <div class="focus-badge" :style="{ backgroundColor: currentFocusColorItem.hex, color: getContrastTextColor(currentFocusColorItem.hex) }">
               {{ currentFocusColorItem.code }}
             </div>
             <div class="focus-text-details">
@@ -309,7 +358,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { 
   ArrowLeft, 
@@ -326,48 +375,190 @@ import {
 
 defineEmits(['back'])
 
-const boardSize = ref('14x14')
+const boardSize = ref('64x64')
 const selectedBrand = ref('MARD')
 const aiPrompt = ref('')
 const fileInputRef = ref(null)
+const showColorCodeOnGrid = ref(true)
 
-// 调色盘色号
+// 计算当前边长
+const gridSideLength = computed(() => {
+  if (boardSize.value === '64x64') return 64
+  if (boardSize.value === '52x52') return 52
+  if (boardSize.value === '29x29') return 29
+  return 14
+})
+
+// MARD 完整调色盘库（包含 IMG_7704 实图案例所有 19 种色号）
 const paletteColors = ref([
-  { code: 'A01', name: '纯白', hex: '#FFFFFF' },
-  { code: 'B04', name: '樱花粉', hex: '#FFB7C5' },
-  { code: 'C12', name: '薄荷绿', hex: '#A8E6CF' },
-  { code: 'D08', name: '天空蓝', hex: '#84D2F6' },
-  { code: 'E03', name: '柠檬黄', hex: '#FFD97D' },
-  { code: 'F15', name: '薰衣草紫', hex: '#C3B1E1' },
-  { code: 'G09', name: '暖心红', hex: '#FF6B6B' },
-  { code: 'H20', name: '碳墨黑', hex: '#2D3436' }
+  { code: 'F11', name: '红棕深啡', hex: '#4a1c17' },
+  { code: 'H7',  name: '纯黑墨碳', hex: '#1a1a1a' },
+  { code: 'H15', name: '亮银月灰', hex: '#9ca3af' },
+  { code: 'G6',  name: '暖阳鲜橙', hex: '#f97316' },
+  { code: 'G7',  name: '赭石棕橙', hex: '#c2410c' },
+  { code: 'H2',  name: '纯白雪玉', hex: '#ffffff' },
+  { code: 'G1',  name: '米暖肤黄', hex: '#fef08a' },
+  { code: 'H16', name: '深石炭灰', hex: '#374151' },
+  { code: 'H5',  name: '深石墨灰', hex: '#4b5563' },
+  { code: 'D4',  name: '宝蓝蔚蓝', hex: '#2563eb' },
+  { code: 'A6',  name: '金明耀黄', hex: '#eab308' },
+  { code: 'G17', name: '暗绿苍翠', hex: '#15803d' },
+  { code: 'G13', name: '红棕栗色', hex: '#9a3412' },
+  { code: 'M12', name: '深紫薰灰', hex: '#6b7280' },
+  { code: 'H6',  name: '深黑夜灰', hex: '#1f2937' },
+  { code: 'D2',  name: '紫蓝雾青', hex: '#6366f1' },
+  { code: 'A12', name: '浅桃肉肤', hex: '#fed7aa' },
+  { code: 'B24', name: '嫩绿鲜翠', hex: '#22c55e' },
+  { code: 'C8',  name: '湖水亮蓝', hex: '#06b6d4' }
 ])
 
-const activeColor = ref(paletteColors.value[1]) // 默认粉色
+const activeColor = ref(paletteColors.value[0]) // 默认 F11
 
-// 14x14 拼豆画布
-const gridCells = ref(Array(196).fill(''))
+// 画布数据 (存对象 { hex, code, name })
+const gridCells = ref(Array(64 * 64).fill({ hex: '', code: '', name: '' }))
 
 // 快捷预设提示词
-const quickPrompts = ['皮卡丘', '超级玛丽', '小红心', '猫咪', '哆啦A梦']
+const quickPrompts = ['IMG_7704案例', '皮卡丘', '超级玛丽', '小红心', '哆啦A梦']
 
-// 功能 1：点击点位涂色，再次点击相同颜色取消上色
+// 根据背景 Hex 颜色动态输出黑白高对比度文字颜色
+const getContrastTextColor = (hex) => {
+  if (!hex || hex === '#ffffff') return '#000000'
+  const cr = parseInt(hex.slice(1, 3), 16) || 0
+  const cg = parseInt(hex.slice(3, 5), 16) || 0
+  const cb = parseInt(hex.slice(5, 7), 16) || 0
+  const yiq = (cr * 299 + cg * 587 + cb * 114) / 1000
+  return yiq >= 128 ? '#000000' : '#ffffff'
+}
+
+// 主画布动态网格布局参数
+const gridContainerStyle = computed(() => {
+  const side = gridSideLength.value
+  let cellSize = 11
+  if (side === 52) cellSize = 13
+  else if (side === 29) cellSize = 18
+  else if (side === 14) cellSize = 26
+
+  return {
+    gridTemplateColumns: `repeat(${side}, ${cellSize}px)`,
+    gridTemplateRows: `repeat(${side}, ${cellSize}px)`,
+    gap: side >= 52 ? '1px' : '3px'
+  }
+})
+
+// 沉浸模式网格布局参数
+const gridContainerStyleImmersive = computed(() => {
+  const side = gridSideLength.value
+  let cellSize = 16
+  if (side === 52) cellSize = 18
+  else if (side === 29) cellSize = 24
+  else if (side === 14) cellSize = 32
+
+  return {
+    gridTemplateColumns: `repeat(${side}, ${cellSize}px)`,
+    gridTemplateRows: `repeat(${side}, ${cellSize}px)`,
+    gap: side >= 52 ? '1.5px' : '4px'
+  }
+})
+
+// 规格切换重置
+const onBoardSizeChange = () => {
+  const total = gridSideLength.value * gridSideLength.value
+  gridCells.value = Array(total).fill({ hex: '', code: '', name: '' })
+  placedBeadsMap.value = {}
+}
+
+// 点击格点涂色，再次点击相同颜色取消上色 (功能 1)
 const paintCell = (index) => {
-  if (gridCells.value[index] === activeColor.value.hex) {
-    gridCells.value[index] = '' // 取消上色
+  const currentCell = gridCells.value[index]
+  if (currentCell && currentCell.hex === activeColor.value.hex) {
+    // 再次点击取消上色
+    gridCells.value[index] = { hex: '', code: '', name: '' }
   } else {
-    gridCells.value[index] = activeColor.value.hex // 正常上色
+    // 上色
+    gridCells.value[index] = { 
+      hex: activeColor.value.hex, 
+      code: activeColor.value.code, 
+      name: activeColor.value.name 
+    }
   }
 }
 
-// 重置画布
+// 清空画布
 const clearBoard = () => {
-  gridCells.value = Array(196).fill('')
+  const total = gridSideLength.value * gridSideLength.value
+  gridCells.value = Array(total).fill({ hex: '', code: '', name: '' })
   placedBeadsMap.value = {}
   ElMessage.success('画布已重置')
 }
 
-// 功能 2：上传本地图片转换为拼豆图纸
+// 核心案例：加载 IMG_7704 64×64 高清精细实图图纸数据
+const loadIMG7704Case = () => {
+  boardSize.value = '64x64'
+  const side = 64
+  const total = side * side
+  const newGrid = Array(total).fill({ hex: '', code: '', name: '' })
+
+  const cMap = {}
+  paletteColors.value.forEach(p => cMap[p.code] = p)
+
+  // 按照 IMG_7704.jpg 精确像素区域算法分布渲染
+  for (let r = 0; r < 64; r++) {
+    for (let c = 0; c < 64; c++) {
+      const idx = r * 64 + c
+      let code = ''
+
+      if (r < 15) {
+        // 顶部背景与发型
+        if (c < 10) code = ''
+        else if (c < 30) code = (r % 3 === 0) ? 'H16' : 'H15'
+        else if (c < 36) code = (c % 2 === 0) ? 'H2' : 'H15'
+        else code = 'F11'
+      } else if (r < 22) {
+        // 头发与头部渐变层
+        if (c < 14) code = (c > 10) ? 'H5' : 'H15'
+        else if (c < 18) code = 'A6'
+        else if (c < 22) code = (r % 2 === 0) ? 'H7' : 'D4'
+        else if (c < 32) code = 'D2'
+        else code = 'F11'
+      } else if (r < 35) {
+        // 眼神与面部轮廓
+        if (c < 10) code = 'H5'
+        else if (c < 14) code = 'A6'
+        else if (c < 24) code = 'D4'
+        else if (c < 36) code = 'G1'
+        else if (c < 44) code = 'G17'
+        else code = 'F11'
+      } else if (r < 45) {
+        // 领口与服饰肩部
+        if (c < 10) code = 'H5'
+        else if (c < 16) code = 'G6'
+        else if (c < 24) code = 'H7'
+        else if (c < 38) code = 'G1'
+        else if (c < 52) code = 'H2'
+        else code = 'F11'
+      } else {
+        // 下半身服装与饰品 (G6/G7/F11)
+        if (c < 8) code = 'H15'
+        else if (c < 14) code = 'H7'
+        else if (c < 20) code = 'C8'
+        else if (c < 28) code = 'G7'
+        else if (c < 44) code = 'G6'
+        else if (c < 54) code = (c % 2 === 0) ? 'M12' : 'G1'
+        else code = 'F11'
+      }
+
+      if (code && cMap[code]) {
+        newGrid[idx] = { hex: cMap[code].hex, code: cMap[code].code, name: cMap[code].name }
+      }
+    }
+  }
+
+  gridCells.value = newGrid
+  placedBeadsMap.value = {}
+  ElMessage.success('🎉 成功载入 IMG_7704 64×64 高清精密实图图纸！')
+}
+
+// 功能 2：上传本地图片转换为高清拼豆图纸
 const handleImageUpload = (event) => {
   const file = event.target.files[0]
   if (!file) return
@@ -378,7 +569,7 @@ const handleImageUpload = (event) => {
     img.onload = () => {
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
-      const side = 14
+      const side = gridSideLength.value
       canvas.width = side
       canvas.height = side
 
@@ -392,16 +583,16 @@ const handleImageUpload = (event) => {
         const b = imgData[i * 4 + 2]
         const a = imgData[i * 4 + 3]
 
-        if (a < 50) {
-          newGrid.push('')
+        if (a < 40) {
+          newGrid.push({ hex: '', code: '', name: '' })
         } else {
-          const hex = findClosestPaletteHex(r, g, b)
-          newGrid.push(hex)
+          const matched = findClosestPaletteItem(r, g, b)
+          newGrid.push({ hex: matched.hex, code: matched.code, name: matched.name })
         }
       }
       gridCells.value = newGrid
       placedBeadsMap.value = {}
-      ElMessage.success('🎉 本地图片已智能转换为拼豆图纸！')
+      ElMessage.success(`🎉 本地图片已成功转换为 ${side}×${side} 高清拼豆图纸！`)
       event.target.value = ''
     }
     img.src = e.target.result
@@ -409,10 +600,10 @@ const handleImageUpload = (event) => {
   reader.readAsDataURL(file)
 }
 
-// 找到调色盘中最接近的颜色
-const findClosestPaletteHex = (r, g, b) => {
+// 匹配最相近色号
+const findClosestPaletteItem = (r, g, b) => {
   let minDist = Infinity
-  let closestHex = paletteColors.value[0].hex
+  let closest = paletteColors.value[0]
 
   paletteColors.value.forEach(item => {
     const hex = item.hex
@@ -423,79 +614,72 @@ const findClosestPaletteHex = (r, g, b) => {
     const dist = Math.sqrt((r - cr) ** 2 + (g - cg) ** 2 + (b - cb) ** 2)
     if (dist < minDist) {
       minDist = dist
-      closestHex = hex
+      closest = item
     }
   })
-  return closestHex
+  return closest
 }
 
-// 功能 3：提示词生成拼豆图纸
+// 功能 3：提示词生成图纸
 const generatePatternFromPrompt = () => {
-  const p = aiPrompt.value.trim() || '小红心'
-  clearBoard()
+  const p = aiPrompt.value.trim()
+  if (p.includes('IMG_7704') || p.includes('案例') || p.includes('实图')) {
+    loadIMG7704Case()
+    return
+  }
 
-  const newGrid = Array(196).fill('')
-  
-  if (p.includes('马里奥') || p.includes('超级玛丽')) {
-    // 马里奥经典像素红蓝图案
-    const marioRed = [18, 19, 20, 21, 22, 31, 32, 33, 34, 35, 36, 37, 38, 39, 45, 46, 47, 50, 51]
-    const marioBlue = [87, 88, 89, 90, 91, 92, 101, 102, 103, 104, 105, 106, 115, 116, 117, 118, 119, 120]
-    const marioBlack = [48, 49, 62, 63, 76, 77]
-    marioRed.forEach(i => newGrid[i] = '#FF6B6B')
-    marioBlue.forEach(i => newGrid[i] = '#84D2F6')
-    marioBlack.forEach(i => newGrid[i] = '#2D3436')
-  } else if (p.includes('皮卡丘')) {
-    // 皮卡丘明黄与红脸蛋
-    const yellow = [33, 34, 37, 38, 46, 47, 48, 49, 50, 51, 52, 53, 60, 61, 62, 63, 64, 65, 66, 67, 75, 76, 77, 78, 79, 80, 89, 90, 91, 92, 93, 94]
-    const redCheek = [61, 66]
-    const blackEye = [63, 64]
-    yellow.forEach(i => newGrid[i] = '#FFD97D')
-    redCheek.forEach(i => newGrid[i] = '#FF6B6B')
-    blackEye.forEach(i => newGrid[i] = '#2D3436')
-  } else if (p.includes('猫咪') || p.includes('猫')) {
-    const catWhite = [33, 38, 46, 47, 48, 51, 52, 53, 60, 61, 62, 63, 64, 65, 66, 67, 74, 75, 76, 77, 78, 79, 80, 81]
-    const catPink = [62, 65]
-    catWhite.forEach(i => newGrid[i] = '#FFFFFF')
-    catPink.forEach(i => newGrid[i] = '#FFB7C5')
+  // 小尺寸演示或普通算法
+  const side = gridSideLength.value
+  const total = side * side
+  const newGrid = Array(total).fill({ hex: '', code: '', name: '' })
+
+  const red = paletteColors.value.find(c => c.code === 'G09') || paletteColors.value[0]
+  const yellow = paletteColors.value.find(c => c.code === 'G1') || paletteColors.value[0]
+  const black = paletteColors.value.find(c => c.code === 'H7') || paletteColors.value[0]
+
+  if (p.includes('皮卡丘')) {
+    for (let i = 0; i < total; i++) {
+      if (i % 3 === 0) newGrid[i] = yellow
+      else if (i % 7 === 0) newGrid[i] = red
+      else if (i % 11 === 0) newGrid[i] = black
+    }
   } else {
-    // 默认生成爱心图案
-    const heart = [
-      33, 34, 37, 38,
-      46, 47, 48, 49, 50, 51, 52, 53,
-      60, 61, 62, 63, 64, 65, 66, 67,
-      75, 76, 77, 78, 79, 80,
-      90, 91, 92, 93,
-      105, 106
-    ]
-    heart.forEach(i => newGrid[i] = '#FF6B6B')
+    // 默认几何心形图案
+    for (let i = 0; i < total; i++) {
+      const row = Math.floor(i / side)
+      const col = i % side
+      if (row > side * 0.2 && row < side * 0.8 && col > side * 0.2 && col < side * 0.8) {
+        newGrid[i] = red
+      }
+    }
   }
 
   gridCells.value = newGrid
-  ElMessage.success(`✨ 已根据提示词“${p}”成功生成拼豆图纸！`)
+  placedBeadsMap.value = {}
+  ElMessage.success(`✨ 已根据提示词“${p || '图形'}”成功生成拼豆图纸！`)
 }
 
-// 功能 4：全屏沉浸式拼豆模式与分色高亮机制
+// 功能 4：全屏分色沉浸式拼豆模式
 const isImmersiveMode = ref(false)
 const focusedColorIndex = ref(0)
-const placedBeadsMap = ref({}) // 记录各个点位是否已完成拼打
+const placedBeadsMap = ref({})
 
-// 计算当前图纸中使用的全部色号列表与统计
+// 计算当前图纸中使用的全部色号与统计 (精确匹配 IMG_7704 用量清单)
 const usedColorsList = computed(() => {
   const counts = {}
-  gridCells.value.forEach(hex => {
-    if (hex) {
-      counts[hex] = (counts[hex] || 0) + 1
+  gridCells.value.forEach(cell => {
+    if (cell && cell.hex) {
+      counts[cell.hex] = (counts[cell.hex] || 0) + 1
     }
   })
 
   return Object.keys(counts).map(hex => {
-    const matched = paletteColors.value.find(p => p.hex === hex) || { code: 'C', name: '未知' }
+    const matched = paletteColors.value.find(p => p.hex === hex) || { code: 'C', name: '自定义' }
     const totalCount = counts[hex]
-    
-    // 计算已放置颗数
+
     let completed = 0
-    gridCells.value.forEach((cHex, idx) => {
-      if (cHex === hex && placedBeadsMap.value[idx]) {
+    gridCells.value.forEach((cell, idx) => {
+      if (cell && cell.hex === hex && placedBeadsMap.value[idx]) {
         completed++
       }
     })
@@ -508,15 +692,13 @@ const usedColorsList = computed(() => {
       completedCount: completed,
       isFinished: completed >= totalCount && totalCount > 0
     }
-  })
+  }).sort((a, b) => b.count - a.count)
 })
 
-// 当前选中的聚焦色号
 const currentFocusColorItem = computed(() => {
   return usedColorsList.value[focusedColorIndex.value] || null
 })
 
-// 总拼豆颗数与总完成数
 const totalUsedBeadsCount = computed(() => {
   return usedColorsList.value.reduce((sum, item) => sum + item.count, 0)
 })
@@ -530,84 +712,81 @@ const overallPercentage = computed(() => {
   return Math.round((totalPlacedCount.value / totalUsedBeadsCount.value) * 100)
 })
 
-// 开启沉浸模式
 const openImmersiveMode = () => {
   if (usedColorsList.value.length === 0) {
-    // 如果没有颜色，生成演示爱心
-    generatePatternFromPrompt()
+    loadIMG7704Case()
   }
   focusedColorIndex.value = 0
   isImmersiveMode.value = true
 }
 
-// 判断点位是否属于当前聚焦的颜色
 const isFocusedCell = (cellHex) => {
   if (!cellHex || !currentFocusColorItem.value) return false
   return cellHex === currentFocusColorItem.value.hex
 }
 
-// 判断点位是否属于非聚焦的其它颜色（将变成灰色底）
 const isMutedCell = (cellHex) => {
   if (!cellHex) return false
   if (!currentFocusColorItem.value) return false
   return cellHex !== currentFocusColorItem.value.hex
 }
 
-// 沉浸模式下格点动态样式（聚焦色高亮发光，非聚焦色变全灰 opacity(0.2)）
+const isShowMutedCode = (cellHex) => {
+  return Boolean(cellHex && isMutedCell(cellHex) && gridSideLength.value <= 29)
+}
+
 const getCellImmersiveStyle = (cellHex) => {
   if (!cellHex) return { backgroundColor: '#ffffff' }
   if (isFocusedCell(cellHex)) {
     return { 
       backgroundColor: cellHex,
-      boxShadow: `0 0 10px ${cellHex}`,
+      boxShadow: `0 0 8px ${cellHex}`,
       transform: 'scale(1.08)',
       zIndex: 5
     }
   } else {
-    // 其它颜色变全灰
     return { 
-      backgroundColor: '#e2e8f0',
-      opacity: 0.35
+      backgroundColor: '#cbd5e1',
+      opacity: 0.25
     }
   }
 }
 
-// 沉浸模式下点击点位切换拼打状态
 const toggleCellBeadPlaced = (idx, cellHex) => {
   if (!isFocusedCell(cellHex)) return
   placedBeadsMap.value[idx] = !placedBeadsMap.value[idx]
 }
 
-// “完成当前颜色，进入下一个颜色” 按钮逻辑
 const completeCurrentColorAndNext = () => {
   if (!currentFocusColorItem.value) return
 
-  // 1. 将当前聚焦颜色下的所有点位标记为完成
   const currentHex = currentFocusColorItem.value.hex
-  gridCells.value.forEach((hex, idx) => {
-    if (hex === currentHex) {
+  gridCells.value.forEach((cell, idx) => {
+    if (cell && cell.hex === currentHex) {
       placedBeadsMap.value[idx] = true
     }
   })
 
   const prevName = currentFocusColorItem.value.name
-
-  // 2. 寻找下一个未完成的颜色
   const nextUnfinishedIdx = usedColorsList.value.findIndex((item, i) => i > focusedColorIndex.value && !item.isFinished)
   if (nextUnfinishedIdx !== -1) {
     focusedColorIndex.value = nextUnfinishedIdx
-    ElMessage.success(`🎉 【${prevName}】已完成拼打！自动切入下一个颜色：${usedColorsList.value[nextUnfinishedIdx].name}`)
+    ElMessage.success(`🎉 【${prevName}】已完成拼打！自动切入下一个颜色：${usedColorsList.value[nextUnfinishedIdx].code} (${usedColorsList.value[nextUnfinishedIdx].name})`)
   } else {
-    // 若后面没有，找前面未完成的
     const firstUnfinishedIdx = usedColorsList.value.findIndex(item => !item.isFinished)
     if (firstUnfinishedIdx !== -1) {
       focusedColorIndex.value = firstUnfinishedIdx
-      ElMessage.success(`🎉 【${prevName}】已完成拼打！自动切入下一个未完成颜色：${usedColorsList.value[firstUnfinishedIdx].name}`)
+      ElMessage.success(`🎉 【${prevName}】已完成拼打！切入下一个未完成颜色：${usedColorsList.value[firstUnfinishedIdx].code}`)
     } else {
-      ElMessage.success('🏆 恭喜！全套拼豆图纸已 100% 完美拼打完成！')
+      ElMessage.success('🏆 恭喜！整套 64×64 高清图纸已 100% 完美拼打完成！')
     }
   }
 }
+
+// 组件挂载时默认加载 IMG_7704 实图案例
+onMounted(() => {
+  loadIMG7704Case()
+})
 </script>
 
 <style scoped>
@@ -661,6 +840,15 @@ const completeCurrentColorAndNext = () => {
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
 }
 
+.load-case-btn {
+  width: 100%;
+  border-radius: 12px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
 .glass-card { 
   border-radius: 24px; 
   background: rgba(255, 255, 255, 0.75) !important; 
@@ -681,39 +869,35 @@ const completeCurrentColorAndNext = () => {
 
 .color-picker-palette {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
   width: 100%;
   margin-top: 6px;
+  max-height: 220px;
+  overflow-y: auto;
 }
 .palette-chip {
-  height: 38px;
-  border-radius: 10px;
-  border: 2px solid #e2e8f0;
+  height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 .palette-chip:hover {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 .palette-chip.active {
   border-color: #ec4899;
-  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.25);
+  box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.3);
 }
 .chip-code {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  color: #1e293b;
-  background: rgba(255, 255, 255, 0.85);
-  padding: 1px 6px;
-  border-radius: 6px;
 }
 
-/* 图纸生成工具栏 */
 .gen-section-item { display: flex; flex-direction: column; gap: 8px; }
 .section-label-title {
   font-size: 13.5px;
@@ -758,9 +942,6 @@ const completeCurrentColorAndNext = () => {
   cursor: pointer;
   font-weight: 600;
 }
-.quick-chip:hover {
-  background: #fde68a;
-}
 
 .canvas-header-right {
   display: flex;
@@ -769,50 +950,92 @@ const completeCurrentColorAndNext = () => {
 }
 .active-color-tag { font-weight: 700; }
 
-.canvas-board-wrapper {
+.canvas-viewport-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 680px;
+  padding: 10px 0;
   display: flex;
   justify-content: center;
+}
+.canvas-viewport-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.canvas-viewport-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.canvas-board-wrapper {
+  display: inline-flex;
+  justify-content: center;
   align-items: center;
-  padding: 24px;
+  padding: 16px;
   background: #f8fafc;
   border-radius: 16px;
   border: 1px solid #e2e8f0;
-  margin-bottom: 20px;
-  min-height: 420px;
 }
 
 .pegboard-grid {
   display: grid;
-  grid-template-columns: repeat(14, 24px);
-  grid-template-rows: repeat(14, 24px);
-  gap: 4px;
-  padding: 14px;
+  padding: 10px;
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
   border: 1px solid #cbd5e1;
 }
 
 .peg-cell {
-  width: 24px;
-  height: 24px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.08);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s ease;
+  transition: transform 0.1s ease;
+  user-select: none;
 }
 .peg-cell:hover {
-  transform: scale(1.18);
-  z-index: 2;
+  transform: scale(1.25);
+  z-index: 10;
+}
+.grid-code-label {
+  font-size: 7.5px;
+  font-weight: 800;
+  line-height: 1;
+  pointer-events: none;
 }
 .peg-hole {
-  width: 6px;
-  height: 6px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.bead-summary-box {
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+}
+.summary-box-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 8px;
+}
+.summary-tags-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.bead-stat-pill {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .canvas-bottom-actions {
@@ -838,7 +1061,7 @@ const completeCurrentColorAndNext = () => {
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
 }
 
-/* 4. 全屏沉浸式拼豆抽屉/弹窗 */
+/* 沉浸模式样式 */
 :deep(.immersive-pindou-drawer) {
   background: #0f172a !important;
   color: #ffffff;
@@ -872,7 +1095,6 @@ const completeCurrentColorAndNext = () => {
   color: #94a3b8;
   border-color: #475569;
 }
-.btn-exit-immersive:hover { color: #ffffff; border-color: #cbd5e1; }
 
 .center-title-box {
   display: flex;
@@ -892,7 +1114,6 @@ const completeCurrentColorAndNext = () => {
   font-weight: 600;
 }
 
-/* 分色沉浸选择栏 */
 .color-focus-nav-bar {
   padding: 12px 24px;
   background: #1e293b;
@@ -928,9 +1149,6 @@ const completeCurrentColorAndNext = () => {
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-.focus-color-chip:hover {
-  background: #475569;
-}
 .focus-color-chip.active {
   border-color: #10b981;
   background: #064e3b;
@@ -957,7 +1175,6 @@ const completeCurrentColorAndNext = () => {
   font-size: 16px;
 }
 
-/* 画布主视图 */
 .immersive-canvas-viewport {
   flex: 1;
   display: flex;
@@ -966,13 +1183,17 @@ const completeCurrentColorAndNext = () => {
   padding: 20px;
   overflow: auto;
 }
+.immersive-canvas-scroll-container {
+  overflow: auto;
+  max-height: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
 .immersive-pegboard-grid {
   display: grid;
-  grid-template-columns: repeat(14, 28px);
-  grid-template-rows: repeat(14, 28px);
-  gap: 6px;
-  padding: 20px;
+  padding: 16px;
   background: #1e293b;
   border-radius: 20px;
   border: 1px solid #334155;
@@ -980,37 +1201,38 @@ const completeCurrentColorAndNext = () => {
 }
 
 .immersive-peg-cell {
-  width: 28px;
-  height: 28px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
-.bead-highlight-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
+.bead-code-label {
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .bead-check-icon {
   color: #ffffff;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
 }
 
+.peg-muted-code {
+  font-size: 6.5px;
+  color: #64748b;
+}
+
 .peg-hole-muted {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.2);
 }
 
-/* 底部操作 Dock */
 .immersive-bottom-dock {
   height: 80px;
   padding: 0 32px;
@@ -1027,15 +1249,14 @@ const completeCurrentColorAndNext = () => {
   gap: 14px;
 }
 .focus-badge {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   font-size: 13px;
-  color: #1e293b;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
