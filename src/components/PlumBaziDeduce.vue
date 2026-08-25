@@ -1,12 +1,12 @@
 <template>
   <div class="glass-card plum-card" style="display: flex; flex-direction: column; margin-bottom: 24px; padding: 24px;">
     <el-tabs v-model="activeDeduceTab" class="custom-tabs-container">
-      <!-- 标签一：乾坤演兵起卦台 (梅花易数) -->
+      <!-- 标签一：时数起卦 (梅花易数) -->
       <el-tab-pane name="plum">
         <template #label>
           <span class="tab-label-custom">
             <el-icon><Opportunity /></el-icon>
-            <span>乾坤演兵起卦台</span>
+            <span>时数起卦</span>
           </span>
         </template>
 
@@ -21,7 +21,7 @@
               <div class="glass-card plum-console-card" style="height: 100%; margin-bottom: 0;">
                 <div class="card-glow-title">
                   <el-icon class="glow-icon"><Opportunity /></el-icon>
-                  <span>乾坤演兵起卦台</span>
+                  <span>时数起卦</span>
                 </div>
             
                 <div class="console-mode-selector" style="margin-bottom: 20px; display: flex; justify-content: center;">
@@ -33,6 +33,16 @@
 
                 <!-- 时间起卦面板 -->
                 <div v-if="plumParams.type === 'time'" class="console-form animate-fade-in" style="margin-bottom: 24px;">
+                  <div class="current-time-bar" style="margin-bottom: 14px; background: linear-gradient(135deg, #e0e7ff, #f3e8ff); padding: 10px 14px; border-radius: 12px; border: 1px solid #c7d2fe; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div style="font-size: 12px; color: #3730a3; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                      <el-icon style="font-size: 15px; color: #6366f1;"><Timer /></el-icon>
+                      <span>当前时间：{{ currentLunarText || '智能读取中...' }}</span>
+                    </div>
+                    <el-button type="primary" size="small" round class="magic-btn" @click="setCurrentTimeParams(true)">
+                      🔄 同步最新时间
+                    </el-button>
+                  </div>
+
                   <el-row :gutter="20">
                     <el-col :xs="12" :sm="12" :md="12" :lg="12" style="margin-bottom: 12px;">
                       <span class="input-label-mini" style="display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 6px;">农历年支 (年数)</span>
@@ -86,8 +96,15 @@
                   </div>
                 </div>
 
-                <div class="deduce-action-center">
-                  <el-button type="primary" size="large" class="plum-deduce-big-btn" :loading="isDeducing" @click="calculatePlumBlossom" style="background: linear-gradient(135deg, #1e1b4b, #4c1d95); border: none; font-weight: bold; font-size: 16px; padding: 16px 40px; border-radius: 16px; box-shadow: 0 10px 20px rgba(76, 29, 149, 0.2); transition: all 0.3s;">
+                <div class="deduce-action-center" style="display: flex; justify-content: center;">
+                  <el-button 
+                    type="primary" 
+                    size="large" 
+                    class="plum-deduce-big-btn" 
+                    :loading="isDeducing" 
+                    @click="calculatePlumBlossom" 
+                    style="background: linear-gradient(135deg, #1e1b4b, #4c1d95); border: none; font-weight: bold; font-size: 16px; padding: 16px 48px; border-radius: 16px; box-shadow: 0 10px 20px rgba(76, 29, 149, 0.2); transition: all 0.3s;"
+                  >
                     ☯ 开始太极推演起卦 ☯
                   </el-button>
                 </div>
@@ -122,14 +139,18 @@
                       <div class="glass-card hexagram-card ben-card">
                         <div class="hex-badge" style="background: rgba(99, 102, 241, 0.1); color: #4f46e5; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px;">本卦 · 现状与初始</div>
                         <div class="hex-lines-container">
-                          <div v-for="index in [5, 4, 3, 2, 1, 0]" :key="'ben-yao-' + index" class="hex-yao-line" :style="{ position: 'relative', width: '100%', height: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }">
-                            <div v-if="plumResult.ben.yao[index] === 1" class="yao-bar yang-bar" :style="{ width: '100%', height: '8px', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #d97706, #fbbf24)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(251, 191, 36, 0.6)' : 'none' }"></div>
-                            <div v-else class="yao-bar yin-bar" :style="{ width: '100%', height: '8px', display: 'flex', justifyContent: 'space-between' }">
-                              <div class="yin-half left-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #d97706, #fbbf24)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(251, 191, 36, 0.6)' : 'none' }"></div>
-                              <div class="yin-half right-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #fbbf24, #d97706)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(251, 191, 36, 0.6)' : 'none' }"></div>
+                          <div v-for="index in [5, 4, 3, 2, 1, 0]" :key="'ben-yao-' + index" class="hex-yao-line">
+                            <span class="moving-indicator ben-moving">
+                              <template v-if="(index + 1) === plumResult.movingYao">○ 动爻</template>
+                            </span>
+                            <div class="yao-bar-box">
+                              <div v-if="plumResult.ben.yao[index] === 1" class="yao-bar yang-bar" :style="{ width: '100%', height: '8px', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #d97706, #fbbf24)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(251, 191, 36, 0.6)' : 'none' }"></div>
+                              <div v-else class="yao-bar yin-bar" :style="{ width: '100%', height: '8px', display: 'flex', justifyContent: 'space-between' }">
+                                <div class="yin-half left-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #d97706, #fbbf24)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(251, 191, 36, 0.6)' : 'none' }"></div>
+                                <div class="yin-half right-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #fbbf24, #d97706)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(251, 191, 36, 0.6)' : 'none' }"></div>
+                              </div>
                             </div>
                             <span class="yao-label-tag">{{ getClerkYaoName(index + 1) }}</span>
-                            <span v-if="(index + 1) === plumResult.movingYao" class="moving-dot">○ 动爻</span>
                           </div>
                         </div>
                         <div class="hex-gua-meta" style="text-align: center; width: 100%; margin-top: 10px;">
@@ -148,11 +169,14 @@
                       <div class="glass-card hexagram-card hu-card">
                         <div class="hex-badge" style="background: rgba(148, 163, 184, 0.1); color: #475569; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px;">互卦 · 核心与中途</div>
                         <div class="hex-lines-container">
-                          <div v-for="index in [5, 4, 3, 2, 1, 0]" :key="'hu-yao-' + index" class="hex-yao-line" :style="{ position: 'relative', width: '100%', height: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }">
-                            <div v-if="plumResult.hu.yao[index] === 1" class="yao-bar yang-bar" style="width: 100%; height: 8px; background: #475569; border-radius: 4px;"></div>
-                            <div v-else class="yao-bar yin-bar" style="width: 100%; height: 8px; display: flex; justify-content: space-between;">
-                              <div class="yin-half left-half" style="width: 45%; height: 100%; background: #475569; border-radius: 4px;"></div>
-                              <div class="yin-half right-half" style="width: 45%; height: 100%; background: #475569; border-radius: 4px;"></div>
+                          <div v-for="index in [5, 4, 3, 2, 1, 0]" :key="'hu-yao-' + index" class="hex-yao-line">
+                            <span class="moving-indicator"></span>
+                            <div class="yao-bar-box">
+                              <div v-if="plumResult.hu.yao[index] === 1" class="yao-bar yang-bar" style="width: 100%; height: 8px; background: #475569; border-radius: 4px;"></div>
+                              <div v-else class="yao-bar yin-bar" style="width: 100%; height: 8px; display: flex; justify-content: space-between;">
+                                <div class="yin-half left-half" style="width: 45%; height: 100%; background: #475569; border-radius: 4px;"></div>
+                                <div class="yin-half right-half" style="width: 45%; height: 100%; background: #475569; border-radius: 4px;"></div>
+                              </div>
                             </div>
                             <span class="yao-label-tag">{{ getClerkYaoName(index + 1) }}</span>
                           </div>
@@ -172,14 +196,18 @@
                       <div class="glass-card hexagram-card bian-card">
                         <div class="hex-badge" style="background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px;">变卦 · 结果与终局</div>
                         <div class="hex-lines-container">
-                          <div v-for="index in [5, 4, 3, 2, 1, 0]" :key="'bian-yao-' + index" class="hex-yao-line" :style="{ position: 'relative', width: '100%', height: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }">
-                            <div v-if="plumResult.bian.yao[index] === 1" class="yao-bar yang-bar" :style="{ width: '100%', height: '8px', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #10b981, #34d399)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none' }"></div>
-                            <div v-else class="yao-bar yin-bar" :style="{ width: '100%', height: '8px', display: 'flex', justifyContent: 'space-between' }">
-                              <div class="yin-half left-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #10b981, #34d399)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none' }"></div>
-                              <div class="yin-half right-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #34d399, #10b981)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none' }"></div>
+                          <div v-for="index in [5, 4, 3, 2, 1, 0]" :key="'bian-yao-' + index" class="hex-yao-line">
+                            <span class="moving-indicator bian-moving">
+                              <template v-if="(index + 1) === plumResult.movingYao">● 变爻</template>
+                            </span>
+                            <div class="yao-bar-box">
+                              <div v-if="plumResult.bian.yao[index] === 1" class="yao-bar yang-bar" :style="{ width: '100%', height: '8px', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #10b981, #34d399)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none' }"></div>
+                              <div v-else class="yao-bar yin-bar" :style="{ width: '100%', height: '8px', display: 'flex', justifyContent: 'space-between' }">
+                                <div class="yin-half left-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #10b981, #34d399)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none' }"></div>
+                                <div class="yin-half right-half" :style="{ width: '45%', height: '100%', background: (index + 1) === plumResult.movingYao ? 'linear-gradient(90deg, #34d399, #10b981)' : '#334155', borderRadius: '4px', boxShadow: (index + 1) === plumResult.movingYao ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none' }"></div>
+                              </div>
                             </div>
                             <span class="yao-label-tag">{{ getClerkYaoName(index + 1) }}</span>
-                            <span v-if="(index + 1) === plumResult.movingYao" class="change-dot">● 变爻</span>
                           </div>
                         </div>
                         <div class="hex-gua-meta" style="text-align: center; width: 100%; margin-top: 10px;">
@@ -773,7 +801,7 @@
 <script setup>
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { Solar } from 'lunar-javascript'
-import { Opportunity, Notebook, MagicStick, Compass, Search, Calendar, MapLocation, Share, Refresh, InfoFilled, CircleCheck, CircleClose } from '@element-plus/icons-vue'
+import { Opportunity, Notebook, MagicStick, Compass, Search, Calendar, MapLocation, Share, Refresh, InfoFilled, CircleCheck, CircleClose, Timer } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 // ==========================================
@@ -852,6 +880,54 @@ const plumParams = reactive({
 const isDeducing = ref(false)
 const deducingStep = ref(0)
 const plumResult = ref(null)
+
+const currentSolarText = ref('')
+const currentLunarText = ref('')
+
+const setCurrentTimeParams = (showToast = true) => {
+  const now = new Date()
+  const solar = Solar.fromDate(now)
+  const lunar = solar.getLunar()
+
+  const branchToNum = { '子': 1, '丑': 2, '寅': 3, '卯': 4, '辰': 5, '巳': 6, '午': 7, '未': 8, '申': 9, '酉': 10, '戌': 11, '亥': 12 }
+  
+  const yZhiStr = lunar.getYearZhi()
+  const yearVal = branchToNum[yZhiStr] || branchToNum[yZhiStr?.slice(-1)] || 1
+  const monthVal = Math.abs(lunar.getMonth())
+  const dayVal = lunar.getDay()
+  const tZhiStr = lunar.getTimeZhi()
+  const hourVal = branchToNum[tZhiStr] || (Math.floor((now.getHours() + 1) % 24 / 2) + 1)
+
+  plumParams.lunarYear = yearVal
+  plumParams.lunarMonth = monthVal
+  plumParams.lunarDay = dayVal
+  plumParams.lunarHour = hourVal
+
+  const yearOpt = lunarYearOptions.find(o => o.value === yearVal)
+  const hourOpt = lunarHourOptions.find(o => o.value === hourVal)
+
+  const yearLabel = yearOpt ? yearOpt.label.split(' ')[0] : `${yZhiStr}年`
+  const hourLabel = hourOpt ? hourOpt.label.split(' ')[0] : `${tZhiStr}时`
+
+  currentSolarText.value = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+  currentLunarText.value = `农历${lunar.getYearInGanZhi()}年(${yearLabel}) ${lunar.getMonthInChinese()}月${lunar.getDayInChinese()} ${hourLabel}`
+
+  if (showToast) {
+    ElMessage.success({
+      message: `已智能刷新为当前系统时间：${currentLunarText.value}`,
+      duration: 2500
+    })
+  }
+}
+
+const quickCurrentTimeDeduce = () => {
+  setCurrentTimeParams(false)
+  calculatePlumBlossom()
+}
+
+onMounted(() => {
+  setCurrentTimeParams(false)
+})
 
 const randomizePlumNums = () => {
   plumParams.num1 = Math.floor(Math.random() * 9999) + 1
@@ -1376,12 +1452,15 @@ const handleSubTabRedirect = (e) => {
 .actor-symbol { font-size: 28px; font-weight: 800; line-height: 1; transition: all 0.3s ease; }
 .actor-name { font-size: 14px; font-weight: 800; color: #1e293b; margin: 2px 0 0 0; transition: all 0.3s ease; }
 .relation-link-arrow { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100px; position: relative; margin: 0 10px; transition: all 0.3s ease; }
-.hexagram-card { border-radius: 24px; padding: 24px; display: flex; flex-direction: column; align-items: center; background: rgba(255, 255, 255, 0.8) !important; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important; border: 1px solid rgba(0, 0, 0, 0.05) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important; }
+.hexagram-card { border-radius: 24px; padding: 20px 14px; display: flex; flex-direction: column; align-items: center; background: rgba(255, 255, 255, 0.8) !important; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important; border: 1px solid rgba(0, 0, 0, 0.05) !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important; }
 .hexagram-card:hover { transform: translateY(-4px); box-shadow: 0 20px 45px rgba(0, 0, 0, 0.06) !important; border-color: rgba(99, 102, 241, 0.15) !important; }
-.hex-lines-container { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 160px; height: 120px; justify-content: space-between; margin-bottom: 20px; position: relative; transition: all 0.3s ease; }
-.yao-label-tag { position: absolute; right: -55px; font-size: 10px; color: #94a3b8; font-weight: 700; transition: all 0.3s ease; }
-.moving-dot { position: absolute; left: -50px; font-size: 10px; font-weight: 800; color: #b45309; animation: pulseGlow 1.5s infinite; transition: all 0.3s ease; }
-.change-dot { position: absolute; left: -50px; font-size: 10px; font-weight: 800; color: #059669; animation: pulseGlow 1.5s infinite; transition: all 0.3s ease; }
+.hex-lines-container { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 220px; margin: 0 auto 20px auto; transition: all 0.3s ease; }
+.hex-yao-line { display: flex; align-items: center; gap: 6px; width: 100%; height: 12px; }
+.moving-indicator { width: 44px; font-size: 11px; font-weight: 800; text-align: right; flex-shrink: 0; }
+.ben-moving { color: #b45309; animation: pulseGlow 1.5s infinite; }
+.bian-moving { color: #059669; animation: pulseGlow 1.5s infinite; }
+.yao-bar-box { flex: 1; display: flex; align-items: center; }
+.yao-label-tag { width: 32px; font-size: 11px; color: #94a3b8; font-weight: 700; text-align: left; flex-shrink: 0; position: static !important; }
 .hex-desc { transition: color 0.3s; }
 .hexagram-card:hover .hex-desc { color: #334155 !important; }
 .custom-radio-group { background: rgba(0, 0, 0, 0.03); padding: 6px; border-radius: 16px; border: 1px solid rgba(0, 0, 0, 0.02); }
@@ -1536,10 +1615,10 @@ const handleSubTabRedirect = (e) => {
   .plum-main-container > .el-row > .el-col { display: flex !important; flex-direction: column !important; }
   .plum-display-section { height: 100% !important; display: flex !important; flex-direction: column !important; }
   .plum-empty-card, .plum-loading-card { flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; height: 100% !important; }
-  .hexagram-card { padding: 24px 12px !important; }
-  .hex-lines-container { max-width: 110px !important; }
-  .yao-label-tag { right: -38px !important; }
-  .moving-dot, .change-dot { left: -38px !important; }
+  .hexagram-card { padding: 20px 10px !important; }
+  .hex-lines-container { max-width: 220px !important; }
+  .moving-indicator { width: 40px !important; font-size: 10px !important; }
+  .yao-label-tag { width: 28px !important; font-size: 10px !important; }
   .analysis-inner-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
 }
 

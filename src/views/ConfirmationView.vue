@@ -217,7 +217,7 @@
                   </div>
 
                   <div class="job-tags" style="margin-bottom: 18px;">
-                    <el-tag effect="plain" type="primary" round><el-icon><Shop /></el-icon> 花径教育 / EdTech头部企业</el-tag>
+                    <el-tag effect="plain" type="primary" round><el-icon><Shop /></el-icon> EdTech头部企业</el-tag>
                     <el-tag effect="plain" type="success" round><el-icon><Finished /></el-icon> 月薪 ¥35,000 (全额五险一金)</el-tag>
                     <el-tag effect="plain" type="warning" round><el-icon><Calendar /></el-icon> 周末双休</el-tag>
                     <el-tag effect="plain" type="info" round><el-icon><MapLocation /></el-icon> 海淀西北旺(E ZIKOO智慧谷)</el-tag>
